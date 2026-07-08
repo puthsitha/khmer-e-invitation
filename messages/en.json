@@ -29,5 +29,29 @@
     "goRegister": "Register here",
     "goLogin": "Log in here",
     "genericError": "Something went wrong. Please try again."
+  },
+  "viewer": {
+    "tapToOpen": "Tap to open",
+    "loading": "Loading…",
+    "notFound": "This invitation could not be found.",
+    "notPublished": "This invitation hasn't been published yet.",
+    "weddingCeremony": "Wedding Ceremony",
+    "groomFamily": "Groom's Family",
+    "brideFamily": "Bride's Family",
+    "countdownTitle": "Counting down",
+    "days": "Days",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds",
+    "galleryTitle": "Gallery",
+    "directionTitle": "Direction",
+    "openInMaps": "Open in Google Maps",
+    "storyTitle": "Our Story",
+    "agendaTitle": "Agenda",
+    "digitalEnvelopeTitle": "Digital Envelope",
+    "digitalEnvelopeNote": "Scan the QR code above to send a gift",
+    "gratitudeTitle": "Thank You",
+    "gratitudeText": "With heartfelt thanks for celebrating this special day with us. Please forgive any shortcomings in our arrangements.",
+    "closingSignoff": "Thank you for sharing in our joy"
   }
 }

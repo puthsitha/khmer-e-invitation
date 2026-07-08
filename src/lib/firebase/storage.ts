@@ -62,6 +62,18 @@ export async function uploadBgMusic(invitationId: string, file: File) {
   return getDownloadURL(storageRef);
 }
 
+export async function uploadDigitalEnvelopeQr(invitationId: string, file: File) {
+  assertUpload(file, {
+    maxBytes: UPLOAD_LIMITS.galleryImageMaxBytes,
+    allowedTypes: ALLOWED_IMAGE_TYPES,
+  });
+
+  const path = `invitations/${invitationId}/envelope/${Date.now()}-${file.name}`;
+  const storageRef = ref(storage, path);
+  await uploadBytes(storageRef, file, { contentType: file.type });
+  return getDownloadURL(storageRef);
+}
+
 export async function deleteMediaByUrl(url: string) {
   const storageRef = ref(storage, url);
   await deleteObject(storageRef);

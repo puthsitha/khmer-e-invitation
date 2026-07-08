@@ -29,5 +29,29 @@
     "goRegister": "ចុះឈ្មោះនៅទីនេះ",
     "goLogin": "ចូលនៅទីនេះ",
     "genericError": "មានបញ្ហាកើតឡើង។ សូមព្យាយាមម្តងទៀត។"
+  },
+  "viewer": {
+    "tapToOpen": "ចុចដើម្បីបើក",
+    "loading": "កំពុងផ្ទុក…",
+    "notFound": "រកមិនឃើញសិចជាភ្ញៀវនេះទេ។",
+    "notPublished": "សិចជាភ្ញៀវនេះមិនទាន់បានផ្សព្វផ្សាយនៅឡើយទេ។",
+    "weddingCeremony": "ពិធីមង្គលការ",
+    "groomFamily": "គ្រួសារខាងកូនប្រុស",
+    "brideFamily": "គ្រួសារខាងកូនស្រី",
+    "countdownTitle": "រាប់ថយក្រោយ",
+    "days": "ថ្ងៃ",
+    "hours": "ម៉ោង",
+    "minutes": "នាទី",
+    "seconds": "វិនាទី",
+    "galleryTitle": "រូបភាព",
+    "directionTitle": "ទិសដៅ",
+    "openInMaps": "បើកនៅក្នុង Google Maps",
+    "storyTitle": "រឿងរ៉ាវរបស់ពួកយើង",
+    "agendaTitle": "កម្មវិធី",
+    "digitalEnvelopeTitle": "ស្រោមអំណោយឌីជីថល",
+    "digitalEnvelopeNote": "សូមស្កេន QR ខាងលើដើម្បីផ្ញើអំណោយ",
+    "gratitudeTitle": "សូមអរគុណ",
+    "gratitudeText": "សូមថ្លែងអំណរគុណដល់ការចូលរួមរបស់អ្នកក្នុងថ្ងៃពិសេសនេះ។ ប្រសិនបើមានកំហុសឆ្គងណាមួយ សូមមេត្តាអភ័យទោសផងផងដែរ។",
+    "closingSignoff": "សូមអរគុណដែលបានចែករំលែកភាពរីករាយជាមួយពួកយើង"
   }
 }

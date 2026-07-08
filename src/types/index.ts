@@ -26,6 +26,7 @@ export interface InvitationContent {
 export interface InvitationMedia {
   bgMusic?: string;
   gallery: string[];
+  digitalEnvelopeQr?: string;
 }
 
 export interface Invitation {

@@ -1,3 +1,5 @@
+import { ViewerExperience } from "@/components/viewer/ViewerExperience";
+
 export default async function ViewerPage({
   params,
 }: {
@@ -5,9 +7,5 @@ export default async function ViewerPage({
 }) {
   const { invitationSlug } = await params;
 
-  return (
-    <main className="flex min-h-screen items-center justify-center bg-cream text-maroon">
-      <p>Invitation &ldquo;{invitationSlug}&rdquo; — viewer experience coming in Phase 4.</p>
-    </main>
-  );
+  return <ViewerExperience slug={invitationSlug} />;
 }
