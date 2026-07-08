@@ -1,8 +1,8 @@
 {
   "projects": {
-    "dev": "khmer-einvite-dev",
+    "dev": "einvitation-2ff36",
     "uat": "khmer-einvite-uat",
     "production": "khmer-einvite-prod",
-    "default": "khmer-einvite-dev"
+    "default": "einvitation-2ff36"
   }
 }
