@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fdf8f0;
+  --foreground: #2a1a12;
+
+  /* Khmer wedding default palette: Royal Gold */
+  --color-gold: #c9a24b;
+  --color-gold-light: #e6cd8a;
+  --color-maroon: #7a1f2b;
+  --color-cream: #fdf8f0;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-gold: var(--color-gold);
+  --color-gold-light: var(--color-gold-light);
+  --color-maroon: var(--color-maroon);
+  --color-cream: var(--color-cream);
+
+  --font-heading-km: var(--font-moul);
+  --font-body-km: var(--font-kantumruy);
+  --font-heading-en: var(--font-playfair);
+  --font-body-en: var(--font-inter);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1a1210;
+    --foreground: #f5ead6;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}

@@ -1,0 +1,18 @@
+{
+  "app": {
+    "name": "Khmer E-Invitation",
+    "tagline": "Beautiful animated Khmer-style digital invitations for weddings, birthdays, and special events"
+  },
+  "nav": {
+    "home": "Home",
+    "login": "Log in",
+    "register": "Register",
+    "dashboard": "Dashboard",
+    "admin": "Admin"
+  },
+  "home": {
+    "heading": "Khmer E-Invitation",
+    "subheading": "Create and send beautiful digital invitations for your wedding",
+    "cta": "Get started"
+  }
+}

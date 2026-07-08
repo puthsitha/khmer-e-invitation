@@ -1,0 +1,17 @@
+[build]
+  command = "next build"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[context.dev]
+  [context.dev.environment]
+    # Firebase project: khmer-einvite-dev
+
+[context.uat]
+  [context.uat.environment]
+    # Firebase project: khmer-einvite-uat
+
+[context.production]
+  [context.production.environment]
+    # Firebase project: khmer-einvite-prod
