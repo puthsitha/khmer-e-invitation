@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { loginWithEmail, loginWithGoogle } from "@/lib/firebase/auth";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 
 export default function LoginPage() {
   const t = useTranslations("auth");
@@ -57,13 +58,11 @@ export default function LoginPage() {
           onChange={(e) => setEmail(e.target.value)}
           className="rounded-lg border border-gold/40 bg-white px-4 py-2"
         />
-        <input
-          type="password"
+        <PasswordInput
           required
           placeholder={t("password")}
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="rounded-lg border border-gold/40 bg-white px-4 py-2"
+          onChange={setPassword}
         />
         {error && <p className="text-sm text-red-700">{error}</p>}
         <button
