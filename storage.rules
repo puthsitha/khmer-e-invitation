@@ -34,5 +34,14 @@ service firebase.storage {
         request.resource.contentType.matches('audio/(mpeg|mp4|wav)');
       allow delete: if isInvitationOwner(invitationId);
     }
+
+    // Digital envelope QR image (gift/money envelope) — same image caps as gallery.
+    match /invitations/{invitationId}/envelope/{fileName} {
+      allow read: if true;
+      allow write: if isInvitationOwner(invitationId) &&
+        request.resource.size < 500 * 1024 &&
+        request.resource.contentType.matches('image/(jpeg|png|webp)');
+      allow delete: if isInvitationOwner(invitationId);
+    }
   }
 }

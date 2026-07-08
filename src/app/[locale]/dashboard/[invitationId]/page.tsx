@@ -11,6 +11,7 @@ import {
 import {
   deleteMediaByUrl,
   uploadBgMusic,
+  uploadDigitalEnvelopeQr,
   uploadGalleryImage,
   UploadValidationError,
 } from "@/lib/firebase/storage";
@@ -95,6 +96,20 @@ export default function EditInvitationPage() {
     try {
       const url = await uploadBgMusic(invitation.invitationId, file);
       await save({ mediaUrls: { ...invitation.mediaUrls, bgMusic: url } });
+    } catch (err) {
+      setStatus(
+        err instanceof UploadValidationError ? err.message : "Upload failed.",
+      );
+    }
+  }
+
+  async function handleEnvelopeQrUpload(files: FileList | null) {
+    const file = files?.[0];
+    if (!file || !invitation) return;
+    setStatus(null);
+    try {
+      const url = await uploadDigitalEnvelopeQr(invitation.invitationId, file);
+      await save({ mediaUrls: { ...invitation.mediaUrls, digitalEnvelopeQr: url } });
     } catch (err) {
       setStatus(
         err instanceof UploadValidationError ? err.message : "Upload failed.",
@@ -226,6 +241,23 @@ export default function EditInvitationPage() {
         />
         {invitation.mediaUrls.bgMusic && (
           <audio className="mt-2 w-full" controls src={invitation.mediaUrls.bgMusic} />
+        )}
+
+        <p className="mb-2 mt-6 text-sm text-foreground/60">
+          Digital envelope QR (gift/money) — up to 500KB (JPEG/PNG/WebP).
+        </p>
+        <input
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          onChange={(e) => handleEnvelopeQrUpload(e.target.files)}
+        />
+        {invitation.mediaUrls.digitalEnvelopeQr && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={invitation.mediaUrls.digitalEnvelopeQr}
+            alt=""
+            className="mt-2 h-32 w-32 rounded object-cover"
+          />
         )}
       </section>
 
