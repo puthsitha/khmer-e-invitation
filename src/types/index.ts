@@ -5,6 +5,7 @@ export interface AppUser {
   name: string;
   email: string;
   role: UserRole;
+  suspended: boolean;
   createdAt: number;
 }
 

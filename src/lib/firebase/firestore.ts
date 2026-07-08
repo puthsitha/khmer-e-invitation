@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -49,10 +50,23 @@ export async function createUserDocIfMissing(user: {
     name: user.name,
     email: user.email,
     role: "user",
+    suspended: false,
     createdAt: Date.now(),
   };
   await setDoc(ref, appUser);
   return appUser;
+}
+
+export async function listAllUsers() {
+  const snap = await getDocs(query(usersCol, orderBy("createdAt", "desc")));
+  return snap.docs.map((d) => d.data());
+}
+
+export async function setUserStatus(
+  uid: string,
+  patch: Partial<Pick<AppUser, "role" | "suspended">>,
+) {
+  await updateDoc(doc(usersCol, uid), patch);
 }
 
 export async function createInvitation(
@@ -105,12 +119,51 @@ export async function getInvitationBySlug(slug: string) {
   return snap.empty ? null : snap.docs[0].data();
 }
 
+export async function getInvitation(invitationId: string) {
+  const snap = await getDoc(doc(invitationsCol, invitationId));
+  return snap.exists() ? snap.data() : null;
+}
+
+export async function deleteInvitation(invitationId: string) {
+  await deleteDoc(doc(invitationsCol, invitationId));
+}
+
+export async function listAllInvitations() {
+  const snap = await getDocs(invitationsCol);
+  return snap.docs.map((d) => d.data());
+}
+
 export async function listTemplates(category?: Template["category"]) {
   const q = category
     ? query(templatesCol, where("category", "==", category))
     : templatesCol;
   const snap = await getDocs(q);
   return snap.docs.map((d) => d.data());
+}
+
+export async function getTemplate(templateId: string) {
+  const snap = await getDoc(doc(templatesCol, templateId));
+  return snap.exists() ? snap.data() : null;
+}
+
+export async function createTemplate(
+  input: Omit<Template, "templateId">,
+) {
+  const ref = doc(templatesCol);
+  const template: Template = { ...input, templateId: ref.id };
+  await setDoc(ref, template);
+  return template;
+}
+
+export async function updateTemplate(
+  templateId: string,
+  patch: Partial<Template>,
+) {
+  await updateDoc(doc(templatesCol, templateId), patch);
+}
+
+export async function deleteTemplate(templateId: string) {
+  await deleteDoc(doc(templatesCol, templateId));
 }
 
 export async function addRsvpResponse(
