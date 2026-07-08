@@ -14,5 +14,20 @@
     "heading": "Khmer E-Invitation",
     "subheading": "Create and send beautiful digital invitations for your wedding",
     "cta": "Get started"
+  },
+  "auth": {
+    "loginTitle": "Log in",
+    "registerTitle": "Create an account",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "loginButton": "Log in",
+    "registerButton": "Register",
+    "googleButton": "Continue with Google",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "goRegister": "Register here",
+    "goLogin": "Log in here",
+    "genericError": "Something went wrong. Please try again."
   }
 }

@@ -1,0 +1,38 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function invitationOwner(invitationId) {
+      return firestore.get(
+        /databases/(default)/documents/invitations/$(invitationId)
+      ).data.ownerUid;
+    }
+
+    function isInvitationOwner(invitationId) {
+      return isSignedIn() && request.auth.uid == invitationOwner(invitationId);
+    }
+
+    // Gallery photos — capped per §2a: 500KB each, JPEG/PNG/WebP only.
+    match /invitations/{invitationId}/gallery/{fileName} {
+      allow read: if true;
+      allow write: if isInvitationOwner(invitationId) &&
+        request.resource.size < 500 * 1024 &&
+        request.resource.contentType.matches('image/(jpeg|png|webp)');
+      allow delete: if isInvitationOwner(invitationId);
+    }
+
+    // Background music — capped per §2a: 3MB, common audio types only.
+    match /invitations/{invitationId}/music/{fileName} {
+      allow read: if true;
+      allow write: if isInvitationOwner(invitationId) &&
+        request.resource.size < 3 * 1024 * 1024 &&
+        request.resource.contentType.matches('audio/(mpeg|mp4|wav)');
+      allow delete: if isInvitationOwner(invitationId);
+    }
+  }
+}

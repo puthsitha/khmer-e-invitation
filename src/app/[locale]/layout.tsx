@@ -3,6 +3,7 @@ import { Inter, Kantumruy_Pro, Moul, Playfair_Display } from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import { AuthProvider } from "@/contexts/AuthContext";
 import "./globals.css";
 
 const moul = Moul({
@@ -57,7 +58,9 @@ export default async function RootLayout({
       className={`${moul.variable} ${kantumruy.variable} ${playfair.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );
