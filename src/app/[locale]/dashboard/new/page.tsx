@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "@/i18n/navigation";
 import { createInvitation, listTemplates } from "@/lib/firebase/firestore";
 import { generateUniqueSlug } from "@/lib/slug";
+import { PALETTE_SWATCHES } from "@/lib/palettes";
 import type { InvitationCategory, Template } from "@/types";
 
 const CATEGORIES: InvitationCategory[] = ["wedding", "birthday", "event"];
@@ -39,11 +40,13 @@ export default function NewInvitationPage() {
     setSubmitting(true);
     try {
       const slug = await generateUniqueSlug(title || category);
+      const selectedTemplate = templates.find((t) => t.templateId === templateId);
       const invitation = await createInvitation(user.uid, {
         slug,
         category,
         templateId,
         defaultLocale: "km",
+        colorPalette: selectedTemplate?.defaultColorPalette ?? "royal-gold",
       });
       router.push(`/dashboard/${invitation.invitationId}`);
     } catch {
@@ -89,6 +92,26 @@ export default function NewInvitationPage() {
             ))}
           </select>
         </label>
+
+        {(() => {
+          const selected = templates.find((t) => t.templateId === templateId);
+          const swatches =
+            selected &&
+            PALETTE_SWATCHES[selected.defaultColorPalette as keyof typeof PALETTE_SWATCHES];
+          if (!swatches) return null;
+          return (
+            <div className="flex items-center gap-2 text-sm text-maroon/70">
+              <span>Palette:</span>
+              {swatches.map((color) => (
+                <span
+                  key={color}
+                  className="h-4 w-4 rounded-full border border-black/10"
+                  style={{ backgroundColor: color }}
+                />
+              ))}
+            </div>
+          );
+        })()}
 
         <label className="flex flex-col gap-1 text-sm text-maroon">
           Title (used to generate the link, e.g. couple names)
