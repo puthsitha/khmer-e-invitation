@@ -38,7 +38,7 @@ function StatCard({ label, value }: { label: string; value: number | null }) {
   return (
     <div className="rounded-xl border border-gold/30 bg-white p-6 text-center">
       <p className="text-3xl font-semibold text-maroon">{value ?? "…"}</p>
-      <p className="text-sm text-foreground/60">{label}</p>
+      <p className="text-sm text-maroon/60">{label}</p>
     </div>
   );
 }

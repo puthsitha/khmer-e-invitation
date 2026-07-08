@@ -25,13 +25,6 @@
   --font-body-en: var(--font-inter);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #1a1210;
-    --foreground: #f5ead6;
-  }
-}
-
 /* Template palette variants (§6 / frontend-design skill) — each is a
    palette + motif-density swap over the same section layout, applied by
    scoping these custom properties under [data-palette] on the viewer root. */
@@ -59,4 +52,19 @@
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+/* Dashboard/admin forms always sit on a light (cream/white) surface, so
+   give inputs an explicit, legible text/placeholder color instead of
+   inheriting body color — keeps them readable regardless of OS theme. */
+input,
+textarea,
+select {
+  color: var(--color-maroon);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: color-mix(in srgb, var(--color-maroon) 45%, transparent);
+  opacity: 1;
 }

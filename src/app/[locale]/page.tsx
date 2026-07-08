@@ -14,7 +14,7 @@ export default function HomePage() {
         <h1 className="font-[family-name:var(--font-heading-km)] text-4xl text-maroon sm:text-5xl">
           {t("heading")}
         </h1>
-        <p className="font-[family-name:var(--font-body-km)] max-w-xl text-lg text-foreground/80">
+        <p className="font-[family-name:var(--font-body-km)] max-w-xl text-lg text-maroon/80">
           {t("subheading")}
         </p>
         <button

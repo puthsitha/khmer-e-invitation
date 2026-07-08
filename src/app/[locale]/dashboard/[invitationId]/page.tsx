@@ -34,7 +34,7 @@ export default function EditInvitationPage() {
   if (!invitation) {
     return (
       <main className="mx-auto max-w-3xl px-6 py-10">
-        <p className="text-foreground/60">Loading…</p>
+        <p className="text-maroon/60">Loading…</p>
       </main>
     );
   }
@@ -205,7 +205,7 @@ export default function EditInvitationPage() {
 
       <section className="mb-8 rounded-xl border border-gold/30 bg-white p-6">
         <h2 className="mb-4 text-lg font-medium text-maroon">Media</h2>
-        <p className="mb-2 text-sm text-foreground/60">
+        <p className="mb-2 text-sm text-maroon/60">
           Gallery — up to 20 images, 500KB each (JPEG/PNG/WebP).
         </p>
         <input
@@ -230,7 +230,7 @@ export default function EditInvitationPage() {
           ))}
         </div>
 
-        <p className="mb-2 mt-6 text-sm text-foreground/60">
+        <p className="mb-2 mt-6 text-sm text-maroon/60">
           Background music — up to 3MB (MP3/M4A/WAV).
         </p>
         <input
@@ -242,7 +242,7 @@ export default function EditInvitationPage() {
           <audio className="mt-2 w-full" controls src={invitation.mediaUrls.bgMusic} />
         )}
 
-        <p className="mb-2 mt-6 text-sm text-foreground/60">
+        <p className="mb-2 mt-6 text-sm text-maroon/60">
           Digital envelope QR (gift/money) — up to 500KB (JPEG/PNG/WebP).
         </p>
         <input
@@ -262,7 +262,7 @@ export default function EditInvitationPage() {
 
       <section className="mb-8 rounded-xl border border-gold/30 bg-white p-6">
         <h2 className="mb-4 text-lg font-medium text-maroon">Publish & share</h2>
-        <p className="mb-3 text-sm text-foreground/60">
+        <p className="mb-3 text-sm text-maroon/60">
           Status: <strong>{invitation.status}</strong>
         </p>
         <button
@@ -291,7 +291,7 @@ export default function EditInvitationPage() {
           RSVPs ({rsvps.length})
         </h2>
         {rsvps.length === 0 && (
-          <p className="text-sm text-foreground/60">No responses yet.</p>
+          <p className="text-sm text-maroon/60">No responses yet.</p>
         )}
         <ul className="flex flex-col gap-2">
           {rsvps.map((r) => (
