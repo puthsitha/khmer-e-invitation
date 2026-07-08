@@ -17,6 +17,22 @@ Netlify builds this Next.js app via `@netlify/plugin-nextjs` (configured in `net
 3. Use the **"Different value per deploy context"** option so `dev`, `uat`, and `production` each point at their own Firebase project's config values.
 4. Never commit real values — `.env.local` (git-ignored) is for local development only, populated from `.env.example`.
 
+## Firebase project setup (per environment)
+
+For each of the three Firebase projects (`khmer-einvite-dev`, `khmer-einvite-uat`, `khmer-einvite-prod`):
+
+1. **Enable Auth providers**: Firebase console → Authentication → Sign-in method → enable **Email/Password** and **Google**.
+2. **Create a Firestore database** (production mode) and a **Storage bucket** in the same console.
+3. **Copy the web app config** (Project settings → General → Your apps) into the matching Netlify context's `NEXT_PUBLIC_FIREBASE_*` environment variables.
+4. **Deploy security rules** — `firestore.rules` and `storage.rules` in this repo are the source of truth (owner-write / public-read, enforcing the upload caps from §2a). Deploy with the Firebase CLI (already a dev dependency):
+
+   ```bash
+   npx firebase login
+   npm run firebase:rules:dev    # or :uat / :prod
+   ```
+
+   `.firebaserc` maps the `dev`/`uat`/`production` aliases to the three project IDs above.
+
 ## Promotion flow
 
 Feature branches → `dev` → `uat` → `main`, matching the branch flow in the project's commit/branching rules.

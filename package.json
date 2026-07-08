@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "prepare": "git config core.hooksPath .githooks"
+    "prepare": "git config core.hooksPath .githooks",
+    "firebase:rules:dev": "firebase deploy --only firestore:rules,storage:rules -P dev",
+    "firebase:rules:uat": "firebase deploy --only firestore:rules,storage:rules -P uat",
+    "firebase:rules:prod": "firebase deploy --only firestore:rules,storage:rules -P production"
   },
   "dependencies": {
     "firebase": "^12.15.0",
@@ -27,6 +30,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "firebase-tools": "^15.22.4",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

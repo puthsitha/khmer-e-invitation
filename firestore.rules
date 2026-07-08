@@ -1,0 +1,59 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isOwner(ownerUid) {
+      return isSignedIn() && request.auth.uid == ownerUid;
+    }
+
+    // users/{uid} — each user manages their own profile; only an admin can
+    // change role (approve/suspend), never the user themselves.
+    match /users/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow create: if isOwner(uid) && request.resource.data.role == 'user';
+      allow update: if isAdmin() ||
+        (isOwner(uid) && request.resource.data.role == resource.data.role);
+      allow delete: if isAdmin();
+    }
+
+    // invitations/{invitationId} — only the owner can write; anyone can read
+    // a published invitation (the public viewer link), only the owner/admin
+    // can read a draft.
+    match /invitations/{invitationId} {
+      allow read: if resource.data.status == 'published' ||
+        isOwner(resource.data.ownerUid) || isAdmin();
+      allow create: if isOwner(request.resource.data.ownerUid);
+      allow update, delete: if isOwner(resource.data.ownerUid) || isAdmin();
+    }
+
+    // templates/{templateId} — public read-only library, admin-managed.
+    match /templates/{templateId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // rsvps/{invitationId}/responses/{responseId} — guests can submit a
+    // response to a published invitation; only the invitation owner/admin
+    // can read the guest list.
+    match /rsvps/{invitationId}/responses/{responseId} {
+      allow create: if get(/databases/$(database)/documents/invitations/$(invitationId)).data.status == 'published' &&
+        request.resource.data.guestName is string &&
+        request.resource.data.attending is bool;
+      allow read: if isOwner(
+        get(/databases/$(database)/documents/invitations/$(invitationId)).data.ownerUid
+      ) || isAdmin();
+      allow update, delete: if false;
+    }
+  }
+}

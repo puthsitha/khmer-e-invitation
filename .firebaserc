@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "dev": "khmer-einvite-dev",
+    "uat": "khmer-einvite-uat",
+    "production": "khmer-einvite-prod",
+    "default": "khmer-einvite-dev"
+  }
+}
