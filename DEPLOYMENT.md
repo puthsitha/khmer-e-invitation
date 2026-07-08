@@ -35,6 +35,17 @@ For each Firebase project (dev is `einvitation-2ff36`; create UAT/production the
 
    `.firebaserc` maps the `dev`/`uat`/`production` aliases to the three project IDs above.
 
+## Bootstrapping the first admin
+
+Every account created through `/register` (or Google sign-in) always gets `role: "user"` — both the client code and `firestore.rules` enforce this, so there's no self-serve way to become an admin. The very first admin per environment has to be promoted manually:
+
+1. Register a normal account through the app's `/register` page.
+2. Firebase Console → the environment's project → **Firestore Database** → `users` collection → find the document for that account (match by the `email` field; the document ID is the user's UID).
+3. Edit the `role` field from `"user"` to `"admin"` and save. Console edits bypass security rules, so this works even though the app itself blocks self-promotion.
+4. Log out and back in at `/login` — the app now redirects admins straight to `/admin`.
+
+After that first admin exists, promote any further admins from inside the app at `/admin/users` ("Make admin") instead of editing Firestore directly.
+
 ## Promotion flow
 
 Feature branches → `dev` → `uat` → `main`, matching the branch flow in the project's commit/branching rules.
