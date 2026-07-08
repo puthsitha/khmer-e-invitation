@@ -35,6 +35,8 @@ For each Firebase project (dev is `einvitation-2ff36`; create UAT/production the
 
    `.firebaserc` maps the `dev`/`uat`/`production` aliases to the three project IDs above.
 
+   `firebase.json`'s `storage.bucket` is currently hardcoded to the dev bucket (`einvitation-2ff36.firebasestorage.app`) — the Firebase CLI needs an explicit bucket name to resolve `storage:rules` deploys, and there's only one real project so far. When UAT/production projects exist, switch `firebase.json`'s `storage` config to the [multi-target array form](https://firebase.google.com/docs/cli/targets) (one `{ "target": ..., "bucket": ..., "rules": "storage.rules" }` per environment, applied via `firebase target:apply storage <name> <bucket>`) instead of a single hardcoded bucket.
+
 ## Bootstrapping the first admin
 
 Every account created through `/register` (or Google sign-in) always gets `role: "user"` — both the client code and `firestore.rules` enforce this, so there's no self-serve way to become an admin. The very first admin per environment has to be promoted manually:
