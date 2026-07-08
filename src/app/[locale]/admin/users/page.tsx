@@ -33,7 +33,7 @@ export default function AdminUsersPage() {
       </h1>
       <table className="w-full text-left text-sm">
         <thead>
-          <tr className="border-b border-gold/30 text-foreground/60">
+          <tr className="border-b border-gold/30 text-maroon/60">
             <th className="py-2">Name</th>
             <th>Email</th>
             <th>Role</th>

@@ -29,9 +29,9 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      {invitations === null && <p className="text-foreground/60">Loading…</p>}
+      {invitations === null && <p className="text-maroon/60">Loading…</p>}
       {invitations?.length === 0 && (
-        <p className="text-foreground/60">
+        <p className="text-maroon/60">
           No invitations yet — create your first one.
         </p>
       )}
@@ -47,11 +47,11 @@ export default function DashboardPage() {
                 <span className="font-medium text-maroon">
                   {invitation.slug}
                 </span>{" "}
-                <span className="text-sm text-foreground/60">
+                <span className="text-sm text-maroon/60">
                   ({invitation.category}, {invitation.status})
                 </span>
               </span>
-              <span className="text-sm text-foreground/40">Edit →</span>
+              <span className="text-sm text-maroon/40">Edit →</span>
             </Link>
           </li>
         ))}

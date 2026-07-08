@@ -92,7 +92,7 @@ export default function RegisterPage() {
           {t("googleButton")}
         </button>
       </form>
-      <p className="text-sm text-foreground/70">
+      <p className="text-sm text-maroon/70">
         {t("haveAccount")}{" "}
         <Link href="/login" className="text-maroon underline">
           {t("goLogin")}

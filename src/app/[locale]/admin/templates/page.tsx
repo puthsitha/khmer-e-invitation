@@ -114,7 +114,7 @@ export default function AdminTemplatesPage() {
           >
             <span>
               <strong className="text-maroon">{t.name}</strong>{" "}
-              <span className="text-sm text-foreground/60">
+              <span className="text-sm text-maroon/60">
                 ({t.category}, {t.defaultColorPalette})
               </span>
             </span>
