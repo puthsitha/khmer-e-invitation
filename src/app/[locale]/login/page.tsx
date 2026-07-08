@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { loginWithEmail, loginWithGoogle } from "@/lib/firebase/auth";
+import { getUserDoc } from "@/lib/firebase/firestore";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 
 export default function LoginPage() {
@@ -19,8 +20,9 @@ export default function LoginPage() {
     setError(null);
     setSubmitting(true);
     try {
-      await loginWithEmail(email, password);
-      router.push("/dashboard");
+      const user = await loginWithEmail(email, password);
+      const appUser = await getUserDoc(user.uid);
+      router.push(appUser?.role === "admin" ? "/admin" : "/dashboard");
     } catch {
       setError(t("genericError"));
     } finally {
@@ -32,8 +34,9 @@ export default function LoginPage() {
     setError(null);
     setSubmitting(true);
     try {
-      await loginWithGoogle();
-      router.push("/dashboard");
+      const user = await loginWithGoogle();
+      const appUser = await getUserDoc(user.uid);
+      router.push(appUser?.role === "admin" ? "/admin" : "/dashboard");
     } catch {
       setError(t("genericError"));
     } finally {
