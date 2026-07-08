@@ -4,9 +4,11 @@
 
 | Environment | Branch | Netlify context   | Firebase project      |
 | ----------- | ------ | ----------------- | ---------------------- |
-| Development | `dev`  | Branch deploy      | `khmer-einvite-dev`    |
-| UAT         | `uat`  | Branch deploy      | `khmer-einvite-uat`    |
-| Production  | `main` | Production deploy  | `khmer-einvite-prod`   |
+| Development | `dev`  | Branch deploy      | `einvitation-2ff36` (Firebase project "eInvitation")    |
+| UAT         | `uat`  | Branch deploy      | *(not yet created — placeholder `khmer-einvite-uat`)*    |
+| Production  | `main` | Production deploy  | *(not yet created — placeholder `khmer-einvite-prod`)*   |
+
+Only the dev project exists so far. Create the UAT/production Firebase projects when you're ready to promote past dev, then update `.firebaserc` and this table with their real project IDs (Firebase auto-generates the ID from the name you pick, so it won't necessarily match the placeholder above).
 
 Netlify builds this Next.js app via `@netlify/plugin-nextjs` (configured in `netlify.toml`). Each branch above maps to its own Netlify deploy context, and each context talks to its own Firebase project so that dev/uat/prod data never mix.
 
@@ -19,7 +21,7 @@ Netlify builds this Next.js app via `@netlify/plugin-nextjs` (configured in `net
 
 ## Firebase project setup (per environment)
 
-For each of the three Firebase projects (`khmer-einvite-dev`, `khmer-einvite-uat`, `khmer-einvite-prod`):
+For each Firebase project (dev is `einvitation-2ff36`; create UAT/production the same way when needed):
 
 1. **Enable Auth providers**: Firebase console → Authentication → Sign-in method → enable **Email/Password** and **Google**.
 2. **Create a Firestore database** (production mode) and a **Storage bucket** in the same console.
@@ -43,7 +45,9 @@ Feature branches → `dev` → `uat` → `main`, matching the branch flow in the
 
 ## Firebase plan: staying on Spark (free)
 
-This project intentionally stays on the **Spark (free) plan** for now (see the master prompt, §2/§2a, and `AGENTS`/project notes for the full reasoning):
+The `einvitation-2ff36` dev project shows as **Blaze** in the Firebase console (Blaze is required to even view/enable some products in newer Firebase projects, so this can happen without any billing charge). The app itself still respects the Spark-era constraints below regardless of which plan the console shows — no Cloud Functions, capped media uploads, no billing-dependent features — so there's nothing to change here. If real charges ever become a concern, set a budget alert on the project (Google Cloud Console → Billing → Budgets & alerts, e.g. $5–10) as described in the upgrade path below.
+
+This project was originally scoped to stay on the **Spark (free) plan** (see the master prompt, §2/§2a, and `AGENTS`/project notes for the full reasoning):
 
 - Firestore/Auth usage is far under Spark's daily free quota (50K reads / 20K writes per day) at this app's scale.
 - Background video is embedded via unlisted YouTube/Vimeo, never uploaded to Firebase Storage — this avoids the one real cost risk (media bandwidth).

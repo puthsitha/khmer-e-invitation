@@ -6,7 +6,7 @@
 
 [context.dev]
   [context.dev.environment]
-    # Firebase project: khmer-einvite-dev
+    # Firebase project: einvitation-2ff36 (eInvitation)
 
 [context.uat]
   [context.uat.environment]
