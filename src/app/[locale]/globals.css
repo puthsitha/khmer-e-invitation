@@ -32,6 +32,30 @@
   }
 }
 
+/* Template palette variants (§6 / frontend-design skill) — each is a
+   palette + motif-density swap over the same section layout, applied by
+   scoping these custom properties under [data-palette] on the viewer root. */
+[data-palette="royal-gold"] {
+  --color-gold: #c9a24b;
+  --color-gold-light: #e6cd8a;
+  --color-maroon: #7a1f2b;
+  --color-cream: #fdf8f0;
+}
+
+[data-palette="blush-temple"] {
+  --color-gold: #c9a24b;
+  --color-gold-light: #e9c98a;
+  --color-maroon: #8a3b4c;
+  --color-cream: #fff8f4;
+}
+
+[data-palette="modern-minimal"] {
+  --color-gold: #b8934a;
+  --color-gold-light: #d8bd85;
+  --color-maroon: #2a2a2a;
+  --color-cream: #f5f2ec;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

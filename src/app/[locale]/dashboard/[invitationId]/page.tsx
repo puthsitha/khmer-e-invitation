@@ -16,9 +16,8 @@ import {
   UploadValidationError,
 } from "@/lib/firebase/storage";
 import { QrCode } from "@/components/ui/QrCode";
+import { PALETTE_IDS, PALETTE_LABELS } from "@/lib/palettes";
 import type { Invitation, RsvpResponse } from "@/types";
-
-const PALETTES = ["royal-gold", "blush-temple", "modern-minimal"];
 
 export default function EditInvitationPage() {
   const { invitationId } = useParams<{ invitationId: string }>();
@@ -195,9 +194,9 @@ export default function EditInvitationPage() {
             onChange={(e) => save({ colorPalette: e.target.value })}
             className="rounded-lg border border-gold/40 px-4 py-2"
           >
-            {PALETTES.map((p) => (
+            {PALETTE_IDS.map((p) => (
               <option key={p} value={p}>
-                {p}
+                {PALETTE_LABELS[p]}
               </option>
             ))}
           </select>

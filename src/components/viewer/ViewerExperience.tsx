@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { AnimatePresence } from "framer-motion";
 import { getInvitationBySlug } from "@/lib/firebase/firestore";
 import { useAutoScroll } from "@/hooks/useAutoScroll";
+import { PaletteProvider } from "@/contexts/PaletteContext";
 import { EnvelopeOpening } from "@/components/sections/EnvelopeOpening";
 import { Hero } from "@/components/sections/Hero";
 import { MuteToggle } from "@/components/viewer/MuteToggle";
@@ -97,35 +98,37 @@ export function ViewerExperience({ slug }: { slug: string }) {
   }
 
   return (
-    <div className="relative">
-      {invitation.mediaUrls.bgMusic && (
-        <audio ref={audioRef} loop src={invitation.mediaUrls.bgMusic} />
-      )}
-
-      <AnimatePresence>
-        {!opened && (
-          <EnvelopeOpening invitation={invitation} onOpen={handleOpen} />
+    <PaletteProvider palette={invitation.colorPalette}>
+      <div className="relative">
+        {invitation.mediaUrls.bgMusic && (
+          <audio ref={audioRef} loop src={invitation.mediaUrls.bgMusic} />
         )}
-      </AnimatePresence>
 
-      {opened && (
-        <>
-          {invitation.mediaUrls.bgMusic && (
-            <MuteToggle muted={muted} onToggle={toggleMute} />
+        <AnimatePresence>
+          {!opened && (
+            <EnvelopeOpening invitation={invitation} onOpen={handleOpen} />
           )}
-          <Hero invitation={invitation} />
-          <FamilyInvitation invitation={invitation} />
-          <Countdown invitation={invitation} />
-          <Gallery invitation={invitation} />
-          <Direction invitation={invitation} />
-          <OurStory invitation={invitation} />
-          <Agenda invitation={invitation} />
-          <DigitalEnvelope invitation={invitation} />
-          <GratitudeApology />
-          <ColorPaletteAccent invitation={invitation} />
-          <Closing invitation={invitation} />
-        </>
-      )}
-    </div>
+        </AnimatePresence>
+
+        {opened && (
+          <>
+            {invitation.mediaUrls.bgMusic && (
+              <MuteToggle muted={muted} onToggle={toggleMute} />
+            )}
+            <Hero invitation={invitation} />
+            <FamilyInvitation invitation={invitation} />
+            <Countdown invitation={invitation} />
+            <Gallery invitation={invitation} />
+            <Direction invitation={invitation} />
+            <OurStory invitation={invitation} />
+            <Agenda invitation={invitation} />
+            <DigitalEnvelope invitation={invitation} />
+            <GratitudeApology />
+            <ColorPaletteAccent invitation={invitation} />
+            <Closing invitation={invitation} />
+          </>
+        )}
+      </div>
+    </PaletteProvider>
   );
 }

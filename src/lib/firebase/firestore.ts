@@ -71,7 +71,10 @@ export async function setUserStatus(
 
 export async function createInvitation(
   ownerUid: string,
-  input: Pick<Invitation, "slug" | "category" | "templateId" | "defaultLocale">,
+  input: Pick<
+    Invitation,
+    "slug" | "category" | "templateId" | "defaultLocale" | "colorPalette"
+  >,
 ) {
   const ref = doc(invitationsCol);
   const invitation: Invitation = {
@@ -82,7 +85,7 @@ export async function createInvitation(
     templateId: input.templateId,
     defaultLocale: input.defaultLocale,
     status: "draft",
-    colorPalette: "royal-gold",
+    colorPalette: input.colorPalette,
     eventDate: Date.now(),
     content: {},
     mediaUrls: { gallery: [] },

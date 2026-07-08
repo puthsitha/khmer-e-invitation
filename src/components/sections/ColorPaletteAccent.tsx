@@ -1,17 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { PALETTE_SWATCHES } from "@/lib/palettes";
 import type { Invitation } from "@/types";
-
-const PALETTE_SWATCHES: Record<string, string[]> = {
-  "royal-gold": ["#c9a24b", "#7a1f2b", "#fdf8f0"],
-  "blush-temple": ["#e7b8c2", "#c9a24b", "#fffaf5"],
-  "modern-minimal": ["#2a2a2a", "#c9a24b", "#f5f2ec"],
-};
 
 export function ColorPaletteAccent({ invitation }: { invitation: Invitation }) {
   const swatches =
-    PALETTE_SWATCHES[invitation.colorPalette] ?? PALETTE_SWATCHES["royal-gold"];
+    PALETTE_SWATCHES[invitation.colorPalette as keyof typeof PALETTE_SWATCHES] ??
+    PALETTE_SWATCHES["royal-gold"];
 
   return (
     <div className="flex w-full justify-center gap-3 bg-cream py-8">

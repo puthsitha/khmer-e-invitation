@@ -6,6 +6,7 @@ import {
   deleteTemplate,
   listTemplates,
 } from "@/lib/firebase/firestore";
+import { PALETTE_IDS, PALETTE_LABELS } from "@/lib/palettes";
 import type { InvitationCategory, Template } from "@/types";
 
 const CATEGORIES: InvitationCategory[] = ["wedding", "birthday", "event"];
@@ -90,9 +91,11 @@ export default function AdminTemplatesPage() {
             onChange={(e) => setColorPalette(e.target.value)}
             className="rounded-lg border border-gold/40 px-3 py-1.5"
           >
-            <option value="royal-gold">Royal Gold</option>
-            <option value="blush-temple">Blush Temple</option>
-            <option value="modern-minimal">Modern Minimal Khmer</option>
+            {PALETTE_IDS.map((p) => (
+              <option key={p} value={p}>
+                {PALETTE_LABELS[p]}
+              </option>
+            ))}
           </select>
         </label>
         <button
