@@ -20,16 +20,14 @@ import { QrCode } from "@/components/ui/QrCode";
 import { BilingualField } from "@/components/dashboard/BilingualField";
 import { TimeSelect12h } from "@/components/dashboard/TimeSelect12h";
 import { PALETTE_IDS, PALETTE_LABELS } from "@/lib/palettes";
+import { asBilingual, EMPTY_BILINGUAL } from "@/lib/bilingual";
 import type {
   AgendaItem,
-  Bilingual,
   FamilyMembers,
   Invitation,
   RsvpResponse,
   StoryItem,
 } from "@/types";
-
-const EMPTY_BILINGUAL: Bilingual = { km: "", en: "" };
 
 export default function EditInvitationPage() {
   const { invitationId } = useParams<{ invitationId: string }>();
@@ -138,12 +136,14 @@ export default function EditInvitationPage() {
     key: "groomFamily" | "brideFamily",
     patch: Partial<FamilyMembers>,
   ) {
-    saveContent({ [key]: { ...invitation!.content[key], ...patch } });
+    const existing = invitation!.content[key];
+    const base = existing && typeof existing === "object" ? existing : {};
+    saveContent({ [key]: { ...base, ...patch } });
   }
 
   // --- Our Story -------------------------------------------------------
 
-  const story = invitation.content.story ?? [];
+  const story = Array.isArray(invitation.content.story) ? invitation.content.story : [];
 
   function updateStory(index: number, patch: Partial<StoryItem>) {
     const next = story.map((item, i) => (i === index ? { ...item, ...patch } : item));
@@ -180,7 +180,7 @@ export default function EditInvitationPage() {
 
   // --- Agenda ------------------------------------------------------------
 
-  const agenda = invitation.content.agenda ?? [];
+  const agenda = Array.isArray(invitation.content.agenda) ? invitation.content.agenda : [];
 
   function updateAgendaItem(index: number, patch: Partial<AgendaItem>) {
     const next = agenda.map((item, i) => (i === index ? { ...item, ...patch } : item));
@@ -220,12 +220,12 @@ export default function EditInvitationPage() {
 
         <BilingualField
           label="Groom name"
-          value={invitation.content.groomName ?? EMPTY_BILINGUAL}
+          value={asBilingual(invitation.content.groomName)}
           onBlur={(v) => saveContent({ groomName: v })}
         />
         <BilingualField
           label="Bride name"
-          value={invitation.content.brideName ?? EMPTY_BILINGUAL}
+          value={asBilingual(invitation.content.brideName)}
           onBlur={(v) => saveContent({ brideName: v })}
         />
 
@@ -234,12 +234,12 @@ export default function EditInvitationPage() {
           <div className="flex flex-col gap-3 rounded-lg bg-cream/60 p-3">
             <BilingualField
               label="Father"
-              value={invitation.content.groomFamily?.father ?? EMPTY_BILINGUAL}
+              value={asBilingual(invitation.content.groomFamily?.father)}
               onBlur={(v) => updateFamily("groomFamily", { father: v })}
             />
             <BilingualField
               label="Mother"
-              value={invitation.content.groomFamily?.mother ?? EMPTY_BILINGUAL}
+              value={asBilingual(invitation.content.groomFamily?.mother)}
               onBlur={(v) => updateFamily("groomFamily", { mother: v })}
             />
           </div>
@@ -250,12 +250,12 @@ export default function EditInvitationPage() {
           <div className="flex flex-col gap-3 rounded-lg bg-cream/60 p-3">
             <BilingualField
               label="Father"
-              value={invitation.content.brideFamily?.father ?? EMPTY_BILINGUAL}
+              value={asBilingual(invitation.content.brideFamily?.father)}
               onBlur={(v) => updateFamily("brideFamily", { father: v })}
             />
             <BilingualField
               label="Mother"
-              value={invitation.content.brideFamily?.mother ?? EMPTY_BILINGUAL}
+              value={asBilingual(invitation.content.brideFamily?.mother)}
               onBlur={(v) => updateFamily("brideFamily", { mother: v })}
             />
           </div>
@@ -263,13 +263,13 @@ export default function EditInvitationPage() {
 
         <BilingualField
           label="Invitation text"
-          value={invitation.content.invitationText ?? EMPTY_BILINGUAL}
+          value={asBilingual(invitation.content.invitationText)}
           onBlur={(v) => saveContent({ invitationText: v })}
           textarea
         />
         <BilingualField
           label="Address"
-          value={invitation.content.address ?? EMPTY_BILINGUAL}
+          value={asBilingual(invitation.content.address)}
           onBlur={(v) => saveContent({ address: v })}
           textarea
         />

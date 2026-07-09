@@ -8,7 +8,7 @@ import type { Invitation } from "@/types";
 export function Agenda({ invitation }: { invitation: Invitation }) {
   const t = useTranslations("viewer");
   const locale = useLocale();
-  const agenda = invitation.content.agenda ?? [];
+  const agenda = Array.isArray(invitation.content.agenda) ? invitation.content.agenda : [];
 
   if (agenda.length === 0) return null;
 

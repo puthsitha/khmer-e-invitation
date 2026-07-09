@@ -9,7 +9,7 @@ import type { Invitation } from "@/types";
 export function OurStory({ invitation }: { invitation: Invitation }) {
   const t = useTranslations("viewer");
   const locale = useLocale();
-  const story = invitation.content.story ?? [];
+  const story = Array.isArray(invitation.content.story) ? invitation.content.story : [];
 
   if (story.length === 0) return null;
 
