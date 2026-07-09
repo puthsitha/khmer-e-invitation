@@ -135,9 +135,9 @@ export function Hero({
           {!shouldReduceMotion && (
             <span
               aria-hidden
-              className="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-transparent via-white/90 to-transparent"
+              className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/90 to-transparent"
               style={{
-                animation: "shimmer-sweep 2.4s linear infinite",
+                animation: "shimmer-sweep 2s linear infinite",
               }}
             />
           )}

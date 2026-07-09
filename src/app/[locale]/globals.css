@@ -103,9 +103,9 @@ textarea::placeholder {
 /* Diagonal glossy sheen sweeping across the "Open Invitation" button. */
 @keyframes shimmer-sweep {
   0% {
-    transform: translateX(-160%) skewX(-20deg);
+    transform: translateX(-90%) skewX(-20deg);
   }
   100% {
-    transform: translateX(460%) skewX(-20deg);
+    transform: translateX(340%) skewX(-20deg);
   }
 }
