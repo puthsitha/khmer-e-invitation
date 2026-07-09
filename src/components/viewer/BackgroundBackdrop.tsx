@@ -21,7 +21,7 @@ export function BackgroundBackdrop({
           src={embedUrl}
           title="Cover video"
           allow="autoplay; encrypted-media"
-          className="pointer-events-none absolute left-1/2 top-1/2 h-[140vh] w-[140vw] -translate-x-1/2 -translate-y-1/2 scale-110 blur-2xl"
+          className="pointer-events-none absolute left-1/2 top-1/2 h-[130vh] w-[130vw] -translate-x-1/2 -translate-y-1/2 scale-105 blur-md"
         />
       ) : imageUrl ? (
         <Image
@@ -30,10 +30,10 @@ export function BackgroundBackdrop({
           fill
           sizes="100vw"
           priority
-          className="scale-110 object-cover opacity-70 blur-2xl"
+          className="scale-105 object-cover blur-md"
         />
       ) : null}
-      <div className="absolute inset-0 bg-cream/55" />
+      <div className="absolute inset-0 bg-cream/35" />
     </div>
   );
 }
