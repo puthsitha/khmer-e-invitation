@@ -1,11 +1,13 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { SectionShell } from "@/components/viewer/SectionShell";
+import { pickBilingual } from "@/lib/bilingual";
 import type { Invitation } from "@/types";
 
 export function Agenda({ invitation }: { invitation: Invitation }) {
   const t = useTranslations("viewer");
+  const locale = useLocale();
   const agenda = invitation.content.agenda ?? [];
 
   if (agenda.length === 0) return null;
@@ -23,7 +25,7 @@ export function Agenda({ invitation }: { invitation: Invitation }) {
           >
             <span className="font-medium text-gold">{item.time}</span>
             <span className="font-[family-name:var(--font-body-km)]">
-              {item.label}
+              {pickBilingual(item.title, locale)}
             </span>
           </li>
         ))}

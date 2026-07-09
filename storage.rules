@@ -43,5 +43,14 @@ service firebase.storage {
         request.resource.contentType.matches('image/(jpeg|png|webp)');
       allow delete: if isInvitationOwner(invitationId);
     }
+
+    // Our Story photos — same image caps as gallery.
+    match /invitations/{invitationId}/story/{fileName} {
+      allow read: if true;
+      allow write: if isInvitationOwner(invitationId) &&
+        request.resource.size < 500 * 1024 &&
+        request.resource.contentType.matches('image/(jpeg|png|webp)');
+      allow delete: if isInvitationOwner(invitationId);
+    }
   }
 }

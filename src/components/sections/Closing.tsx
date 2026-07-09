@@ -1,13 +1,18 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { SectionShell } from "@/components/viewer/SectionShell";
 import { OrnamentDivider } from "@/components/ui/OrnamentDivider";
+import { pickBilingual } from "@/lib/bilingual";
 import type { Invitation } from "@/types";
 
 export function Closing({ invitation }: { invitation: Invitation }) {
   const t = useTranslations("viewer");
-  const names = [invitation.content.groomName, invitation.content.brideName]
+  const locale = useLocale();
+  const names = [
+    pickBilingual(invitation.content.groomName, locale),
+    pickBilingual(invitation.content.brideName, locale),
+  ]
     .filter(Boolean)
     .join(" & ");
   const date = new Date(invitation.eventDate).toLocaleDateString(undefined, {

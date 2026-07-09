@@ -13,11 +13,23 @@ import {
   uploadBgMusic,
   uploadDigitalEnvelopeQr,
   uploadGalleryImage,
+  uploadStoryImage,
   UploadValidationError,
 } from "@/lib/firebase/storage";
 import { QrCode } from "@/components/ui/QrCode";
+import { BilingualField } from "@/components/dashboard/BilingualField";
+import { TimeSelect12h } from "@/components/dashboard/TimeSelect12h";
 import { PALETTE_IDS, PALETTE_LABELS } from "@/lib/palettes";
-import type { Invitation, RsvpResponse } from "@/types";
+import type {
+  AgendaItem,
+  Bilingual,
+  FamilyMembers,
+  Invitation,
+  RsvpResponse,
+  StoryItem,
+} from "@/types";
+
+const EMPTY_BILINGUAL: Bilingual = { km: "", en: "" };
 
 export default function EditInvitationPage() {
   const { invitationId } = useParams<{ invitationId: string }>();
@@ -51,6 +63,10 @@ export default function EditInvitationPage() {
     } finally {
       setSaving(false);
     }
+  }
+
+  function saveContent(patch: Partial<Invitation["content"]>) {
+    return save({ content: { ...invitation!.content, ...patch } });
   }
 
   async function handleGalleryUpload(files: FileList | null) {
@@ -116,6 +132,73 @@ export default function EditInvitationPage() {
     }
   }
 
+  // --- Family fields -------------------------------------------------
+
+  function updateFamily(
+    key: "groomFamily" | "brideFamily",
+    patch: Partial<FamilyMembers>,
+  ) {
+    saveContent({ [key]: { ...invitation!.content[key], ...patch } });
+  }
+
+  // --- Our Story -------------------------------------------------------
+
+  const story = invitation.content.story ?? [];
+
+  function updateStory(index: number, patch: Partial<StoryItem>) {
+    const next = story.map((item, i) => (i === index ? { ...item, ...patch } : item));
+    saveContent({ story: next });
+  }
+
+  function addStoryItem() {
+    const next: StoryItem[] = [
+      ...story,
+      { title: EMPTY_BILINGUAL, description: EMPTY_BILINGUAL },
+    ];
+    saveContent({ story: next });
+  }
+
+  async function removeStoryItem(index: number) {
+    const item = story[index];
+    if (item.image) await deleteMediaByUrl(item.image).catch(() => {});
+    saveContent({ story: story.filter((_, i) => i !== index) });
+  }
+
+  async function handleStoryImageUpload(index: number, files: FileList | null) {
+    const file = files?.[0];
+    if (!file || !invitation) return;
+    setStatus(null);
+    try {
+      const url = await uploadStoryImage(invitation.invitationId, file);
+      updateStory(index, { image: url });
+    } catch (err) {
+      setStatus(
+        err instanceof UploadValidationError ? err.message : "Upload failed.",
+      );
+    }
+  }
+
+  // --- Agenda ------------------------------------------------------------
+
+  const agenda = invitation.content.agenda ?? [];
+
+  function updateAgendaItem(index: number, patch: Partial<AgendaItem>) {
+    const next = agenda.map((item, i) => (i === index ? { ...item, ...patch } : item));
+    saveContent({ agenda: next });
+  }
+
+  function addAgendaItem() {
+    const next: AgendaItem[] = [
+      ...agenda,
+      { time: "6:00 PM", title: EMPTY_BILINGUAL },
+    ];
+    saveContent({ agenda: next });
+  }
+
+  function removeAgendaItem(index: number) {
+    saveContent({ agenda: agenda.filter((_, i) => i !== index) });
+  }
+
   const shareUrl =
     typeof window !== "undefined"
       ? `${window.location.origin}/${invitation.defaultLocale}/i/${invitation.slug}`
@@ -132,51 +215,86 @@ export default function EditInvitationPage() {
 
       {status && <p className="mb-4 text-sm text-maroon">{status}</p>}
 
-      <section className="mb-8 rounded-xl border border-gold/30 bg-white p-6">
-        <h2 className="mb-4 text-lg font-medium text-maroon">Content</h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Field
-            label="Groom name"
-            value={invitation.content.groomName ?? ""}
-            onBlur={(v) => save({ content: { ...invitation.content, groomName: v } })}
-          />
-          <Field
-            label="Bride name"
-            value={invitation.content.brideName ?? ""}
-            onBlur={(v) => save({ content: { ...invitation.content, brideName: v } })}
-          />
-          <Field
-            label="Groom's family"
-            value={invitation.content.groomFamily ?? ""}
-            onBlur={(v) => save({ content: { ...invitation.content, groomFamily: v } })}
-          />
-          <Field
-            label="Bride's family"
-            value={invitation.content.brideFamily ?? ""}
-            onBlur={(v) => save({ content: { ...invitation.content, brideFamily: v } })}
-          />
+      <section className="mb-8 flex flex-col gap-4 rounded-xl border border-gold/30 bg-white p-6">
+        <h2 className="text-lg font-medium text-maroon">Content</h2>
+
+        <BilingualField
+          label="Groom name"
+          value={invitation.content.groomName ?? EMPTY_BILINGUAL}
+          onBlur={(v) => saveContent({ groomName: v })}
+        />
+        <BilingualField
+          label="Bride name"
+          value={invitation.content.brideName ?? EMPTY_BILINGUAL}
+          onBlur={(v) => saveContent({ brideName: v })}
+        />
+
+        <div>
+          <p className="mb-2 text-sm text-maroon">Groom&rsquo;s family</p>
+          <div className="flex flex-col gap-3 rounded-lg bg-cream/60 p-3">
+            <BilingualField
+              label="Father"
+              value={invitation.content.groomFamily?.father ?? EMPTY_BILINGUAL}
+              onBlur={(v) => updateFamily("groomFamily", { father: v })}
+            />
+            <BilingualField
+              label="Mother"
+              value={invitation.content.groomFamily?.mother ?? EMPTY_BILINGUAL}
+              onBlur={(v) => updateFamily("groomFamily", { mother: v })}
+            />
+          </div>
         </div>
-        <TextField
+
+        <div>
+          <p className="mb-2 text-sm text-maroon">Bride&rsquo;s family</p>
+          <div className="flex flex-col gap-3 rounded-lg bg-cream/60 p-3">
+            <BilingualField
+              label="Father"
+              value={invitation.content.brideFamily?.father ?? EMPTY_BILINGUAL}
+              onBlur={(v) => updateFamily("brideFamily", { father: v })}
+            />
+            <BilingualField
+              label="Mother"
+              value={invitation.content.brideFamily?.mother ?? EMPTY_BILINGUAL}
+              onBlur={(v) => updateFamily("brideFamily", { mother: v })}
+            />
+          </div>
+        </div>
+
+        <BilingualField
           label="Invitation text"
-          value={invitation.content.invitationText ?? ""}
-          onBlur={(v) => save({ content: { ...invitation.content, invitationText: v } })}
+          value={invitation.content.invitationText ?? EMPTY_BILINGUAL}
+          onBlur={(v) => saveContent({ invitationText: v })}
+          textarea
         />
-        <TextField
-          label="Our story"
-          value={invitation.content.story ?? ""}
-          onBlur={(v) => save({ content: { ...invitation.content, story: v } })}
+        <BilingualField
+          label="Address"
+          value={invitation.content.address ?? EMPTY_BILINGUAL}
+          onBlur={(v) => saveContent({ address: v })}
+          textarea
         />
-        <Field
-          label="Map URL"
-          value={invitation.content.mapUrl ?? ""}
-          onBlur={(v) => save({ content: { ...invitation.content, mapUrl: v } })}
-        />
-        <Field
-          label="Cover video (YouTube/Vimeo embed URL)"
-          value={invitation.coverVideoEmbedUrl ?? ""}
-          onBlur={(v) => save({ coverVideoEmbedUrl: v })}
-        />
-        <label className="mt-4 flex flex-col gap-1 text-sm text-maroon">
+
+        <label className="flex flex-col gap-1 text-sm text-maroon">
+          Map URL
+          <input
+            type="text"
+            defaultValue={invitation.content.mapUrl ?? ""}
+            onBlur={(e) => saveContent({ mapUrl: e.target.value })}
+            className="rounded-lg border border-gold/40 px-4 py-2"
+          />
+        </label>
+
+        <label className="flex flex-col gap-1 text-sm text-maroon">
+          Cover video (YouTube/Vimeo embed URL)
+          <input
+            type="text"
+            defaultValue={invitation.coverVideoEmbedUrl ?? ""}
+            onBlur={(e) => save({ coverVideoEmbedUrl: e.target.value })}
+            className="rounded-lg border border-gold/40 px-4 py-2"
+          />
+        </label>
+
+        <label className="flex flex-col gap-1 text-sm text-maroon">
           Event date & time
           <input
             type="datetime-local"
@@ -187,7 +305,8 @@ export default function EditInvitationPage() {
             className="rounded-lg border border-gold/40 px-4 py-2"
           />
         </label>
-        <label className="mt-4 flex flex-col gap-1 text-sm text-maroon">
+
+        <label className="flex flex-col gap-1 text-sm text-maroon">
           Color palette
           <select
             defaultValue={invitation.colorPalette}
@@ -201,6 +320,99 @@ export default function EditInvitationPage() {
             ))}
           </select>
         </label>
+      </section>
+
+      <section className="mb-8 rounded-xl border border-gold/30 bg-white p-6">
+        <h2 className="mb-4 text-lg font-medium text-maroon">Our Story</h2>
+        <div className="flex flex-col gap-4">
+          {story.map((item, index) => (
+            <div
+              key={index}
+              className="flex flex-col gap-3 rounded-lg border border-gold/20 bg-cream/60 p-4"
+            >
+              <BilingualField
+                label="Title"
+                value={item.title}
+                onBlur={(v) => updateStory(index, { title: v })}
+              />
+              <BilingualField
+                label="Description"
+                value={item.description}
+                onBlur={(v) => updateStory(index, { description: v })}
+                textarea
+              />
+              <div>
+                <p className="mb-1 text-xs text-maroon/60">Image</p>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={(e) => handleStoryImageUpload(index, e.target.files)}
+                />
+                {item.image && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={item.image}
+                    alt=""
+                    className="mt-2 h-24 w-24 rounded object-cover"
+                  />
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => removeStoryItem(index)}
+                className="self-start text-sm text-red-700"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={addStoryItem}
+          className="mt-4 rounded-full border border-gold/60 px-4 py-1.5 text-sm text-maroon"
+        >
+          + Add story item
+        </button>
+      </section>
+
+      <section className="mb-8 rounded-xl border border-gold/30 bg-white p-6">
+        <h2 className="mb-4 text-lg font-medium text-maroon">Agenda</h2>
+        <div className="flex flex-col gap-4">
+          {agenda.map((item, index) => (
+            <div
+              key={index}
+              className="flex flex-col gap-3 rounded-lg border border-gold/20 bg-cream/60 p-4"
+            >
+              <div>
+                <p className="mb-1 text-xs text-maroon/60">Time</p>
+                <TimeSelect12h
+                  value={item.time}
+                  onChange={(time) => updateAgendaItem(index, { time })}
+                />
+              </div>
+              <BilingualField
+                label="Title"
+                value={item.title}
+                onBlur={(v) => updateAgendaItem(index, { title: v })}
+              />
+              <button
+                type="button"
+                onClick={() => removeAgendaItem(index)}
+                className="self-start text-sm text-red-700"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={addAgendaItem}
+          className="mt-4 rounded-full border border-gold/60 px-4 py-1.5 text-sm text-maroon"
+        >
+          + Add agenda item
+        </button>
       </section>
 
       <section className="mb-8 rounded-xl border border-gold/30 bg-white p-6">
@@ -311,48 +523,4 @@ function toLocalInputValue(timestamp: number) {
   const d = new Date(timestamp);
   d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
   return d.toISOString().slice(0, 16);
-}
-
-function Field({
-  label,
-  value,
-  onBlur,
-}: {
-  label: string;
-  value: string;
-  onBlur: (value: string) => void;
-}) {
-  return (
-    <label className="flex flex-col gap-1 text-sm text-maroon">
-      {label}
-      <input
-        type="text"
-        defaultValue={value}
-        onBlur={(e) => onBlur(e.target.value)}
-        className="rounded-lg border border-gold/40 px-4 py-2"
-      />
-    </label>
-  );
-}
-
-function TextField({
-  label,
-  value,
-  onBlur,
-}: {
-  label: string;
-  value: string;
-  onBlur: (value: string) => void;
-}) {
-  return (
-    <label className="mt-4 flex flex-col gap-1 text-sm text-maroon">
-      {label}
-      <textarea
-        defaultValue={value}
-        onBlur={(e) => onBlur(e.target.value)}
-        rows={3}
-        className="rounded-lg border border-gold/40 px-4 py-2"
-      />
-    </label>
-  );
 }

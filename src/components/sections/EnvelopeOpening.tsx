@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { OrnamentDivider } from "@/components/ui/OrnamentDivider";
+import { pickBilingual } from "@/lib/bilingual";
 import type { Invitation } from "@/types";
 
 export function EnvelopeOpening({
@@ -13,7 +14,11 @@ export function EnvelopeOpening({
   onOpen: () => void;
 }) {
   const t = useTranslations("viewer");
-  const names = [invitation.content.groomName, invitation.content.brideName]
+  const locale = useLocale();
+  const names = [
+    pickBilingual(invitation.content.groomName, locale),
+    pickBilingual(invitation.content.brideName, locale),
+  ]
     .filter(Boolean)
     .join(" & ");
 
