@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { SectionShell } from "@/components/viewer/SectionShell";
+import { SectionHeading } from "@/components/viewer/SectionHeading";
 import type { Invitation } from "@/types";
 
 export function Gallery({ invitation }: { invitation: Invitation }) {
@@ -15,17 +16,15 @@ export function Gallery({ invitation }: { invitation: Invitation }) {
   if (photos.length === 0) return null;
 
   return (
-    <SectionShell className="bg-cream text-maroon">
-      <p className="text-sm uppercase tracking-widest text-gold">
-        {t("galleryTitle")}
-      </p>
+    <SectionShell className="text-maroon">
+      <SectionHeading icon="🖼️">{t("galleryTitle")}</SectionHeading>
       <div className="grid w-full max-w-3xl grid-cols-2 gap-3 sm:grid-cols-3">
         {photos.map((url, index) => (
           <button
             key={url}
             type="button"
             onClick={() => setSelected(index)}
-            className="relative aspect-square overflow-hidden rounded-lg"
+            className="relative aspect-square overflow-hidden rounded-xl shadow-lg"
           >
             <Image
               src={url}

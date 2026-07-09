@@ -2,6 +2,9 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { SectionShell } from "@/components/viewer/SectionShell";
+import { GlassCard } from "@/components/viewer/GlassCard";
+import { SectionHeading } from "@/components/viewer/SectionHeading";
+import { bodyFontStyle } from "@/lib/fonts";
 import { pickBilingual } from "@/lib/bilingual";
 import type { Invitation } from "@/types";
 
@@ -13,23 +16,21 @@ export function Agenda({ invitation }: { invitation: Invitation }) {
   if (agenda.length === 0) return null;
 
   return (
-    <SectionShell className="bg-cream text-maroon">
-      <p className="text-sm uppercase tracking-widest text-gold">
-        {t("agendaTitle")}
-      </p>
-      <ol className="flex w-full max-w-md flex-col gap-4">
-        {agenda.map((item, index) => (
-          <li
-            key={`${item.time}-${index}`}
-            className="flex items-center justify-between border-b border-gold/30 pb-2"
-          >
-            <span className="font-medium text-gold">{item.time}</span>
-            <span className="font-[family-name:var(--font-body-km)]">
-              {pickBilingual(item.title, locale)}
-            </span>
-          </li>
-        ))}
-      </ol>
+    <SectionShell className="text-maroon">
+      <GlassCard>
+        <SectionHeading icon="🕐">{t("agendaTitle")}</SectionHeading>
+        <ol className="flex flex-col gap-6 border-l-2 border-gold/40 pl-6 text-left">
+          {agenda.map((item, index) => (
+            <li key={`${item.time}-${index}`} className="relative">
+              <span className="absolute -left-[29px] top-1.5 h-3 w-3 rounded-full bg-gold" />
+              <p className="font-[family-name:var(--font-heading-en)] text-gold">
+                {item.time}
+              </p>
+              <p style={bodyFontStyle(locale)}>{pickBilingual(item.title, locale)}</p>
+            </li>
+          ))}
+        </ol>
+      </GlassCard>
     </SectionShell>
   );
 }

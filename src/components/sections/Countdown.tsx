@@ -1,12 +1,14 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { SectionShell } from "@/components/viewer/SectionShell";
+import { bodyFontStyle } from "@/lib/fonts";
 import { useCountdown } from "@/hooks/useCountdown";
 import type { Invitation } from "@/types";
 
 export function Countdown({ invitation }: { invitation: Invitation }) {
   const t = useTranslations("viewer");
+  const locale = useLocale();
   const { days, hours, minutes, seconds } = useCountdown(invitation.eventDate);
 
   const units: [number, string][] = [
@@ -17,17 +19,20 @@ export function Countdown({ invitation }: { invitation: Invitation }) {
   ];
 
   return (
-    <SectionShell className="bg-maroon text-cream">
-      <p className="text-sm uppercase tracking-widest text-gold">
+    <SectionShell className="text-maroon">
+      <p className="text-lg text-maroon/90" style={bodyFontStyle(locale)}>
         {t("countdownTitle")}
       </p>
-      <div className="flex gap-4 sm:gap-8">
+      <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
         {units.map(([value, label]) => (
-          <div key={label} className="flex flex-col items-center">
-            <span className="font-[family-name:var(--font-heading-km)] text-4xl text-gold sm:text-6xl">
+          <div
+            key={label}
+            className="flex w-20 flex-col items-center gap-1 rounded-2xl bg-cream/75 py-4 shadow-lg backdrop-blur-md sm:w-24"
+          >
+            <span className="font-[family-name:var(--font-heading-en)] text-3xl text-gold sm:text-4xl">
               {String(value).padStart(2, "0")}
             </span>
-            <span className="text-xs uppercase tracking-widest text-cream/70">
+            <span className="text-[10px] uppercase tracking-widest text-maroon/70">
               {label}
             </span>
           </div>

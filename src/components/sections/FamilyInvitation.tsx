@@ -2,7 +2,8 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { SectionShell } from "@/components/viewer/SectionShell";
-import { OrnamentDivider } from "@/components/ui/OrnamentDivider";
+import { GlassCard } from "@/components/viewer/GlassCard";
+import { bodyFontStyle } from "@/lib/fonts";
 import { pickBilingual } from "@/lib/bilingual";
 import type { FamilyMembers, Invitation } from "@/types";
 
@@ -22,10 +23,11 @@ function FamilyBlock({
 
   return (
     <div>
-      <p className="mb-2 text-sm uppercase tracking-widest text-gold">{heading}</p>
-      <p className="font-[family-name:var(--font-body-km)]">
-        {[father, mother].filter(Boolean).join(" & ")}
-      </p>
+      <p className="mb-2 text-xs uppercase tracking-widest text-gold">{heading}</p>
+      <div className="flex flex-col gap-1" style={bodyFontStyle(locale)}>
+        {father && <p>{father}</p>}
+        {mother && <p>{mother}</p>}
+      </div>
     </div>
   );
 }
@@ -37,19 +39,29 @@ export function FamilyInvitation({ invitation }: { invitation: Invitation }) {
   const text = pickBilingual(invitationText, locale);
 
   return (
-    <SectionShell className="bg-cream text-maroon">
-      <div className="grid w-full max-w-2xl grid-cols-1 gap-8 sm:grid-cols-2">
-        <FamilyBlock heading={t("groomFamily")} family={groomFamily} locale={locale} />
-        <FamilyBlock heading={t("brideFamily")} family={brideFamily} locale={locale} />
-      </div>
+    <SectionShell className="text-maroon">
+      <GlassCard className="flex flex-col items-center gap-8">
+        <div className="grid w-full grid-cols-1 gap-8 sm:grid-cols-2 sm:divide-x sm:divide-gold/30">
+          <FamilyBlock heading={t("groomFamily")} family={groomFamily} locale={locale} />
+          <div className="sm:pl-8">
+            <FamilyBlock heading={t("brideFamily")} family={brideFamily} locale={locale} />
+          </div>
+        </div>
 
-      <OrnamentDivider />
-
-      {text && (
-        <p className="max-w-xl font-[family-name:var(--font-body-km)] leading-relaxed">
-          {text}
-        </p>
-      )}
+        <div className="flex flex-col items-center gap-3">
+          <p className="text-sm uppercase tracking-widest text-maroon">
+            {t("invitationHeading")}
+          </p>
+          {text && (
+            <p
+              className="max-w-xl leading-relaxed text-maroon/90"
+              style={bodyFontStyle(locale)}
+            >
+              {text}
+            </p>
+          )}
+        </div>
+      </GlassCard>
     </SectionShell>
   );
 }
