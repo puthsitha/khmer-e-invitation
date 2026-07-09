@@ -22,6 +22,29 @@ export function useBackgroundMusic(url: string | undefined) {
     const context = new AudioContext();
     contextRef.current = context;
 
+    // A freshly-created context can still report "suspended" even when
+    // constructed inside a click handler — some browsers (Brave among
+    // them) don't reliably flip it to "running" from a single resume()
+    // call, and by the time the fetched track finishes decoding we're
+    // well outside that gesture's call stack anyway. Resume explicitly
+    // now, again right before playback starts, and retry on the next
+    // couple of interactions as a last-resort safety net.
+    function tryResume() {
+      if (context.state === "suspended") {
+        context.resume().catch(() => {});
+      }
+    }
+    function resumeOnInteraction() {
+      tryResume();
+      if (context.state === "running") {
+        document.removeEventListener("click", resumeOnInteraction);
+        document.removeEventListener("touchend", resumeOnInteraction);
+      }
+    }
+    tryResume();
+    document.addEventListener("click", resumeOnInteraction);
+    document.addEventListener("touchend", resumeOnInteraction);
+
     const gain = context.createGain();
     gain.gain.value = muted ? 0 : 1;
     gain.connect(context.destination);
@@ -31,6 +54,7 @@ export function useBackgroundMusic(url: string | undefined) {
       .then((res) => res.arrayBuffer())
       .then((data) => context.decodeAudioData(data))
       .then((buffer) => {
+        tryResume();
         const source = context.createBufferSource();
         source.buffer = buffer;
         source.loop = true;
