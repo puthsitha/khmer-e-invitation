@@ -130,7 +130,11 @@ export function ViewerExperience({ slug }: { slug: string }) {
           </AnimatePresence>
 
           {stage === "landing" && (
-            <Hero invitation={invitation} onOpen={handleOpenInvitation} />
+            <Hero
+              invitation={invitation}
+              onOpen={handleOpenInvitation}
+              onStartMusic={startMusic}
+            />
           )}
 
           {stage === "opened" && (

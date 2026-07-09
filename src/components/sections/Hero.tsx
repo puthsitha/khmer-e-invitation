@@ -41,9 +41,11 @@ const kmNameStyle: CSSProperties = {
 export function Hero({
   invitation,
   onOpen,
+  onStartMusic,
 }: {
   invitation: Invitation;
   onOpen: () => void;
+  onStartMusic: () => void;
 }) {
   const t = useTranslations("viewer");
   const locale = useLocale();
@@ -104,6 +106,11 @@ export function Hero({
         };
 
   function handleOpenClick() {
+    // Start audio synchronously, in the same click, so browsers that
+    // require a fresh user gesture to resume an AudioContext (notably
+    // Safari/iOS) don't block playback — the stage transition can still be
+    // delayed for the spark burst without affecting that gesture window.
+    onStartMusic();
     setBursting(true);
     setTimeout(onOpen, 900);
   }
