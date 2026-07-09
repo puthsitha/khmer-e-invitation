@@ -20,7 +20,7 @@ function generateSparks(): Spark[] {
     id: i,
     left: `${Math.random() * 100}%`,
     top: `${Math.random() * 100}%`,
-    size: 2 + Math.random() * 2,
+    size: 1.5 + Math.random() * Math.random() * 7,
     duration: 2 + Math.random() * 2.5,
     delay: Math.random() * 4,
     gold: i % 3 !== 0,
