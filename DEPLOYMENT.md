@@ -33,9 +33,7 @@ For each Firebase project (dev is `einvitation-2ff36`; create UAT/production the
    npm run firebase:rules:dev    # or :uat / :prod
    ```
 
-   `.firebaserc` maps the `dev`/`uat`/`production` aliases to the three project IDs above.
-
-   `firebase.json`'s `storage.bucket` is currently hardcoded to the dev bucket (`einvitation-2ff36.firebasestorage.app`) — the Firebase CLI needs an explicit bucket name to resolve `storage:rules` deploys, and there's only one real project so far. When UAT/production projects exist, switch `firebase.json`'s `storage` config to the [multi-target array form](https://firebase.google.com/docs/cli/targets) (one `{ "target": ..., "bucket": ..., "rules": "storage.rules" }` per environment, applied via `firebase target:apply storage <name> <bucket>`) instead of a single hardcoded bucket.
+   `.firebaserc` maps the `dev`/`uat`/`production` aliases to the three project IDs above. Note the `--only firestore:rules,storage` flag: it's `storage`, not `storage:rules` — the `:rules` resource-selector syntax only works with named [storage targets](https://firebase.google.com/docs/cli/targets) (`firebase target:apply storage <name> <bucket>`), which this project doesn't use since there's only one bucket per environment; bare `storage` deploys that single project's rules directly and needs no target configuration.
 
 ## Bootstrapping the first admin
 
