@@ -8,9 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "prepare": "git config core.hooksPath .githooks",
-    "firebase:rules:dev": "firebase deploy --only firestore:rules,storage:rules -P dev",
-    "firebase:rules:uat": "firebase deploy --only firestore:rules,storage:rules -P uat",
-    "firebase:rules:prod": "firebase deploy --only firestore:rules,storage:rules -P production"
+    "firebase:rules:dev": "firebase deploy --only firestore:rules,storage -P dev",
+    "firebase:rules:uat": "firebase deploy --only firestore:rules,storage -P uat",
+    "firebase:rules:prod": "firebase deploy --only firestore:rules,storage -P production"
   },
   "dependencies": {
     "firebase": "^12.15.0",
