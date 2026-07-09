@@ -10,9 +10,10 @@ import { bodyFontStyle, scriptFontStyle } from "@/lib/fonts";
 import { pickBilingual } from "@/lib/bilingual";
 import type { Invitation } from "@/types";
 
-/** Reference look captured from wedgo.app's English-mode couple names. */
+/** Reference look captured from wedgo.app's English-mode couple names,
+ * adapted to the app's Khmer maroon palette instead of the source's green. */
 const enNameStyle: CSSProperties = {
-  color: "rgb(26, 42, 30)",
+  color: "var(--color-maroon)",
   lineHeight: 1.05,
   textShadow:
     "rgba(255, 255, 255, 0.28) 0px 1px 2px, rgba(255, 255, 255, 0.2) 0px 2px 6px, rgba(255, 255, 255, 0.14) 0px 4px 16px",
@@ -60,7 +61,7 @@ export function Hero({
 
   function handleOpenClick() {
     setBursting(true);
-    setTimeout(onOpen, 550);
+    setTimeout(onOpen, 900);
   }
 
   return (
@@ -134,7 +135,7 @@ export function Hero({
           {!shouldReduceMotion && (
             <span
               aria-hidden
-              className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent"
+              className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/70 to-transparent"
               style={{
                 animation: "shimmer-sweep 2.4s ease-in-out infinite",
               }}

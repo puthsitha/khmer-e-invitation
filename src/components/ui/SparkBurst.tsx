@@ -28,12 +28,12 @@ export function SparkBurst({ active }: { active: boolean }) {
           {particles.map((p) => (
             <motion.span
               key={p.id}
-              className={`absolute h-1.5 w-1.5 rounded-full ${
+              className={`absolute h-2.5 w-2.5 rounded-full shadow-sm ${
                 p.gold ? "bg-gold-light" : "bg-maroon"
               }`}
               initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
               animate={{ x: p.x, y: p.y, opacity: 0, scale: 0.2 }}
-              transition={{ duration: 0.8, delay: p.delay, ease: "easeOut" }}
+              transition={{ duration: 0.9, delay: p.delay, ease: "easeOut" }}
             />
           ))}
         </div>
