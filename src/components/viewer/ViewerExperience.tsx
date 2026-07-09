@@ -1,11 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { NextIntlClientProvider, useLocale, useTranslations } from "next-intl";
 import { AnimatePresence } from "framer-motion";
 import { getInvitationBySlug } from "@/lib/firebase/firestore";
 import { useAutoScroll } from "@/hooks/useAutoScroll";
+import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 import { PaletteProvider } from "@/contexts/PaletteContext";
 import { toBackgroundEmbedUrl } from "@/lib/embed";
 import { viewerMessages } from "@/lib/viewerMessages";
@@ -57,11 +58,12 @@ export function ViewerExperience({ slug }: { slug: string }) {
     undefined,
   );
   const [stage, setStage] = useState<Stage>("closed");
-  const [muted, setMuted] = useState(false);
   const [displayLocale, setDisplayLocale] = useState<"km" | "en">(
     urlLocale === "en" ? "en" : "km",
   );
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { start: startMusic, muted, toggleMute } = useBackgroundMusic(
+    invitation ? invitation.mediaUrls.bgMusic : undefined,
+  );
 
   useEffect(() => {
     getInvitationBySlug(slug).then(setInvitation);
@@ -75,15 +77,7 @@ export function ViewerExperience({ slug }: { slug: string }) {
 
   function handleOpenInvitation() {
     setStage("opened");
-    audioRef.current?.play().catch(() => {});
-  }
-
-  function toggleMute() {
-    setMuted((prev) => {
-      const next = !prev;
-      if (audioRef.current) audioRef.current.muted = next;
-      return next;
-    });
+    startMusic();
   }
 
   if (invitation === undefined) {
@@ -120,10 +114,6 @@ export function ViewerExperience({ slug }: { slug: string }) {
       <PaletteProvider palette={invitation.colorPalette}>
         <div className="relative min-h-screen">
           <BackgroundBackdrop embedUrl={embedUrl} imageUrl={backdropImage} />
-
-          {invitation.mediaUrls.bgMusic && (
-            <audio ref={audioRef} loop src={invitation.mediaUrls.bgMusic} />
-          )}
 
           {stage !== "closed" && (
             <ViewerTopBar
