@@ -1,12 +1,16 @@
 "use client";
 
-import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
+import { ViewerLocaleSwitcher } from "@/components/viewer/ViewerLocaleSwitcher";
 
 export function ViewerTopBar({
+  locale,
+  onChangeLocale,
   hasMusic,
   muted,
   onToggleMute,
 }: {
+  locale: "km" | "en";
+  onChangeLocale: (locale: "km" | "en") => void;
   hasMusic: boolean;
   muted: boolean;
   onToggleMute: () => void;
@@ -14,8 +18,8 @@ export function ViewerTopBar({
   return (
     <div className="fixed inset-x-0 top-4 z-50 grid grid-cols-3 items-center px-4">
       <div />
-      <div className="justify-self-center shadow-md">
-        <LocaleSwitcher />
+      <div className="justify-self-center">
+        <ViewerLocaleSwitcher locale={locale} onChange={onChangeLocale} />
       </div>
       <div className="justify-self-end">
         {hasMusic && (
