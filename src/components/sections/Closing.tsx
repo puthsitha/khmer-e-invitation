@@ -3,6 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { SectionShell } from "@/components/viewer/SectionShell";
 import { OrnamentDivider } from "@/components/ui/OrnamentDivider";
+import { bodyFontStyle, scriptFontStyle } from "@/lib/fonts";
 import { pickBilingual } from "@/lib/bilingual";
 import type { Invitation } from "@/types";
 
@@ -15,23 +16,22 @@ export function Closing({ invitation }: { invitation: Invitation }) {
   ]
     .filter(Boolean)
     .join(" & ");
-  const date = new Date(invitation.eventDate).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const date = new Date(invitation.eventDate).toLocaleDateString(
+    locale === "km" ? "km-KH" : "en-US",
+    { year: "numeric", month: "long", day: "numeric" },
+  );
 
   return (
-    <SectionShell className="bg-maroon text-cream">
+    <SectionShell className="text-maroon">
       <OrnamentDivider />
-      <h2 className="font-[family-name:var(--font-heading-km)] text-3xl text-gold">
+      <h2 className="text-3xl text-maroon" style={scriptFontStyle(locale)}>
         {names}
       </h2>
-      <p className="text-cream/80">{date}</p>
-      <p className="font-[family-name:var(--font-body-km)] text-sm text-cream/70">
+      <p style={bodyFontStyle(locale)}>{date}</p>
+      <OrnamentDivider />
+      <p className="text-sm text-maroon/70" style={bodyFontStyle(locale)}>
         {t("closingSignoff")}
       </p>
-      <OrnamentDivider />
     </SectionShell>
   );
 }

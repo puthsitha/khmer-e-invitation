@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
-import { Inter, Kantumruy_Pro, Moul, Playfair_Display } from "next/font/google";
+import {
+  Alex_Brush,
+  Cormorant_Garamond,
+  Inter,
+  Kantumruy_Pro,
+  Moul,
+  Playfair_Display,
+} from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
@@ -29,6 +36,18 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const alexBrush = Alex_Brush({
+  variable: "--font-script",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+});
+
 export const metadata: Metadata = {
   title: "Khmer E-Invitation",
   description:
@@ -55,7 +74,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={`${moul.variable} ${kantumruy.variable} ${playfair.variable} ${inter.variable} h-full antialiased`}
+      className={`${moul.variable} ${kantumruy.variable} ${playfair.variable} ${inter.variable} ${alexBrush.variable} ${cormorant.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <NextIntlClientProvider>

@@ -1,51 +1,37 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useLocale, useTranslations } from "next-intl";
-import { OrnamentDivider } from "@/components/ui/OrnamentDivider";
-import { pickBilingual } from "@/lib/bilingual";
-import type { Invitation } from "@/types";
+import { useTranslations } from "next-intl";
+import { WaxSeal } from "@/components/ui/WaxSeal";
 
-export function EnvelopeOpening({
-  invitation,
-  onOpen,
-}: {
-  invitation: Invitation;
-  onOpen: () => void;
-}) {
+export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
   const t = useTranslations("viewer");
-  const locale = useLocale();
-  const names = [
-    pickBilingual(invitation.content.groomName, locale),
-    pickBilingual(invitation.content.brideName, locale),
-  ]
-    .filter(Boolean)
-    .join(" & ");
 
   return (
     <motion.button
       type="button"
       onClick={onOpen}
       exit={{ opacity: 0, scale: 1.05 }}
-      transition={{ duration: 1.4, ease: "easeInOut" }}
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-maroon px-6 text-center text-cream"
+      transition={{ duration: 1, ease: "easeInOut" }}
+      className="paper-texture fixed inset-0 z-50 flex flex-col items-center justify-center gap-8 bg-cream px-6 text-center"
     >
       <motion.div
-        initial={{ rotateY: 0 }}
-        animate={{ rotateY: [0, 6, -6, 0] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        className="flex w-72 flex-col items-center gap-4 rounded-2xl border-2 border-gold/60 bg-maroon px-8 py-10 shadow-2xl"
+        initial={{ y: 0 }}
+        animate={{ y: [0, -6, 0] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        className="relative h-56 w-80 sm:h-64 sm:w-96"
       >
-        <OrnamentDivider />
-        <p className="font-[family-name:var(--font-heading-km)] text-2xl text-gold">
-          {names || t("weddingCeremony")}
-        </p>
-        <OrnamentDivider />
+        <div className="absolute inset-0 rounded-md bg-white shadow-2xl" />
+        <div className="absolute left-1/2 top-0 h-0 w-0 -translate-x-1/2 border-x-[160px] border-t-[96px] border-x-transparent border-t-[#eee7da] sm:border-x-[192px] sm:border-t-[112px]" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <WaxSeal size={72} />
+        </div>
       </motion.div>
+
       <motion.p
         animate={{ opacity: [0.4, 1, 0.4] }}
         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        className="font-[family-name:var(--font-body-km)] text-sm uppercase tracking-widest text-gold"
+        className="text-sm uppercase tracking-widest text-maroon/70"
       >
         {t("tapToOpen")}
       </motion.p>

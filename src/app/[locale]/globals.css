@@ -23,6 +23,8 @@
   --font-body-km: var(--font-kantumruy);
   --font-heading-en: var(--font-playfair);
   --font-body-en: var(--font-inter);
+  --font-script-en: var(--font-script);
+  --font-elegant-en: var(--font-cormorant);
 }
 
 /* Template palette variants (§6 / frontend-design skill) — each is a
@@ -67,4 +69,15 @@ input::placeholder,
 textarea::placeholder {
   color: color-mix(in srgb, var(--color-maroon) 45%, transparent);
   opacity: 1;
+}
+
+/* Subtle diagonal paper grain for the envelope/landing screens. */
+.paper-texture {
+  background-image: repeating-linear-gradient(
+    45deg,
+    color-mix(in srgb, var(--color-maroon) 4%, transparent) 0px,
+    color-mix(in srgb, var(--color-maroon) 4%, transparent) 1px,
+    transparent 1px,
+    transparent 6px
+  );
 }

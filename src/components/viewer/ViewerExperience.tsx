@@ -7,9 +7,11 @@ import { AnimatePresence } from "framer-motion";
 import { getInvitationBySlug } from "@/lib/firebase/firestore";
 import { useAutoScroll } from "@/hooks/useAutoScroll";
 import { PaletteProvider } from "@/contexts/PaletteContext";
+import { toBackgroundEmbedUrl } from "@/lib/embed";
 import { EnvelopeOpening } from "@/components/sections/EnvelopeOpening";
 import { Hero } from "@/components/sections/Hero";
-import { MuteToggle } from "@/components/viewer/MuteToggle";
+import { BackgroundBackdrop } from "@/components/viewer/BackgroundBackdrop";
+import { ViewerTopBar } from "@/components/viewer/ViewerTopBar";
 import type { Invitation } from "@/types";
 
 const FamilyInvitation = dynamic(() =>
@@ -45,12 +47,14 @@ const Closing = dynamic(() =>
   import("@/components/sections/Closing").then((m) => m.Closing),
 );
 
+type Stage = "closed" | "landing" | "opened";
+
 export function ViewerExperience({ slug }: { slug: string }) {
   const t = useTranslations("viewer");
   const [invitation, setInvitation] = useState<Invitation | null | undefined>(
     undefined,
   );
-  const [opened, setOpened] = useState(false);
+  const [stage, setStage] = useState<Stage>("closed");
   const [muted, setMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -58,10 +62,14 @@ export function ViewerExperience({ slug }: { slug: string }) {
     getInvitationBySlug(slug).then(setInvitation);
   }, [slug]);
 
-  useAutoScroll(opened);
+  useAutoScroll(stage === "opened");
 
-  function handleOpen() {
-    setOpened(true);
+  function handleOpenEnvelope() {
+    setStage("landing");
+  }
+
+  function handleOpenInvitation() {
+    setStage("opened");
     audioRef.current?.play().catch(() => {});
   }
 
@@ -97,25 +105,38 @@ export function ViewerExperience({ slug }: { slug: string }) {
     );
   }
 
+  const embedUrl = invitation.coverVideoEmbedUrl
+    ? toBackgroundEmbedUrl(invitation.coverVideoEmbedUrl)
+    : null;
+  const backdropImage = invitation.mediaUrls.gallery[0];
+
   return (
     <PaletteProvider palette={invitation.colorPalette}>
-      <div className="relative">
+      <div className="relative min-h-screen">
+        <BackgroundBackdrop embedUrl={embedUrl} imageUrl={backdropImage} />
+
         {invitation.mediaUrls.bgMusic && (
           <audio ref={audioRef} loop src={invitation.mediaUrls.bgMusic} />
         )}
 
+        {stage !== "closed" && (
+          <ViewerTopBar
+            hasMusic={Boolean(invitation.mediaUrls.bgMusic)}
+            muted={muted}
+            onToggleMute={toggleMute}
+          />
+        )}
+
         <AnimatePresence>
-          {!opened && (
-            <EnvelopeOpening invitation={invitation} onOpen={handleOpen} />
-          )}
+          {stage === "closed" && <EnvelopeOpening onOpen={handleOpenEnvelope} />}
         </AnimatePresence>
 
-        {opened && (
+        {stage === "landing" && (
+          <Hero invitation={invitation} onOpen={handleOpenInvitation} />
+        )}
+
+        {stage === "opened" && (
           <>
-            {invitation.mediaUrls.bgMusic && (
-              <MuteToggle muted={muted} onToggle={toggleMute} />
-            )}
-            <Hero invitation={invitation} />
             <FamilyInvitation invitation={invitation} />
             <Countdown invitation={invitation} />
             <Gallery invitation={invitation} />
