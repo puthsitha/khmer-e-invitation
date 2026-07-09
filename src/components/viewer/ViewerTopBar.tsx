@@ -12,7 +12,7 @@ export function ViewerTopBar({
   onToggleMute: () => void;
 }) {
   return (
-    <div className="fixed inset-x-0 top-4 z-40 grid grid-cols-3 items-center px-4">
+    <div className="fixed inset-x-0 top-4 z-50 grid grid-cols-3 items-center px-4">
       <div />
       <div className="justify-self-center shadow-md">
         <LocaleSwitcher />
