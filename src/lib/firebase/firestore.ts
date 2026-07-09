@@ -10,6 +10,7 @@ import {
   setDoc,
   updateDoc,
   where,
+  writeBatch,
   type QueryDocumentSnapshot,
 } from "firebase/firestore";
 import { db } from "./client";
@@ -92,7 +93,15 @@ export async function createInvitation(
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
-  await setDoc(ref, invitation);
+
+  // Reserve the slug atomically alongside the invitation so uniqueness
+  // checks and the public viewer's slug lookup can use a plain get() on
+  // slugs/{slug} instead of a list query (see getInvitationBySlug below).
+  const batch = writeBatch(db);
+  batch.set(ref, invitation);
+  batch.set(doc(db, "slugs", input.slug), { invitationId: ref.id });
+  await batch.commit();
+
   return invitation;
 }
 
@@ -116,10 +125,16 @@ export async function listInvitationsByOwner(ownerUid: string) {
   return snap.docs.map((d) => d.data());
 }
 
+export async function isSlugTaken(slug: string) {
+  const snap = await getDoc(doc(db, "slugs", slug));
+  return snap.exists();
+}
+
 export async function getInvitationBySlug(slug: string) {
-  const q = query(invitationsCol, where("slug", "==", slug));
-  const snap = await getDocs(q);
-  return snap.empty ? null : snap.docs[0].data();
+  const slugSnap = await getDoc(doc(db, "slugs", slug));
+  if (!slugSnap.exists()) return null;
+  const { invitationId } = slugSnap.data() as { invitationId: string };
+  return getInvitation(invitationId);
 }
 
 export async function getInvitation(invitationId: string) {

@@ -49,7 +49,8 @@ export default function NewInvitationPage() {
         colorPalette: selectedTemplate?.defaultColorPalette ?? "royal-gold",
       });
       router.push(`/dashboard/${invitation.invitationId}`);
-    } catch {
+    } catch (err) {
+      console.error("Failed to create invitation:", err);
       setError("Could not create the invitation. Please try again.");
     } finally {
       setSubmitting(false);

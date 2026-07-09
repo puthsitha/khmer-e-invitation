@@ -1,4 +1,4 @@
-import { getInvitationBySlug } from "@/lib/firebase/firestore";
+import { isSlugTaken } from "@/lib/firebase/firestore";
 
 export function slugify(input: string) {
   return input
@@ -12,7 +12,7 @@ export async function generateUniqueSlug(base: string) {
   const root = slugify(base) || "invitation";
   let candidate = root;
   let suffix = 1;
-  while (await getInvitationBySlug(candidate)) {
+  while (await isSlugTaken(candidate)) {
     suffix += 1;
     candidate = `${root}-${suffix}`;
   }
