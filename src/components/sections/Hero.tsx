@@ -137,7 +137,7 @@ export function Hero({
               aria-hidden
               className="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-transparent via-white/90 to-transparent"
               style={{
-                animation: "shimmer-sweep 2.4s ease-in-out infinite",
+                animation: "shimmer-sweep 2.4s linear infinite",
               }}
             />
           )}
