@@ -49,20 +49,29 @@ export function AmbientSparks() {
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-      {sparks.map((s) => (
-        <motion.span
-          key={s.id}
-          className={`absolute rounded-full ${s.gold ? "bg-gold-light" : "bg-gold"}`}
-          style={{ left: s.left, top: s.top, width: s.size, height: s.size }}
-          animate={{ opacity: [0, 1, 0], scale: [0.5, 1.2, 0.5] }}
-          transition={{
-            duration: s.duration,
-            delay: s.delay,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-      ))}
+      {sparks.map((s) => {
+        const core = s.gold ? "var(--color-gold-light)" : "var(--color-gold)";
+        return (
+          <motion.span
+            key={s.id}
+            className="absolute rounded-full"
+            style={{
+              left: s.left,
+              top: s.top,
+              width: s.size * 5,
+              height: s.size * 5,
+              background: `radial-gradient(circle, rgba(255,255,255,0.95) 0%, ${core} 30%, transparent 72%)`,
+            }}
+            animate={{ opacity: [0, 1, 0], scale: [0.6, 1.15, 0.6] }}
+            transition={{
+              duration: s.duration,
+              delay: s.delay,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+        );
+      })}
     </div>
   );
 }
