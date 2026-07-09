@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { AmbientSparks } from "@/components/ui/AmbientSparks";
 
 /**
  * Fixed, heavily blurred full-viewport photo/video that stays in place behind
@@ -21,7 +22,7 @@ export function BackgroundBackdrop({
           src={embedUrl}
           title="Cover video"
           allow="autoplay; encrypted-media"
-          className="pointer-events-none absolute left-1/2 top-1/2 h-[100vh] min-h-[56.25vw] w-[177.78vh] min-w-[100vw] -translate-x-1/2 -translate-y-1/2 scale-110 blur-md"
+          className="pointer-events-none absolute left-1/2 top-1/2 h-[100vh] min-h-[56.25vw] w-[177.78vh] min-w-[100vw] -translate-x-1/2 -translate-y-1/2 scale-110 blur-[2px]"
         />
       ) : imageUrl ? (
         <Image
@@ -30,10 +31,11 @@ export function BackgroundBackdrop({
           fill
           sizes="100vw"
           priority
-          className="scale-105 object-cover blur-md"
+          className="scale-105 object-cover blur-[2px]"
         />
       ) : null}
       <div className="absolute inset-0 bg-cream/35" />
+      <AmbientSparks />
     </div>
   );
 }
