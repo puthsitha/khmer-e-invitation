@@ -12,14 +12,38 @@ export interface AppUser {
 export type InvitationCategory = "wedding" | "birthday" | "event";
 export type InvitationStatus = "draft" | "published";
 
+/** A piece of guest-facing text, provided in both Khmer and English. */
+export interface Bilingual {
+  km: string;
+  en: string;
+}
+
+export interface FamilyMembers {
+  father?: Bilingual;
+  mother?: Bilingual;
+}
+
+export interface StoryItem {
+  title: Bilingual;
+  description: Bilingual;
+  image?: string;
+}
+
+export interface AgendaItem {
+  /** 12-hour time, e.g. "6:30 PM". */
+  time: string;
+  title: Bilingual;
+}
+
 export interface InvitationContent {
-  groomName?: string;
-  brideName?: string;
-  groomFamily?: string;
-  brideFamily?: string;
-  invitationText?: string;
-  story?: string;
-  agenda?: { time: string; label: string }[];
+  groomName?: Bilingual;
+  brideName?: Bilingual;
+  groomFamily?: FamilyMembers;
+  brideFamily?: FamilyMembers;
+  invitationText?: Bilingual;
+  address?: Bilingual;
+  story?: StoryItem[];
+  agenda?: AgendaItem[];
   mapUrl?: string;
 }
 

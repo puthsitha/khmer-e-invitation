@@ -1,16 +1,21 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { SectionShell } from "@/components/viewer/SectionShell";
 import { toBackgroundEmbedUrl } from "@/lib/embed";
+import { pickBilingual } from "@/lib/bilingual";
 import type { Invitation } from "@/types";
 
 export function Hero({ invitation }: { invitation: Invitation }) {
   const t = useTranslations("viewer");
+  const locale = useLocale();
   const embedUrl = invitation.coverVideoEmbedUrl
     ? toBackgroundEmbedUrl(invitation.coverVideoEmbedUrl)
     : null;
-  const names = [invitation.content.groomName, invitation.content.brideName]
+  const names = [
+    pickBilingual(invitation.content.groomName, locale),
+    pickBilingual(invitation.content.brideName, locale),
+  ]
     .filter(Boolean)
     .join(" & ");
 
