@@ -13,7 +13,7 @@ export function ViewerLocaleSwitcher({
   onChange: (locale: "km" | "en") => void;
 }) {
   return (
-    <div className="flex items-center gap-1 rounded-full border border-gold/40 bg-cream/80 p-1 text-sm shadow-md">
+    <div className="flex items-center gap-1 rounded-full border border-gold/40 bg-cream/95 p-1 text-sm shadow-md backdrop-blur-sm">
       {(["km", "en"] as const).map((loc) => (
         <button
           key={loc}

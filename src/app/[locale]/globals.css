@@ -81,3 +81,31 @@ textarea::placeholder {
     transparent 6px
   );
 }
+
+/* Couple-name entrance: an "ink settling" reveal (blur + rise into focus). */
+@keyframes name-ink-reveal {
+  0% {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(6px);
+  }
+  60% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+/* Light sweep across the "Open Invitation" button. */
+@keyframes shimmer-sweep {
+  0% {
+    transform: translateX(-130%);
+  }
+  100% {
+    transform: translateX(130%);
+  }
+}

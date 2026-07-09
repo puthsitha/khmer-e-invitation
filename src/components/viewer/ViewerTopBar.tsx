@@ -27,7 +27,7 @@ export function ViewerTopBar({
             type="button"
             onClick={onToggleMute}
             aria-label={muted ? "Unmute background music" : "Mute background music"}
-            className="flex items-center gap-2 rounded-full border border-gold/40 bg-cream/80 px-3 py-1.5 text-xs uppercase tracking-widest text-maroon shadow-md backdrop-blur"
+            className="flex items-center gap-2 rounded-full border border-gold/40 bg-cream/95 px-3 py-1.5 text-xs uppercase tracking-widest text-maroon shadow-md backdrop-blur-sm"
           >
             <span aria-hidden>{muted ? "🔇" : "🔊"}</span>
             {muted ? "Off" : "On"}

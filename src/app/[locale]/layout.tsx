@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import {
-  Alex_Brush,
   Cormorant_Garamond,
+  Great_Vibes,
   Inter,
   Kantumruy_Pro,
   Moul,
@@ -36,7 +36,7 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const alexBrush = Alex_Brush({
+const greatVibes = Great_Vibes({
   variable: "--font-script",
   subsets: ["latin"],
   weight: "400",
@@ -74,7 +74,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={`${moul.variable} ${kantumruy.variable} ${playfair.variable} ${inter.variable} ${alexBrush.variable} ${cormorant.variable} h-full antialiased`}
+      className={`${moul.variable} ${kantumruy.variable} ${playfair.variable} ${inter.variable} ${greatVibes.variable} ${cormorant.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <NextIntlClientProvider>
