@@ -21,7 +21,7 @@ export function BackgroundBackdrop({
           src={embedUrl}
           title="Cover video"
           allow="autoplay; encrypted-media"
-          className="pointer-events-none absolute left-1/2 top-1/2 h-[130vh] w-[130vw] -translate-x-1/2 -translate-y-1/2 scale-105 blur-md"
+          className="pointer-events-none absolute left-1/2 top-1/2 h-[100vh] min-h-[56.25vw] w-[177.78vh] min-w-[100vw] -translate-x-1/2 -translate-y-1/2 scale-110 blur-md"
         />
       ) : imageUrl ? (
         <Image
