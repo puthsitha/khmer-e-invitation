@@ -13,7 +13,7 @@ export function ViewerLocaleSwitcher({
   onChange: (locale: "km" | "en") => void;
 }) {
   return (
-    <div className="flex items-center gap-1 rounded-full border border-gold/40 bg-background/85 p-1 text-sm shadow-md backdrop-blur-md">
+    <div className="flex items-center gap-1 rounded-full border border-gold/40 bg-bg/85 p-1 text-sm shadow-md backdrop-blur-md">
       {(["km", "en"] as const).map((loc) => (
         <button
           key={loc}
@@ -21,7 +21,9 @@ export function ViewerLocaleSwitcher({
           onClick={() => onChange(loc)}
           aria-current={loc === locale}
           className={`rounded-full px-3 py-1 transition-colors ${
-            loc === locale ? "bg-maroon text-cream" : "text-maroon/70 hover:text-maroon"
+            loc === locale
+              ? "bg-maroon text-cream"
+              : "text-maroon/70 hover:text-maroon"
           }`}
         >
           {labels[loc]}
