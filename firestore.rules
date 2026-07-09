@@ -41,6 +41,17 @@ service cloud.firestore {
       allow update, delete: if isOwner(resource.data.ownerUid) || isAdmin();
     }
 
+    // slugs/{slug} — public slug -> invitationId reservation, so slug
+    // uniqueness and the public viewer's slug lookup can be checked with a
+    // plain get() instead of a list query (queries can't satisfy the
+    // owner/published-only read rule above). No invitation content is
+    // exposed here, so a public read is safe.
+    match /slugs/{slug} {
+      allow read: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if false;
+    }
+
     // templates/{templateId} — public read-only library, admin-managed.
     match /templates/{templateId} {
       allow read: if true;
