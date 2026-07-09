@@ -5,6 +5,7 @@ import { SectionShell } from "@/components/viewer/SectionShell";
 import { OrnamentDivider } from "@/components/ui/OrnamentDivider";
 import { bodyFontStyle, scriptFontStyle } from "@/lib/fonts";
 import { pickBilingual } from "@/lib/bilingual";
+import { formatKhmerDate } from "@/lib/khmerDate";
 import type { Invitation } from "@/types";
 
 export function Closing({ invitation }: { invitation: Invitation }) {
@@ -15,11 +16,16 @@ export function Closing({ invitation }: { invitation: Invitation }) {
     pickBilingual(invitation.content.brideName, locale),
   ]
     .filter(Boolean)
-    .join(" & ");
-  const date = new Date(invitation.eventDate).toLocaleDateString(
-    locale === "km" ? "km-KH" : "en-US",
-    { year: "numeric", month: "long", day: "numeric" },
-  );
+    .join(locale === "km" ? " និង " : " & ");
+  const eventDate = new Date(invitation.eventDate);
+  const date =
+    locale === "km"
+      ? formatKhmerDate(eventDate)
+      : eventDate.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
 
   return (
     <SectionShell className="text-maroon">

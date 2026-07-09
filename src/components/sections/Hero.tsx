@@ -6,8 +6,9 @@ import { useLocale, useTranslations } from "next-intl";
 import { motion, useReducedMotion } from "framer-motion";
 import { OrnamentDivider } from "@/components/ui/OrnamentDivider";
 import { SparkBurst } from "@/components/ui/SparkBurst";
-import { bodyFontStyle, scriptFontStyle } from "@/lib/fonts";
+import { bodyFontStyle, headingFontStyle, scriptFontStyle } from "@/lib/fonts";
 import { pickBilingual } from "@/lib/bilingual";
+import { formatKhmerDate, formatKhmerTime } from "@/lib/khmerDate";
 import type { Invitation } from "@/types";
 
 /** Reference look captured from wedgo.app's English-mode couple names,
@@ -22,6 +23,19 @@ const enNameStyle: CSSProperties = {
   whiteSpace: "nowrap",
   overflow: "visible",
   fontSize: "clamp(1.75rem, 8vw, 2.625rem)",
+};
+
+/** Same reference treatment for the Khmer couple names, keeping the app's
+ * existing maroon color (inherited) instead of the reference's green. */
+const kmNameStyle: CSSProperties = {
+  lineHeight: 1.8,
+  textShadow:
+    "rgba(255, 255, 255, 0.28) 0px 1px 2px, rgba(255, 255, 255, 0.2) 0px 2px 6px, rgba(255, 255, 255, 0.14) 0px 4px 16px",
+  letterSpacing: "0px",
+  fontWeight: 400,
+  whiteSpace: "nowrap",
+  overflow: "visible",
+  fontSize: "clamp(1.0625rem, 6vw, 1.625rem)",
 };
 
 export function Hero({
@@ -40,24 +54,54 @@ export function Hero({
   const brideName = pickBilingual(invitation.content.brideName, locale);
   const address = pickBilingual(invitation.content.address, locale);
 
-  const dateLocale = locale === "km" ? "km-KH" : "en-US";
-  const date = new Date(invitation.eventDate).toLocaleDateString(dateLocale, {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-  const time = new Date(invitation.eventDate).toLocaleTimeString(dateLocale, {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const eventDate = new Date(invitation.eventDate);
+  const date =
+    locale === "km"
+      ? formatKhmerDate(eventDate)
+      : eventDate.toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+  const time =
+    locale === "km"
+      ? formatKhmerTime(eventDate)
+      : eventDate.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
 
-  const nameClassName =
-    locale === "en" ? "" : "text-4xl leading-[1.6] sm:text-6xl";
   const nameStyle: CSSProperties =
     locale === "en"
       ? { ...scriptFontStyle(locale), ...enNameStyle }
-      : scriptFontStyle(locale);
+      : { ...scriptFontStyle(locale), ...kmNameStyle };
+
+  const onOccasionInkAnimation = shouldReduceMotion
+    ? undefined
+    : "name-ink-reveal 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0s 1 normal both";
+  const onOccasionStyle: CSSProperties =
+    locale === "km"
+      ? {
+          ...headingFontStyle(locale),
+          fontSize: "18px",
+          letterSpacing: "0px",
+          textTransform: "none",
+          fontWeight: 400,
+          opacity: 0.78,
+          marginBottom: "26px",
+          animation: onOccasionInkAnimation,
+        }
+      : {
+          fontFamily: "var(--font-elegant-en)",
+          fontSize: "clamp(11px, 2.9vw, 13px)",
+          letterSpacing: "0.36em",
+          textTransform: "uppercase",
+          fontWeight: 500,
+          opacity: 0.78,
+          marginBottom: "26px",
+          animation: onOccasionInkAnimation,
+        };
 
   function handleOpenClick() {
     setBursting(true);
@@ -66,16 +110,12 @@ export function Hero({
 
   return (
     <div className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-5 overflow-y-auto px-6 py-10 text-center text-maroon">
-      <p
-        className="text-xs uppercase tracking-[0.3em] text-maroon/70"
-        style={bodyFontStyle(locale)}
-      >
+      <p className="text-maroon" style={onOccasionStyle}>
         {t("onOccasion")}
       </p>
 
       <div className="flex flex-col items-center gap-3 sm:gap-4">
         <motion.h1
-          className={nameClassName}
           style={{
             ...nameStyle,
             animation: shouldReduceMotion
@@ -86,10 +126,9 @@ export function Hero({
           {groomName}
         </motion.h1>
         <span className="text-2xl text-gold" style={scriptFontStyle(locale)}>
-          &
+          {locale === "km" ? "និង" : "&"}
         </span>
         <motion.h1
-          className={nameClassName}
           style={{
             ...nameStyle,
             animation: shouldReduceMotion
