@@ -6,6 +6,7 @@ import { SectionShell } from "@/components/viewer/SectionShell";
 import { GlassCard } from "@/components/viewer/GlassCard";
 import { SectionHeading } from "@/components/viewer/SectionHeading";
 import { TimelineItem } from "@/components/viewer/TimelineItem";
+import { TypewriterText } from "@/components/viewer/TypewriterText";
 import { bodyFontStyle } from "@/lib/fonts";
 import { pickBilingual } from "@/lib/bilingual";
 import { formatAgendaTime } from "@/lib/formatTime";
@@ -34,7 +35,10 @@ export function Agenda({ invitation }: { invitation: Invitation }) {
               <p className="font-[family-name:var(--font-heading-en)] text-gold">
                 {formatAgendaTime(item.time, locale)}
               </p>
-              <p style={bodyFontStyle(locale)}>{pickBilingual(item.title, locale)}</p>
+              <TypewriterText
+                text={pickBilingual(item.title, locale)}
+                style={bodyFontStyle(locale)}
+              />
             </TimelineItem>
           ))}
         </ol>

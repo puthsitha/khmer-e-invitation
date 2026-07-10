@@ -2,9 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { WaxSeal } from "@/components/ui/WaxSeal";
 import { OrnamentDivider } from "@/components/ui/OrnamentDivider";
+import { bodyFontStyle } from "@/lib/fonts";
 
 type Phase = "closed" | "flipping" | "flapOpen" | "cardOut" | "cardRotate" | "zoom";
 
@@ -20,6 +23,8 @@ const DURATION_MS: Record<Phase, number> = {
 
 export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
   const t = useTranslations("viewer");
+  const locale = useLocale();
+  const guestName = useSearchParams().get("to")?.trim();
   const reduceMotion = useReducedMotion();
   const [phase, setPhase] = useState<Phase>("closed");
 
@@ -44,6 +49,8 @@ export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
   const cardRotating = phase === "cardRotate" || phase === "zoom";
   const zooming = phase === "zoom";
 
+  const idlePulse = phase === "closed" && !reduceMotion;
+
   return (
     <motion.div
       animate={{ opacity: zooming ? 0 : 1 }}
@@ -51,10 +58,16 @@ export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
       transition={{ duration: 0.5, delay: zooming ? 0.2 : 0 }}
       className="paper-texture fixed inset-0 z-50 flex flex-col items-center justify-center gap-8 bg-cream px-6 text-center"
     >
-      <button
+      <motion.button
         type="button"
         onClick={() => phase === "closed" && setPhase("flipping")}
         disabled={phase !== "closed"}
+        animate={idlePulse ? { scale: [1, 1.06, 1] } : { scale: 1 }}
+        transition={
+          idlePulse
+            ? { duration: 2.2, repeat: Infinity, ease: "easeInOut" }
+            : { duration: 0.3, ease: "easeOut" }
+        }
         className="relative h-56 w-80 sm:h-64 sm:w-96"
         style={{ perspective: 1400 }}
       >
@@ -70,21 +83,9 @@ export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
             style={{ backfaceVisibility: "hidden" }}
           >
             <div className="absolute left-1/2 top-0 h-0 w-0 -translate-x-1/2 border-x-[160px] border-t-[96px] border-x-transparent border-t-[#eee7da] sm:border-x-[192px] sm:border-t-[112px]" />
-            <motion.div
-              className="absolute inset-0 flex items-center justify-center"
-              animate={
-                phase === "closed" && !reduceMotion
-                  ? { scale: [1, 1.08, 1] }
-                  : { scale: 1 }
-              }
-              transition={
-                phase === "closed" && !reduceMotion
-                  ? { duration: 1.8, repeat: Infinity, ease: "easeInOut" }
-                  : { duration: 0.3, ease: "easeOut" }
-              }
-            >
+            <div className="absolute inset-0 flex items-center justify-center">
               <WaxSeal size={72} />
-            </motion.div>
+            </div>
           </div>
 
           <div
@@ -105,17 +106,60 @@ export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
 
         {/* invitation card — slides out, rotates, then zooms to fill the screen */}
         <motion.div
-          initial={{ y: 20, scale: 0.6, rotateY: 0, opacity: 0 }}
+          initial={{ y: 20, scale: 0.6, opacity: 0 }}
           animate={{
             y: cardOut ? -130 : 20,
             scale: zooming ? 7 : cardOut ? 0.95 : 0.6,
-            rotateY: cardRotating ? 360 : 0,
             opacity: cardOut ? 1 : 0,
           }}
           transition={{ duration: 0.7, ease: "easeInOut" }}
-          className="absolute left-1/2 top-1/2 h-40 w-28 -translate-x-1/2 -translate-y-1/2 rounded-md border border-gold/50 bg-cream shadow-xl"
-        />
-      </button>
+          className="absolute left-1/2 top-1/2 h-40 -translate-x-1/2 -translate-y-1/2 sm:h-48"
+          style={{ aspectRatio: "961 / 1920" }}
+        >
+          <motion.div
+            className="relative h-full w-full"
+            style={{ transformStyle: "preserve-3d" }}
+            animate={{ rotateY: cardRotating ? 360 : 0 }}
+            transition={{ duration: 0.7, ease: "easeInOut" }}
+          >
+            <div
+              className="absolute inset-0 overflow-hidden rounded-md shadow-xl"
+              style={{ backfaceVisibility: "hidden" }}
+            >
+              <Image
+                src="/images/front_card.png"
+                alt=""
+                fill
+                sizes="200px"
+                className="object-cover"
+              />
+              <div className="absolute inset-x-0 top-[54%] flex flex-col items-center gap-1 px-2 text-center">
+                <p className="text-[6px] uppercase tracking-[0.3em] text-gold sm:text-[7px]">
+                  {t("invitationLabel")}
+                </p>
+                <p
+                  className="text-[7px] leading-tight text-maroon sm:text-[8px]"
+                  style={bodyFontStyle(locale)}
+                >
+                  {guestName ? t("guestGreeting", { name: guestName }) : t("guestGreetingDefault")}
+                </p>
+              </div>
+            </div>
+            <div
+              className="absolute inset-0 overflow-hidden rounded-md shadow-xl"
+              style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+            >
+              <Image
+                src="/images/back_card.png"
+                alt=""
+                fill
+                sizes="200px"
+                className="object-cover"
+              />
+            </div>
+          </motion.div>
+        </motion.div>
+      </motion.button>
 
       {phase === "closed" && (
         <motion.p

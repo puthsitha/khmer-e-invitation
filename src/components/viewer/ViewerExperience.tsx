@@ -129,7 +129,11 @@ export function ViewerExperience({ slug }: { slug: string }) {
           )}
 
           <AnimatePresence>
-            {stage === "closed" && <EnvelopeOpening onOpen={handleOpenEnvelope} />}
+            {stage === "closed" && (
+              <Suspense fallback={null}>
+                <EnvelopeOpening onOpen={handleOpenEnvelope} />
+              </Suspense>
+            )}
           </AnimatePresence>
 
           {stage === "landing" && (
