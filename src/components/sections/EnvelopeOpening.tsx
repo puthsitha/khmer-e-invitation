@@ -83,7 +83,7 @@ export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
         fill
         priority
         sizes="100vw"
-        className="-z-10 object-cover"
+        className="-z-10 object-cover opacity-30"
         aria-hidden
       />
       <motion.button
