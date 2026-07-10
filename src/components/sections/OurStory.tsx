@@ -10,6 +10,7 @@ import { GlassCard } from "@/components/viewer/GlassCard";
 import { SectionHeading } from "@/components/viewer/SectionHeading";
 import { TimelineItem } from "@/components/viewer/TimelineItem";
 import { ImageLightbox } from "@/components/viewer/ImageLightbox";
+import { TypewriterText } from "@/components/viewer/TypewriterText";
 import { bodyFontStyle, headingFontStyle } from "@/lib/fonts";
 import { pickBilingual } from "@/lib/bilingual";
 import type { Invitation } from "@/types";
@@ -44,12 +45,11 @@ export function OurStory({ invitation }: { invitation: Invitation }) {
               <p className="mb-2 text-lg text-maroon" style={headingFontStyle(locale)}>
                 {pickBilingual(item.title, locale)}
               </p>
-              <p
+              <TypewriterText
+                text={pickBilingual(item.description, locale)}
                 className="mb-3 leading-relaxed text-maroon/90"
                 style={bodyFontStyle(locale)}
-              >
-                {pickBilingual(item.description, locale)}
-              </p>
+              />
               {item.image && (
                 <button
                   type="button"

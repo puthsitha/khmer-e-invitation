@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { SectionShell } from "@/components/viewer/SectionShell";
 import { GlassCard } from "@/components/viewer/GlassCard";
@@ -41,11 +42,19 @@ export function FamilyInvitation({ invitation }: { invitation: Invitation }) {
   return (
     <SectionShell className="text-maroon">
       <GlassCard className="flex flex-col items-center gap-8">
-        <div className="grid w-full grid-cols-1 gap-8 sm:grid-cols-2 sm:divide-x sm:divide-gold/30">
+        <div className="grid w-full grid-cols-1 items-center gap-8 sm:grid-cols-[1fr_auto_1fr]">
           <FamilyBlock heading={t("groomFamily")} family={groomFamily} locale={locale} />
-          <div className="sm:pl-8">
-            <FamilyBlock heading={t("brideFamily")} family={brideFamily} locale={locale} />
+          <div className="relative hidden w-3 self-stretch sm:block">
+            <Image
+              src="/images/vertical_divider.png"
+              alt=""
+              fill
+              sizes="12px"
+              className="object-contain"
+              aria-hidden
+            />
           </div>
+          <FamilyBlock heading={t("brideFamily")} family={brideFamily} locale={locale} />
         </div>
 
         <div className="flex flex-col items-center gap-3">
