@@ -28,7 +28,7 @@ export function Direction({ invitation }: { invitation: Invitation }) {
 
       {address && (
         <p
-          className="max-w-md leading-relaxed text-maroon/90"
+          className="text-glow max-w-md leading-relaxed text-maroon/90"
           style={bodyFontStyle(locale)}
         >
           {address}

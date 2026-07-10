@@ -30,12 +30,14 @@ export function Closing({ invitation }: { invitation: Invitation }) {
   return (
     <SectionShell className="text-maroon">
       <OrnamentDivider />
-      <h2 className="text-3xl text-maroon" style={scriptFontStyle(locale)}>
+      <h2 className="text-glow text-3xl text-maroon" style={scriptFontStyle(locale)}>
         {names}
       </h2>
-      <p style={bodyFontStyle(locale)}>{date}</p>
-      <OrnamentDivider />
-      <p className="text-sm text-maroon/70" style={bodyFontStyle(locale)}>
+      <p className="text-glow" style={bodyFontStyle(locale)}>
+        {date}
+      </p>
+      <OrnamentDivider mirrored />
+      <p className="text-glow text-sm text-maroon/70" style={bodyFontStyle(locale)}>
         {t("closingSignoff")}
       </p>
     </SectionShell>

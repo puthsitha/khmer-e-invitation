@@ -16,15 +16,22 @@ function graphemes(text: string): string[] {
 }
 
 /** Reveals text character-by-character once scrolled into view, like it's
- * being written out. */
+ * being written out. `letterDelay` staggers the start of each character,
+ * `letterDuration` controls how smoothly each one fades in — raise both
+ * for a slower, more deliberate reveal (e.g. a short hero greeting) or
+ * lower them for long body copy. */
 export function TypewriterText({
   text,
   className,
   style,
+  letterDelay = 0.02,
+  letterDuration = 0.25,
 }: {
   text: string;
   className?: string;
   style?: CSSProperties;
+  letterDelay?: number;
+  letterDuration?: number;
 }) {
   const ref = useRef<HTMLParagraphElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.5 });
@@ -46,7 +53,11 @@ export function TypewriterText({
             key={index}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.01, delay: index * 0.02 }}
+            transition={{
+              duration: letterDuration,
+              delay: index * letterDelay,
+              ease: "easeOut",
+            }}
           >
             {unit}
           </motion.span>

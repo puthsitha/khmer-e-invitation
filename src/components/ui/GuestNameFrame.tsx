@@ -1,13 +1,14 @@
 import Image from "next/image";
 import type { CSSProperties } from "react";
+import { TypewriterText } from "@/components/viewer/TypewriterText";
 
 /** Ornamental frame image with guest-facing greeting text overlaid inside
  * its rounded-rectangle band. */
 export function GuestNameFrame({
-  children,
+  text,
   textStyle,
 }: {
-  children: React.ReactNode;
+  text: string;
   textStyle?: CSSProperties;
 }) {
   return (
@@ -17,15 +18,16 @@ export function GuestNameFrame({
         alt=""
         fill
         sizes="320px"
-        className="object-contain"
+        className="image-glow object-contain"
         aria-hidden
       />
-      <p
+      <TypewriterText
+        text={text}
         className="absolute left-1/2 top-[56%] w-[75%] -translate-x-1/2 -translate-y-1/2 text-center text-maroon"
         style={textStyle}
-      >
-        {children}
-      </p>
+        letterDelay={0.07}
+        letterDuration={0.5}
+      />
     </div>
   );
 }

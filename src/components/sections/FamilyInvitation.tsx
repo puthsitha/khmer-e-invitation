@@ -44,12 +44,12 @@ export function FamilyInvitation({ invitation }: { invitation: Invitation }) {
       <GlassCard className="flex flex-col items-center gap-8">
         <div className="grid w-full grid-cols-1 items-center gap-8 sm:grid-cols-[1fr_auto_1fr]">
           <FamilyBlock heading={t("groomFamily")} family={groomFamily} locale={locale} />
-          <div className="relative hidden w-3 self-stretch sm:block">
+          <div className="relative hidden w-8 self-stretch sm:block md:w-10">
             <Image
               src="/images/vertical_divider.png"
               alt=""
               fill
-              sizes="12px"
+              sizes="40px"
               className="object-contain"
               aria-hidden
             />

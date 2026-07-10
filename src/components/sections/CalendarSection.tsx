@@ -52,6 +52,32 @@ function DrawnCircle() {
   );
 }
 
+/** The event day's circle plus a bounce that pops right as each draw
+ * cycle finishes, timed to match DrawnCircle's own draw+pause period. */
+function EventDayCell({ day, locale }: { day: number; locale: string }) {
+  const reduceMotion = useReducedMotion();
+
+  return (
+    <motion.span
+      className="relative"
+      animate={reduceMotion ? undefined : { scale: [1, 1, 1.25, 0.92, 1, 1] }}
+      transition={
+        reduceMotion
+          ? undefined
+          : {
+              duration: 2.6,
+              repeat: Infinity,
+              times: [0, 0.44, 0.48, 0.53, 0.58, 1],
+              ease: "easeOut",
+            }
+      }
+    >
+      <DrawnCircle />
+      <span className="relative">{dayLabel(day, locale)}</span>
+    </motion.span>
+  );
+}
+
 export function CalendarSection({ invitation }: { invitation: Invitation }) {
   const t = useTranslations("viewer");
   const locale = useLocale();
@@ -104,12 +130,12 @@ export function CalendarSection({ invitation }: { invitation: Invitation }) {
               key={index}
               className="relative flex h-10 items-center justify-center text-maroon"
             >
-              {day !== null && (
-                <>
-                  {day === eventDay && <DrawnCircle />}
+              {day !== null &&
+                (day === eventDay ? (
+                  <EventDayCell day={day} locale={locale} />
+                ) : (
                   <span className="relative">{dayLabel(day, locale)}</span>
-                </>
-              )}
+                ))}
             </span>
           ))}
         </div>

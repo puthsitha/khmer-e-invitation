@@ -20,7 +20,7 @@ export function DigitalEnvelope({ invitation }: { invitation: Invitation }) {
       <SectionHeading icon={<Gift className="h-4 w-4" />}>
         {t("digitalEnvelopeTitle")}
       </SectionHeading>
-      <div className="relative h-64 w-64 overflow-hidden rounded-2xl sm:h-80 sm:w-80">
+      <div className="image-glow relative h-64 w-64 overflow-hidden rounded-2xl sm:h-80 sm:w-80">
         <Image
           src={qrUrl}
           alt=""
@@ -29,7 +29,7 @@ export function DigitalEnvelope({ invitation }: { invitation: Invitation }) {
           className="object-contain"
         />
       </div>
-      <p className="text-maroon/80" style={bodyFontStyle(locale)}>
+      <p className="text-glow text-maroon/80" style={bodyFontStyle(locale)}>
         {t("digitalEnvelopeNote")}
       </p>
     </SectionShell>
