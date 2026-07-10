@@ -17,7 +17,14 @@ type Phase =
   | "cardRotate"
   | "zoom";
 
-const ORDER: Phase[] = ["sealBreak", "flipping", "flapOpen", "cardOut", "cardRotate", "zoom"];
+const ORDER: Phase[] = [
+  "sealBreak",
+  "flipping",
+  "flapOpen",
+  "cardOut",
+  "cardRotate",
+  "zoom",
+];
 const DURATION_MS: Record<Phase, number> = {
   closed: 0,
   sealBreak: 700,
@@ -52,8 +59,12 @@ export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
   const flipped = phase !== "closed" && phase !== "sealBreak";
   const flipDone = flipped && phase !== "flipping";
   const flapOpen =
-    phase === "flapOpen" || phase === "cardOut" || phase === "cardRotate" || phase === "zoom";
-  const cardOut = phase === "cardOut" || phase === "cardRotate" || phase === "zoom";
+    phase === "flapOpen" ||
+    phase === "cardOut" ||
+    phase === "cardRotate" ||
+    phase === "zoom";
+  const cardOut =
+    phase === "cardOut" || phase === "cardRotate" || phase === "zoom";
   const cardRotating = phase === "cardRotate" || phase === "zoom";
   const zooming = phase === "zoom";
 
@@ -109,10 +120,16 @@ export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
 
           <div
             className="absolute inset-0 flex items-center justify-center gap-1 rounded-md bg-cream shadow-2xl"
-            style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+            style={{
+              backfaceVisibility: "hidden",
+              transform: "rotateY(180deg)",
+            }}
           >
             {[0, 1, 2].map((i) => (
-              <div key={i} className="image-glow relative h-8 w-20 sm:h-10 sm:w-24">
+              <div
+                key={i}
+                className="image-glow relative h-8 w-20 sm:h-10 sm:w-24"
+              >
                 <Image
                   src="/images/divider_6.png"
                   alt=""
@@ -130,8 +147,15 @@ export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
         {/* flap — opens once the envelope has flipped to its back */}
         <motion.div
           animate={{ rotateX: flapOpen ? -170 : 0, opacity: flipDone ? 1 : 0 }}
-          transition={{ duration: 0.65, ease: "easeInOut", opacity: { duration: 0.2 } }}
-          style={{ transformOrigin: "top center", transformStyle: "preserve-3d" }}
+          transition={{
+            duration: 0.65,
+            ease: "easeInOut",
+            opacity: { duration: 0.2 },
+          }}
+          style={{
+            transformOrigin: "top center",
+            transformStyle: "preserve-3d",
+          }}
           className="absolute left-1/2 top-0 h-0 w-0 -translate-x-1/2 border-x-[160px] border-t-[96px] border-x-transparent border-t-gold/60 sm:border-x-[192px] sm:border-t-[112px]"
         />
 
@@ -154,7 +178,7 @@ export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
             transition={{ duration: 0.7, ease: "easeInOut" }}
           >
             <div
-              className="absolute inset-0 overflow-hidden rounded-md shadow-xl"
+              className="absolute inset-0 overflow-hidden shadow-xl"
               style={{ backfaceVisibility: "hidden" }}
             >
               <Image
@@ -164,7 +188,7 @@ export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
                 sizes="200px"
                 className="object-cover"
               />
-              <div className="absolute inset-x-0 top-[54%] flex flex-col items-center gap-1 px-2 text-center">
+              <div className="absolute inset-x-0 top-[64%] flex flex-col items-center gap-1 px-2 text-center">
                 <p className="text-[6px] uppercase tracking-[0.3em] text-gold sm:text-[7px]">
                   {t("invitationLabel")}
                 </p>
@@ -172,13 +196,18 @@ export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
                   className="text-[7px] leading-tight text-maroon sm:text-[8px]"
                   style={bodyFontStyle(locale)}
                 >
-                  {guestName ? t("guestGreeting", { name: guestName }) : t("guestGreetingDefault")}
+                  {guestName
+                    ? t("guestGreeting", { name: guestName })
+                    : t("guestGreetingDefault")}
                 </p>
               </div>
             </div>
             <div
-              className="absolute inset-0 overflow-hidden rounded-md shadow-xl"
-              style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+              className="absolute inset-0 overflow-hidden shadow-xl"
+              style={{
+                backfaceVisibility: "hidden",
+                transform: "rotateY(180deg)",
+              }}
             >
               <Image
                 src="/images/back_card.png"
