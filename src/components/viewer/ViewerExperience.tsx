@@ -73,11 +73,11 @@ export function ViewerExperience({ slug }: { slug: string }) {
 
   function handleOpenEnvelope() {
     setStage("landing");
+    startMusic();
   }
 
   function handleOpenInvitation() {
     setStage("opened");
-    startMusic();
   }
 
   if (invitation === undefined) {
