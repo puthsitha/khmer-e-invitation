@@ -9,7 +9,7 @@ import { SectionShell } from "@/components/viewer/SectionShell";
 import { SectionHeading } from "@/components/viewer/SectionHeading";
 import type { Invitation } from "@/types";
 
-const ORBIT_RADIUS_PERCENT = 38;
+const ORBIT_RADIUS_PERCENT = 40;
 const ORBIT_DURATION_SECONDS = 50;
 
 function OrbitGallery({
@@ -22,11 +22,11 @@ function OrbitGallery({
   const reduceMotion = useReducedMotion();
   const thumbSizeClass =
     photos.length > 8
-      ? "h-14 w-14 sm:h-16 sm:w-16"
-      : "h-20 w-20 sm:h-24 sm:w-24";
+      ? "h-16 w-16 sm:h-20 sm:w-20"
+      : "h-28 w-28 sm:h-36 sm:w-36";
 
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-sm">
+    <div className="relative mx-auto aspect-square w-full max-w-md sm:max-w-lg">
       <motion.div
         className="absolute inset-0"
         animate={reduceMotion ? undefined : { rotate: 360 }}
@@ -71,7 +71,7 @@ function OrbitGallery({
                   src={url}
                   alt=""
                   fill
-                  sizes="128px"
+                  sizes="144px"
                   className="object-cover"
                   loading="lazy"
                 />
