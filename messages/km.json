@@ -38,6 +38,8 @@
     "notPublished": "ការអញ្ជើញនេះមិនទាន់បានផ្សព្វផ្សាយនៅឡើយទេ។",
     "weddingCeremony": "ពិធីមង្គលការ",
     "onOccasion": "ក្នុងឱកាសអភិសេកសម្រស់",
+    "guestGreeting": "គោរពជូន {name}",
+    "guestGreetingDefault": "សូមគោរពអញ្ជើញ",
     "requestPleasure": "សូមគោរពអញ្ជើញ",
     "openInvitation": "បើកការអញ្ជើញ",
     "invitationHeading": "គ្រួសារខាងកូនប្រុស និងកូនស្រី",

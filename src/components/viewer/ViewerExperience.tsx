@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { NextIntlClientProvider, useLocale, useTranslations } from "next-intl";
 import { AnimatePresence } from "framer-motion";
 import { getInvitationBySlug } from "@/lib/firebase/firestore";
@@ -133,11 +133,13 @@ export function ViewerExperience({ slug }: { slug: string }) {
           </AnimatePresence>
 
           {stage === "landing" && (
-            <Hero
-              invitation={invitation}
-              onOpen={handleOpenInvitation}
-              onStartMusic={startMusic}
-            />
+            <Suspense fallback={null}>
+              <Hero
+                invitation={invitation}
+                onOpen={handleOpenInvitation}
+                onStartMusic={startMusic}
+              />
+            </Suspense>
           )}
 
           {stage === "opened" && (

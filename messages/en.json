@@ -38,6 +38,8 @@
     "notPublished": "This invitation hasn't been published yet.",
     "weddingCeremony": "Wedding Ceremony",
     "onOccasion": "On the occasion of their marriage",
+    "guestGreeting": "Dear {name},",
+    "guestGreetingDefault": "Dear Guest,",
     "requestPleasure": "Request the pleasure of your company",
     "openInvitation": "Open Invitation",
     "invitationHeading": "Our Groom and Bride Family",

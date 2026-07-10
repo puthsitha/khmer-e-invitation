@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import type { CSSProperties } from "react";
+import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { motion, useReducedMotion } from "framer-motion";
-import { OrnamentDivider } from "@/components/ui/OrnamentDivider";
+import { GuestNameFrame } from "@/components/ui/GuestNameFrame";
 import { SparkBurst } from "@/components/ui/SparkBurst";
 import { bodyFontStyle, headingFontStyle, scriptFontStyle } from "@/lib/fonts";
 import { pickBilingual } from "@/lib/bilingual";
@@ -51,6 +52,7 @@ export function Hero({
   const locale = useLocale();
   const shouldReduceMotion = useReducedMotion();
   const [bursting, setBursting] = useState(false);
+  const guestName = useSearchParams().get("to")?.trim();
 
   const groomName = pickBilingual(invitation.content.groomName, locale);
   const brideName = pickBilingual(invitation.content.brideName, locale);
@@ -147,7 +149,9 @@ export function Hero({
         </motion.h1>
       </div>
 
-      <OrnamentDivider variant="hero" />
+      <GuestNameFrame textStyle={bodyFontStyle(locale)}>
+        {guestName ? t("guestGreeting", { name: guestName }) : t("guestGreetingDefault")}
+      </GuestNameFrame>
 
       <p
         className="max-w-xs text-base italic text-maroon/80"
