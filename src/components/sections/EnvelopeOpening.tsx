@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { WaxSeal } from "@/components/ui/WaxSeal";
 import { OrnamentDivider } from "@/components/ui/OrnamentDivider";
@@ -20,6 +20,7 @@ const DURATION_MS: Record<Phase, number> = {
 
 export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
   const t = useTranslations("viewer");
+  const reduceMotion = useReducedMotion();
   const [phase, setPhase] = useState<Phase>("closed");
 
   useEffect(() => {
@@ -69,9 +70,21 @@ export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
             style={{ backfaceVisibility: "hidden" }}
           >
             <div className="absolute left-1/2 top-0 h-0 w-0 -translate-x-1/2 border-x-[160px] border-t-[96px] border-x-transparent border-t-[#eee7da] sm:border-x-[192px] sm:border-t-[112px]" />
-            <div className="absolute inset-0 flex items-center justify-center">
+            <motion.div
+              className="absolute inset-0 flex items-center justify-center"
+              animate={
+                phase === "closed" && !reduceMotion
+                  ? { scale: [1, 1.08, 1] }
+                  : { scale: 1 }
+              }
+              transition={
+                phase === "closed" && !reduceMotion
+                  ? { duration: 1.8, repeat: Infinity, ease: "easeInOut" }
+                  : { duration: 0.3, ease: "easeOut" }
+              }
+            >
               <WaxSeal size={72} />
-            </div>
+            </motion.div>
           </div>
 
           <div
