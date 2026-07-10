@@ -6,14 +6,21 @@ import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { WaxSeal } from "@/components/ui/WaxSeal";
-import { OrnamentDivider } from "@/components/ui/OrnamentDivider";
 import { bodyFontStyle } from "@/lib/fonts";
 
-type Phase = "closed" | "flipping" | "flapOpen" | "cardOut" | "cardRotate" | "zoom";
+type Phase =
+  | "closed"
+  | "sealBreak"
+  | "flipping"
+  | "flapOpen"
+  | "cardOut"
+  | "cardRotate"
+  | "zoom";
 
-const ORDER: Phase[] = ["flipping", "flapOpen", "cardOut", "cardRotate", "zoom"];
+const ORDER: Phase[] = ["sealBreak", "flipping", "flapOpen", "cardOut", "cardRotate", "zoom"];
 const DURATION_MS: Record<Phase, number> = {
   closed: 0,
+  sealBreak: 700,
   flipping: 800,
   flapOpen: 650,
   cardOut: 600,
@@ -41,8 +48,9 @@ export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
     return () => clearTimeout(timer);
   }, [phase, onOpen]);
 
-  const flipped = phase !== "closed";
-  const flipDone = phase !== "closed" && phase !== "flipping";
+  const sealBroken = phase !== "closed";
+  const flipped = phase !== "closed" && phase !== "sealBreak";
+  const flipDone = flipped && phase !== "flipping";
   const flapOpen =
     phase === "flapOpen" || phase === "cardOut" || phase === "cardRotate" || phase === "zoom";
   const cardOut = phase === "cardOut" || phase === "cardRotate" || phase === "zoom";
@@ -60,7 +68,7 @@ export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
     >
       <motion.button
         type="button"
-        onClick={() => phase === "closed" && setPhase("flipping")}
+        onClick={() => phase === "closed" && setPhase("sealBreak")}
         disabled={phase !== "closed"}
         animate={idlePulse ? { scale: [1, 1.06, 1] } : { scale: 1 }}
         transition={
@@ -83,16 +91,39 @@ export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
             style={{ backfaceVisibility: "hidden" }}
           >
             <div className="absolute left-1/2 top-0 h-0 w-0 -translate-x-1/2 border-x-[160px] border-t-[96px] border-x-transparent border-t-[#eee7da] sm:border-x-[192px] sm:border-t-[112px]" />
-            <div className="absolute inset-0 flex items-center justify-center">
+            <motion.div
+              className="absolute inset-0 flex items-center justify-center"
+              animate={
+                sealBroken
+                  ? { rotate: reduceMotion ? 0 : 360, opacity: 0 }
+                  : { rotate: 0, opacity: 1 }
+              }
+              transition={{
+                duration: sealBroken ? (reduceMotion ? 0.2 : 0.6) : 0.3,
+                ease: "easeInOut",
+              }}
+            >
               <WaxSeal size={72} />
-            </div>
+            </motion.div>
           </div>
 
           <div
-            className="absolute inset-0 flex items-center justify-center rounded-md bg-cream shadow-2xl"
+            className="absolute inset-0 flex items-center justify-center gap-1 rounded-md bg-cream shadow-2xl"
             style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
           >
-            <OrnamentDivider priority />
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="image-glow relative h-8 w-20 sm:h-10 sm:w-24">
+                <Image
+                  src="/images/divider_6.png"
+                  alt=""
+                  fill
+                  sizes="96px"
+                  priority={i === 1}
+                  className="object-contain"
+                  aria-hidden
+                />
+              </div>
+            ))}
           </div>
         </motion.div>
 

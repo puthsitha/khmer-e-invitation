@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { Suspense, useEffect, useState } from "react";
 import { NextIntlClientProvider, useLocale, useTranslations } from "next-intl";
 import { AnimatePresence } from "framer-motion";
+import { Hourglass, Loader2, MailQuestion } from "lucide-react";
 import { getInvitationBySlug } from "@/lib/firebase/firestore";
 import { useAutoScroll } from "@/hooks/useAutoScroll";
 import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
@@ -14,6 +15,7 @@ import { EnvelopeOpening } from "@/components/sections/EnvelopeOpening";
 import { Hero } from "@/components/sections/Hero";
 import { BackgroundBackdrop } from "@/components/viewer/BackgroundBackdrop";
 import { ViewerTopBar } from "@/components/viewer/ViewerTopBar";
+import { ViewerStatusScreen } from "@/components/viewer/ViewerStatusScreen";
 import type { Invitation } from "@/types";
 
 const FamilyInvitation = dynamic(() =>
@@ -85,25 +87,28 @@ export function ViewerExperience({ slug }: { slug: string }) {
 
   if (invitation === undefined) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-cream text-maroon">
-        <p>{t("loading")}</p>
-      </main>
+      <ViewerStatusScreen
+        icon={<Loader2 className="h-8 w-8 animate-spin" />}
+        message={t("loading")}
+      />
     );
   }
 
   if (invitation === null) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-cream text-maroon">
-        <p>{t("notFound")}</p>
-      </main>
+      <ViewerStatusScreen
+        icon={<MailQuestion className="h-8 w-8" />}
+        message={t("notFound")}
+      />
     );
   }
 
   if (invitation.status !== "published") {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-cream text-maroon">
-        <p>{t("notPublished")}</p>
-      </main>
+      <ViewerStatusScreen
+        icon={<Hourglass className="h-8 w-8" />}
+        message={t("notPublished")}
+      />
     );
   }
 
