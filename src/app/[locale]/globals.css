@@ -56,6 +56,20 @@ body {
   color: var(--foreground);
 }
 
+/* Lifts text/images that sit directly on the blurred photo backdrop
+   (no card behind them) so they stay legible over busy areas — same
+   soft white-glow recipe as the Hero couple names. */
+.text-glow {
+  text-shadow:
+    rgba(255, 255, 255, 0.55) 0px 1px 2px,
+    rgba(255, 255, 255, 0.4) 0px 2px 8px,
+    rgba(255, 255, 255, 0.28) 0px 4px 18px;
+}
+
+.image-glow {
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.18));
+}
+
 /* Dashboard/admin forms always sit on a light (cream/white) surface, so
    give inputs an explicit, legible text/placeholder color instead of
    inheriting body color — keeps them readable regardless of OS theme. */

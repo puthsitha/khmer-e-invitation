@@ -149,19 +149,20 @@ export function Hero({
         </motion.h1>
       </div>
 
-      <GuestNameFrame textStyle={bodyFontStyle(locale)}>
-        {guestName ? t("guestGreeting", { name: guestName }) : t("guestGreetingDefault")}
-      </GuestNameFrame>
+      <GuestNameFrame
+        text={guestName ? t("guestGreeting", { name: guestName }) : t("guestGreetingDefault")}
+        textStyle={bodyFontStyle(locale)}
+      />
 
       <p
-        className="max-w-xs text-base italic text-maroon/80"
+        className="text-glow max-w-xs text-base italic text-maroon/80"
         style={bodyFontStyle(locale)}
       >
         {t("requestPleasure")}
       </p>
 
       <div
-        className="flex flex-col items-center gap-1 text-maroon/90"
+        className="text-glow flex flex-col items-center gap-1 text-maroon/90"
         style={bodyFontStyle(locale)}
       >
         <p className="text-lg">{date}</p>

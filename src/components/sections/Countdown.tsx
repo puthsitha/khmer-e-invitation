@@ -46,7 +46,7 @@ export function Countdown({ invitation }: { invitation: Invitation }) {
 
   return (
     <SectionShell className="text-maroon">
-      <p className="text-lg text-maroon/90" style={bodyFontStyle(locale)}>
+      <p className="text-glow text-lg text-maroon/90" style={bodyFontStyle(locale)}>
         {t("countdownTitle")}
       </p>
       <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
