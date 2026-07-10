@@ -22,6 +22,9 @@ const FamilyInvitation = dynamic(() =>
 const Countdown = dynamic(() =>
   import("@/components/sections/Countdown").then((m) => m.Countdown),
 );
+const CalendarSection = dynamic(() =>
+  import("@/components/sections/CalendarSection").then((m) => m.CalendarSection),
+);
 const Gallery = dynamic(() =>
   import("@/components/sections/Gallery").then((m) => m.Gallery),
 );
@@ -142,6 +145,7 @@ export function ViewerExperience({ slug }: { slug: string }) {
               <div className="h-20 sm:h-24" aria-hidden />
               <FamilyInvitation invitation={invitation} />
               <Countdown invitation={invitation} />
+              <CalendarSection invitation={invitation} />
               <Gallery invitation={invitation} />
               <Direction invitation={invitation} />
               <OurStory invitation={invitation} />
