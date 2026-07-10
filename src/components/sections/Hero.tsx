@@ -147,7 +147,7 @@ export function Hero({
         </motion.h1>
       </div>
 
-      <OrnamentDivider />
+      <OrnamentDivider variant="hero" />
 
       <p
         className="max-w-xs text-base italic text-maroon/80"

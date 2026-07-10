@@ -16,7 +16,7 @@ export function ColorPaletteAccent({ invitation }: { invitation: Invitation }) {
       <p className="text-xs uppercase tracking-[0.25em] text-maroon/70">
         {t("colorPaletteTitle")}
       </p>
-      <div className="flex justify-center gap-3">
+      <div className="flex flex-wrap justify-center gap-5 sm:gap-6">
         {swatches.map((color, index) => (
           <motion.span
             key={color}
@@ -24,7 +24,7 @@ export function ColorPaletteAccent({ invitation }: { invitation: Invitation }) {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: index * 0.15, ease: "easeOut" }}
-            className="h-4 w-4 rounded-full shadow"
+            className="h-12 w-12 rounded-full shadow-lg ring-2 ring-cream/80 sm:h-16 sm:w-16"
             style={{ backgroundColor: color }}
           />
         ))}
