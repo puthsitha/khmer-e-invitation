@@ -2,9 +2,11 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
+import { BookOpen } from "lucide-react";
 import { SectionShell } from "@/components/viewer/SectionShell";
 import { GlassCard } from "@/components/viewer/GlassCard";
 import { SectionHeading } from "@/components/viewer/SectionHeading";
+import { TimelineItem } from "@/components/viewer/TimelineItem";
 import { bodyFontStyle, headingFontStyle } from "@/lib/fonts";
 import { pickBilingual } from "@/lib/bilingual";
 import type { Invitation } from "@/types";
@@ -19,11 +21,12 @@ export function OurStory({ invitation }: { invitation: Invitation }) {
   return (
     <SectionShell className="text-maroon">
       <GlassCard>
-        <SectionHeading icon="📖">{t("storyTitle")}</SectionHeading>
-        <ol className="flex flex-col gap-8 border-l-2 border-gold/40 pl-6 text-left">
+        <SectionHeading icon={<BookOpen className="h-4 w-4" />}>
+          {t("storyTitle")}
+        </SectionHeading>
+        <ol className="flex flex-col">
           {story.map((item, index) => (
-            <li key={index} className="relative">
-              <span className="absolute -left-[29px] top-1.5 h-3 w-3 rounded-full bg-gold" />
+            <TimelineItem key={index} index={index} isLast={index === story.length - 1}>
               <p className="mb-2 text-lg text-maroon" style={headingFontStyle(locale)}>
                 {pickBilingual(item.title, locale)}
               </p>
@@ -34,18 +37,17 @@ export function OurStory({ invitation }: { invitation: Invitation }) {
                 {pickBilingual(item.description, locale)}
               </p>
               {item.image && (
-                <div className="relative h-56 w-full overflow-hidden rounded-2xl shadow-lg">
-                  <Image
-                    src={item.image}
-                    alt=""
-                    fill
-                    sizes="(max-width: 640px) 100vw, 480px"
-                    className="object-cover"
-                    loading="lazy"
-                  />
-                </div>
+                <Image
+                  src={item.image}
+                  alt=""
+                  width={0}
+                  height={0}
+                  sizes="(max-width: 640px) 100vw, 480px"
+                  className="h-auto w-full rounded-2xl shadow-lg"
+                  loading="lazy"
+                />
               )}
-            </li>
+            </TimelineItem>
           ))}
         </ol>
       </GlassCard>

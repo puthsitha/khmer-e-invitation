@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
+import { MapPin } from "lucide-react";
 import { SectionShell } from "@/components/viewer/SectionShell";
 import { SectionHeading } from "@/components/viewer/SectionHeading";
 import { bodyFontStyle } from "@/lib/fonts";
@@ -21,7 +22,9 @@ export function Direction({ invitation }: { invitation: Invitation }) {
 
   return (
     <SectionShell className="text-maroon">
-      <SectionHeading icon="📍">{t("directionTitle")}</SectionHeading>
+      <SectionHeading icon={<MapPin className="h-4 w-4" />}>
+        {t("directionTitle")}
+      </SectionHeading>
 
       {address && (
         <p

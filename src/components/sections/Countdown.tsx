@@ -1,10 +1,32 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { SectionShell } from "@/components/viewer/SectionShell";
 import { bodyFontStyle } from "@/lib/fonts";
 import { useCountdown } from "@/hooks/useCountdown";
 import type { Invitation } from "@/types";
+
+function AnimatedNumber({ value }: { value: string }) {
+  const reduceMotion = useReducedMotion();
+
+  return (
+    <span className="relative inline-block h-[1em] w-[2ch] overflow-hidden align-bottom">
+      <AnimatePresence mode="popLayout" initial={false}>
+        <motion.span
+          key={value}
+          initial={reduceMotion ? { opacity: 0 } : { y: "100%", opacity: 0 }}
+          animate={{ y: "0%", opacity: 1 }}
+          exit={reduceMotion ? { opacity: 0 } : { y: "-100%", opacity: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          {value}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+}
 
 export function Countdown({ invitation }: { invitation: Invitation }) {
   const t = useTranslations("viewer");
@@ -30,7 +52,7 @@ export function Countdown({ invitation }: { invitation: Invitation }) {
             className="flex w-20 flex-col items-center gap-1 rounded-2xl bg-cream/75 py-4 shadow-lg backdrop-blur-md sm:w-24"
           >
             <span className="font-[family-name:var(--font-heading-en)] text-3xl text-gold sm:text-4xl">
-              {String(value).padStart(2, "0")}
+              <AnimatedNumber value={String(value).padStart(2, "0")} />
             </span>
             <span className="text-[10px] uppercase tracking-widest text-maroon/70">
               {label}
