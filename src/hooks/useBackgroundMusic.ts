@@ -50,7 +50,7 @@ export function useBackgroundMusic(url: string | undefined) {
     gain.connect(context.destination);
     gainRef.current = gain;
 
-    fetch(url)
+    fetch(`/api/audio-proxy?url=${encodeURIComponent(url)}`)
       .then((res) => res.arrayBuffer())
       .then((data) => context.decodeAudioData(data))
       .then((buffer) => {
