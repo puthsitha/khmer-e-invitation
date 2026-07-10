@@ -59,7 +59,7 @@ function EventDayCell({ day, locale }: { day: number; locale: string }) {
 
   return (
     <motion.span
-      className="relative"
+      className="relative flex h-10 w-10 items-center justify-center"
       animate={reduceMotion ? undefined : { scale: [1, 1, 1.25, 0.92, 1, 1] }}
       transition={
         reduceMotion
