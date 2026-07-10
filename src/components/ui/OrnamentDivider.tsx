@@ -8,9 +8,11 @@ const DIVIDER_SRC = {
 export function OrnamentDivider({
   variant = "section",
   mirrored = false,
+  priority = false,
 }: {
   variant?: "hero" | "section";
   mirrored?: boolean;
+  priority?: boolean;
 }) {
   return (
     <div className="image-glow relative h-14 w-60 sm:h-16 sm:w-72">
@@ -19,6 +21,7 @@ export function OrnamentDivider({
         alt=""
         fill
         sizes="288px"
+        priority={priority}
         className={`object-cover${mirrored ? " -scale-y-100" : ""}`}
         aria-hidden
       />

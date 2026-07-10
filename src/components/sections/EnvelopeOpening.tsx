@@ -92,7 +92,7 @@ export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
             className="absolute inset-0 flex items-center justify-center rounded-md bg-cream shadow-2xl"
             style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
           >
-            <OrnamentDivider />
+            <OrnamentDivider priority />
           </div>
         </motion.div>
 
