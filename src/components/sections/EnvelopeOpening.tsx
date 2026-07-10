@@ -75,8 +75,17 @@ export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
       animate={{ opacity: zooming ? 0 : 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5, delay: zooming ? 0.2 : 0 }}
-      className="paper-texture fixed inset-0 z-50 flex flex-col items-center justify-center gap-8 bg-cream px-6 text-center"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-8 bg-cream px-6 text-center"
     >
+      <Image
+        src="/images/bg.png"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="-z-10 object-cover"
+        aria-hidden
+      />
       <motion.button
         type="button"
         onClick={() => phase === "closed" && setPhase("sealBreak")}
