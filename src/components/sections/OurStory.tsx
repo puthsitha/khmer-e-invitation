@@ -36,7 +36,7 @@ export function OurStory({ invitation }: { invitation: Invitation }) {
   return (
     <SectionShell className="text-maroon">
       <GlassCard>
-        <SectionHeading icon={<BookOpen className="h-4 w-4" />}>
+        <SectionHeading icon={<BookOpen className="h-4 w-4" />} dividerVariant={6}>
           {t("storyTitle")}
         </SectionHeading>
         <ol className="flex flex-col">

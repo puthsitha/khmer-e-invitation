@@ -98,7 +98,7 @@ export function Gallery({ invitation }: { invitation: Invitation }) {
 
   return (
     <SectionShell className="text-maroon">
-      <SectionHeading icon={<Images className="h-4 w-4" />}>
+      <SectionHeading icon={<Images className="h-4 w-4" />} dividerVariant={3}>
         {t("galleryTitle")}
       </SectionHeading>
 
