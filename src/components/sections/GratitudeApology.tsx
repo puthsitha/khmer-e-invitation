@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
+import { Heart } from "lucide-react";
 import { SectionShell } from "@/components/viewer/SectionShell";
 import { GlassCard } from "@/components/viewer/GlassCard";
 import { SectionHeading } from "@/components/viewer/SectionHeading";
@@ -13,7 +14,9 @@ export function GratitudeApology() {
   return (
     <SectionShell className="text-maroon">
       <GlassCard>
-        <SectionHeading icon="🎀">{t("gratitudeTitle")}</SectionHeading>
+        <SectionHeading icon={<Heart className="h-4 w-4" />}>
+          {t("gratitudeTitle")}
+        </SectionHeading>
         <p className="leading-relaxed text-maroon/90" style={bodyFontStyle(locale)}>
           {t("gratitudeText")}
         </p>

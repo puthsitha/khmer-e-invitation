@@ -1,5 +1,6 @@
 "use client";
 
+import { Volume2, VolumeX } from "lucide-react";
 import { ViewerLocaleSwitcher } from "@/components/viewer/ViewerLocaleSwitcher";
 
 export function ViewerTopBar({
@@ -31,7 +32,11 @@ export function ViewerTopBar({
             }
             className="flex items-center gap-2 rounded-full border border-gold/40 bg-bg/85 px-3 py-1.5 text-xs uppercase tracking-widest text-maroon shadow-md backdrop-blur-md"
           >
-            <span aria-hidden>{muted ? "🔇" : "🔊"}</span>
+            {muted ? (
+              <VolumeX className="h-4 w-4" aria-hidden />
+            ) : (
+              <Volume2 className="h-4 w-4" aria-hidden />
+            )}
             {muted ? "Off" : "On"}
           </button>
         )}

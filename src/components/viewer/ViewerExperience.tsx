@@ -139,6 +139,7 @@ export function ViewerExperience({ slug }: { slug: string }) {
 
           {stage === "opened" && (
             <>
+              <div className="h-20 sm:h-24" aria-hidden />
               <FamilyInvitation invitation={invitation} />
               <Countdown invitation={invitation} />
               <Gallery invitation={invitation} />

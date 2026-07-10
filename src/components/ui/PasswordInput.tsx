@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 export function PasswordInput({
   value,
@@ -34,7 +35,7 @@ export function PasswordInput({
         aria-label={visible ? "Hide password" : "Show password"}
         className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-maroon/60"
       >
-        {visible ? "🙈" : "👁️"}
+        {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
       </button>
     </div>
   );

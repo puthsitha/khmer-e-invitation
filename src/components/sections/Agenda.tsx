@@ -1,11 +1,14 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
+import { Clock } from "lucide-react";
 import { SectionShell } from "@/components/viewer/SectionShell";
 import { GlassCard } from "@/components/viewer/GlassCard";
 import { SectionHeading } from "@/components/viewer/SectionHeading";
+import { TimelineItem } from "@/components/viewer/TimelineItem";
 import { bodyFontStyle } from "@/lib/fonts";
 import { pickBilingual } from "@/lib/bilingual";
+import { formatAgendaTime } from "@/lib/formatTime";
 import type { Invitation } from "@/types";
 
 export function Agenda({ invitation }: { invitation: Invitation }) {
@@ -18,16 +21,21 @@ export function Agenda({ invitation }: { invitation: Invitation }) {
   return (
     <SectionShell className="text-maroon">
       <GlassCard>
-        <SectionHeading icon="🕐">{t("agendaTitle")}</SectionHeading>
-        <ol className="flex flex-col gap-6 border-l-2 border-gold/40 pl-6 text-left">
+        <SectionHeading icon={<Clock className="h-4 w-4" />}>
+          {t("agendaTitle")}
+        </SectionHeading>
+        <ol className="flex flex-col">
           {agenda.map((item, index) => (
-            <li key={`${item.time}-${index}`} className="relative">
-              <span className="absolute -left-[29px] top-1.5 h-3 w-3 rounded-full bg-gold" />
+            <TimelineItem
+              key={`${item.time}-${index}`}
+              index={index}
+              isLast={index === agenda.length - 1}
+            >
               <p className="font-[family-name:var(--font-heading-en)] text-gold">
-                {item.time}
+                {formatAgendaTime(item.time, locale)}
               </p>
               <p style={bodyFontStyle(locale)}>{pickBilingual(item.title, locale)}</p>
-            </li>
+            </TimelineItem>
           ))}
         </ol>
       </GlassCard>
