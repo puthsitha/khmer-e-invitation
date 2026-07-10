@@ -17,7 +17,7 @@ export function DigitalEnvelope({ invitation }: { invitation: Invitation }) {
 
   return (
     <SectionShell className="text-maroon">
-      <SectionHeading icon={<Gift className="h-4 w-4" />}>
+      <SectionHeading icon={<Gift className="h-4 w-4" />} dividerVariant={1}>
         {t("digitalEnvelopeTitle")}
       </SectionHeading>
       <div className="image-glow relative h-64 w-64 overflow-hidden rounded-2xl sm:h-80 sm:w-80">

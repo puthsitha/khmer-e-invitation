@@ -22,7 +22,7 @@ export function Direction({ invitation }: { invitation: Invitation }) {
 
   return (
     <SectionShell className="text-maroon">
-      <SectionHeading icon={<MapPin className="h-4 w-4" />}>
+      <SectionHeading icon={<MapPin className="h-4 w-4" />} dividerVariant={4}>
         {t("directionTitle")}
       </SectionHeading>
 

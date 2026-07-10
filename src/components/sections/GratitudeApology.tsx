@@ -14,7 +14,7 @@ export function GratitudeApology() {
   return (
     <SectionShell className="text-maroon">
       <GlassCard>
-        <SectionHeading icon={<Heart className="h-4 w-4" />}>
+        <SectionHeading icon={<Heart className="h-4 w-4" />} dividerVariant={4}>
           {t("gratitudeTitle")}
         </SectionHeading>
         <p className="leading-relaxed text-maroon/90" style={bodyFontStyle(locale)}>

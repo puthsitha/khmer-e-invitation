@@ -105,7 +105,7 @@ export function CalendarSection({ invitation }: { invitation: Invitation }) {
 
   return (
     <SectionShell className="text-maroon">
-      <SectionHeading icon={<Calendar className="h-4 w-4" />}>
+      <SectionHeading icon={<Calendar className="h-4 w-4" />} dividerVariant={1}>
         {t("calendarTitle")}
       </SectionHeading>
 

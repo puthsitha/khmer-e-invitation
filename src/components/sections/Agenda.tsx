@@ -22,7 +22,7 @@ export function Agenda({ invitation }: { invitation: Invitation }) {
   return (
     <SectionShell className="text-maroon">
       <GlassCard>
-        <SectionHeading icon={<Clock className="h-4 w-4" />}>
+        <SectionHeading icon={<Clock className="h-4 w-4" />} dividerVariant={5}>
           {t("agendaTitle")}
         </SectionHeading>
         <ol className="flex flex-col">
