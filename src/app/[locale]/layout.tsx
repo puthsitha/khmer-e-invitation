@@ -11,6 +11,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { EnvTag } from "@/components/ui/EnvTag";
 import "./globals.css";
 
 const moul = Moul({
@@ -80,6 +81,7 @@ export default async function RootLayout({
         <NextIntlClientProvider>
           <AuthProvider>{children}</AuthProvider>
         </NextIntlClientProvider>
+        <EnvTag />
       </body>
     </html>
   );

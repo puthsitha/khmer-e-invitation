@@ -6,12 +6,15 @@
 
 [context.dev]
   [context.dev.environment]
+    NEXT_PUBLIC_APP_ENV = "dev"
     # Firebase project: einvitation-2ff36 (eInvitation)
 
 [context.uat]
   [context.uat.environment]
+    NEXT_PUBLIC_APP_ENV = "uat"
     # Firebase project: khmer-einvite-uat
 
 [context.production]
   [context.production.environment]
+    # NEXT_PUBLIC_APP_ENV intentionally unset — production shows no env tag
     # Firebase project: khmer-einvite-prod

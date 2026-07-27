@@ -2,15 +2,17 @@
 
 ## Environments
 
-| Environment | Branch | Netlify context   | Firebase project      |
-| ----------- | ------ | ----------------- | ---------------------- |
-| Development | `dev`  | Branch deploy      | `einvitation-2ff36` (Firebase project "eInvitation")    |
-| UAT         | `uat`  | Branch deploy      | *(not yet created — placeholder `khmer-einvite-uat`)*    |
-| Production  | `main` | Production deploy  | *(not yet created — placeholder `khmer-einvite-prod`)*   |
-
-Only the dev project exists so far. Create the UAT/production Firebase projects when you're ready to promote past dev, then update `.firebaserc` and this table with their real project IDs (Firebase auto-generates the ID from the name you pick, so it won't necessarily match the placeholder above).
+| Environment | Branch | Netlify context  | Netlify URL                                              | Env tag | Firebase project                                    |
+| ----------- | ------ | ----------------- | --------------------------------------------------------- | ------- | ----------------------------------------------------- |
+| Development | `dev`  | Branch deploy      | https://dev--e-khmer-invitation.netlify.app                | `DEV`   | `einvitation-2ff36` (Firebase project "eInvitation")   |
+| UAT         | `uat`  | Branch deploy      | https://uat--e-khmer-invitation.netlify.app                | `UAT`   | `khmer-einvite-uat`                                    |
+| Production  | `main` | Production deploy  | https://e-khmer-invitation.netlify.app                     | *none*  | `khmer-einvite-prod`                                   |
 
 Netlify builds this Next.js app via `@netlify/plugin-nextjs` (configured in `netlify.toml`). Each branch above maps to its own Netlify deploy context, and each context talks to its own Firebase project so that dev/uat/prod data never mix.
+
+### Env tag (dev/UAT badge)
+
+`netlify.toml` sets `NEXT_PUBLIC_APP_ENV` to `dev` / `uat` per context (left unset for `production`). `src/components/ui/EnvTag.tsx` reads that var and renders a small fixed corner badge reading `DEV` or `UAT` so a non-production deploy is never mistaken for the live site; it renders nothing when the var is unset, i.e. on production.
 
 ## Setting environment variables in Netlify
 
@@ -45,6 +47,29 @@ Every account created through `/register` (or Google sign-in) always gets `role:
 4. Log out and back in at `/login` — the app now redirects admins straight to `/admin`.
 
 After that first admin exists, promote any further admins from inside the app at `/admin/users` ("Make admin") instead of editing Firestore directly.
+
+## Commands per environment
+
+The app deploy itself is push-triggered (Netlify watches the branch and builds automatically) — there's no manual deploy command for the Next.js app. What you run locally is: local dev server, and — after security rules change — pushing `firestore.rules` / `storage.rules` to that environment's Firebase project.
+
+**Development**
+```bash
+npm run dev                    # local dev server, http://localhost:3000
+git push origin dev            # triggers Netlify branch deploy -> dev--e-khmer-invitation.netlify.app
+npm run firebase:rules:dev     # deploy firestore.rules/storage.rules to einvitation-2ff36
+```
+
+**UAT**
+```bash
+git push origin uat            # triggers Netlify branch deploy -> uat--e-khmer-invitation.netlify.app
+npm run firebase:rules:uat     # deploy firestore.rules/storage.rules to khmer-einvite-uat
+```
+
+**Production**
+```bash
+git push origin main           # triggers Netlify production deploy -> e-khmer-invitation.netlify.app
+npm run firebase:rules:prod    # deploy firestore.rules/storage.rules to khmer-einvite-prod
+```
 
 ## Promotion flow
 
