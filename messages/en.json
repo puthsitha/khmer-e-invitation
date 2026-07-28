@@ -14,7 +14,9 @@
   "home": {
     "heading": "Khmer E-Invitation",
     "subheading": "Create and send beautiful digital invitations for your wedding",
-    "cta": "Get started"
+    "cta": "Get started",
+    "welcomeBack": "Welcome back, {name}",
+    "goToDashboard": "Go to dashboard"
   },
   "auth": {
     "loginTitle": "Log in",
