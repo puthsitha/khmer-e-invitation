@@ -22,7 +22,8 @@ export function TimeSelect12h({
   onChange: (value: string) => void;
 }) {
   const { hour, minute, period } = parseTime12h(value);
-  const selectClassName = "rounded-lg border border-gold/40 px-2 py-1.5";
+  const selectClassName =
+    "rounded-lg border border-gold/40 px-2 py-1.5 transition-colors focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20";
 
   function update(next: Partial<{ hour: number; minute: string; period: Period }>) {
     const h = next.hour ?? hour;

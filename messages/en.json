@@ -67,5 +67,82 @@
     "gratitudeText": "With heartfelt thanks for celebrating this special day with us. Please forgive any shortcomings in our arrangements.",
     "colorPaletteTitle": "Color Palette",
     "closingSignoff": "Thank you for sharing in our joy"
+  },
+  "dashboard": {
+    "loading": "Loading…",
+    "suspended": "Your account has been suspended. Contact the site admin for help.",
+    "signOut": "Sign out",
+    "list": {
+      "title": "Your invitations",
+      "newInvitation": "New invitation",
+      "loading": "Loading your invitations…",
+      "emptyTitle": "No invitations yet",
+      "emptyBody": "Create your first invitation to get started.",
+      "edit": "Edit",
+      "category": {
+        "wedding": "Wedding",
+        "birthday": "Birthday",
+        "event": "Event"
+      },
+      "status": {
+        "draft": "Draft",
+        "published": "Published"
+      }
+    },
+    "editor": {
+      "back": "Back to invitations",
+      "loading": "Loading…",
+      "saved": "Saved.",
+      "saving": "Saving…",
+      "saveError": "Could not save. Please try again.",
+      "content": {
+        "title": "Content",
+        "groomName": "Groom name",
+        "brideName": "Bride name",
+        "groomFamily": "Groom's family",
+        "brideFamily": "Bride's family",
+        "father": "Father",
+        "mother": "Mother",
+        "invitationText": "Invitation text",
+        "address": "Address",
+        "mapUrl": "Map URL",
+        "coverVideo": "Cover video (YouTube/Vimeo embed URL)",
+        "eventDate": "Event date & time",
+        "colorPalette": "Color palette"
+      },
+      "story": {
+        "title": "Our Story",
+        "itemTitle": "Title",
+        "description": "Description",
+        "image": "Image",
+        "remove": "Remove",
+        "add": "Add story item"
+      },
+      "agenda": {
+        "title": "Agenda",
+        "time": "Time",
+        "itemTitle": "Title",
+        "remove": "Remove",
+        "add": "Add agenda item"
+      },
+      "media": {
+        "title": "Media",
+        "galleryNote": "Gallery — up to 20 images, 500KB each (JPEG/PNG/WebP).",
+        "musicNote": "Background music — up to 3MB (MP3/M4A/WAV).",
+        "envelopeNote": "Digital envelope QR (gift/money) — up to 500KB (JPEG/PNG/WebP)."
+      },
+      "publish": {
+        "title": "Publish & share",
+        "status": "Status",
+        "publish": "Publish",
+        "unpublish": "Unpublish"
+      },
+      "rsvp": {
+        "title": "RSVPs ({count})",
+        "empty": "No responses yet.",
+        "attending": "Attending",
+        "notAttending": "Not attending"
+      }
+    }
   }
 }

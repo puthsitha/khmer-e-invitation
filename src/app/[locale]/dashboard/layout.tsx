@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
+import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useRouter } from "@/i18n/navigation";
 import { logout } from "@/lib/firebase/auth";
@@ -12,6 +14,7 @@ export default function DashboardLayout({
 }) {
   const { user, appUser, loading } = useAuth();
   const router = useRouter();
+  const t = useTranslations("dashboard");
 
   useEffect(() => {
     if (!loading && !user) {
@@ -22,33 +25,52 @@ export default function DashboardLayout({
   if (loading || !user) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-cream text-maroon">
-        <p>Loading…</p>
+        <motion.p
+          animate={{ opacity: [0.4, 1, 0.4] }}
+          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+          className="font-[family-name:var(--font-body-km)]"
+        >
+          {t("loading")}
+        </motion.p>
       </main>
     );
   }
 
   if (appUser?.suspended) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-cream text-maroon">
-        <p>Your account has been suspended. Contact the site admin for help.</p>
+      <main className="flex min-h-screen items-center justify-center bg-cream px-6 text-center text-maroon">
+        <p className="font-[family-name:var(--font-body-km)] max-w-md">
+          {t("suspended")}
+        </p>
       </main>
     );
   }
 
   return (
     <div className="min-h-screen bg-cream">
-      <header className="flex items-center justify-between border-b border-gold/30 px-6 py-4">
-        <Link href="/dashboard" className="font-[family-name:var(--font-heading-km)] text-xl text-maroon">
+      <motion.header
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="sticky top-0 z-40 flex items-center justify-between border-b border-gold/30 bg-cream/80 px-6 py-4 backdrop-blur-md"
+      >
+        <Link
+          href="/dashboard"
+          className="font-[family-name:var(--font-heading-km)] text-xl text-maroon transition-opacity hover:opacity-80"
+        >
           {appUser?.name ?? user.email}
         </Link>
-        <button
+        <motion.button
           type="button"
           onClick={() => logout()}
-          className="rounded-full border border-gold/60 px-4 py-1.5 text-sm text-maroon"
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.97 }}
+          transition={{ duration: 0.2 }}
+          className="rounded-full border border-gold/60 px-4 py-1.5 text-sm text-maroon transition-colors hover:bg-maroon hover:text-cream"
         >
-          Sign out
-        </button>
-      </header>
+          {t("signOut")}
+        </motion.button>
+      </motion.header>
       {children}
     </div>
   );
