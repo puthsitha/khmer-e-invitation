@@ -21,7 +21,7 @@ import {
 import { QrCode } from "@/components/ui/QrCode";
 import { BilingualField } from "@/components/dashboard/BilingualField";
 import { TimeSelect12h } from "@/components/dashboard/TimeSelect12h";
-import { PALETTE_IDS, PALETTE_LABELS } from "@/lib/palettes";
+import { usePalettes } from "@/hooks/usePalettes";
 import { asBilingual, EMPTY_BILINGUAL } from "@/lib/bilingual";
 import type {
   AgendaItem,
@@ -72,6 +72,7 @@ export default function EditInvitationPage() {
   const [saving, setSaving] = useState(false);
   const t = useTranslations("dashboard.editor");
   const tStatus = useTranslations("dashboard.list.status");
+  const palettes = usePalettes();
 
   useEffect(() => {
     getInvitation(invitationId).then(setInvitation);
@@ -372,9 +373,9 @@ export default function EditInvitationPage() {
             onChange={(e) => save({ colorPalette: e.target.value })}
             className={inputClassName}
           >
-            {PALETTE_IDS.map((p) => (
-              <option key={p} value={p}>
-                {PALETTE_LABELS[p]}
+            {palettes?.map((p) => (
+              <option key={p.paletteId} value={p.paletteId}>
+                {p.name}
               </option>
             ))}
           </select>

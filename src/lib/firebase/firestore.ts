@@ -14,7 +14,7 @@ import {
   type QueryDocumentSnapshot,
 } from "firebase/firestore";
 import { db } from "./client";
-import type { AppUser, Invitation, RsvpResponse, Template } from "@/types";
+import type { AppUser, Invitation, Palette, RsvpResponse, Template } from "@/types";
 
 function converter<T>() {
   return {
@@ -31,6 +31,40 @@ const invitationsCol = collection(db, "invitations").withConverter(
 const templatesCol = collection(db, "templates").withConverter(
   converter<Template>(),
 );
+const palettesCol = collection(db, "palettes").withConverter(
+  converter<Palette>(),
+);
+
+// Seed data for the app's three built-in palettes — mirrors the
+// [data-palette] CSS variable overrides in globals.css. Used to seed the
+// "palettes" collection on first read and as a fallback if a built-in
+// palette's Firestore doc is ever missing.
+const DEFAULT_PALETTES: Palette[] = [
+  {
+    paletteId: "royal-gold",
+    name: "Royal Gold",
+    gold: "#c9a24b",
+    goldLight: "#e6cd8a",
+    maroon: "#7a1f2b",
+    cream: "#fdf8f0",
+  },
+  {
+    paletteId: "blush-temple",
+    name: "Blush Temple",
+    gold: "#c9a24b",
+    goldLight: "#e9c98a",
+    maroon: "#8a3b4c",
+    cream: "#fff8f4",
+  },
+  {
+    paletteId: "modern-minimal",
+    name: "Modern Minimal Khmer",
+    gold: "#b8934a",
+    goldLight: "#d8bd85",
+    maroon: "#2a2a2a",
+    cream: "#f5f2ec",
+  },
+];
 
 export async function getUserDoc(uid: string) {
   const snap = await getDoc(doc(usersCol, uid));
@@ -182,6 +216,40 @@ export async function updateTemplate(
 
 export async function deleteTemplate(templateId: string) {
   await deleteDoc(doc(templatesCol, templateId));
+}
+
+export async function listPalettes() {
+  const snap = await getDocs(query(palettesCol, orderBy("name")));
+  if (snap.empty) {
+    const batch = writeBatch(db);
+    for (const palette of DEFAULT_PALETTES) {
+      batch.set(doc(palettesCol, palette.paletteId), palette);
+    }
+    await batch.commit();
+    return DEFAULT_PALETTES;
+  }
+  return snap.docs.map((d) => d.data());
+}
+
+export async function getPalette(paletteId: string) {
+  const snap = await getDoc(doc(palettesCol, paletteId));
+  if (snap.exists()) return snap.data();
+  return DEFAULT_PALETTES.find((p) => p.paletteId === paletteId) ?? null;
+}
+
+export async function createPalette(input: Omit<Palette, "paletteId">) {
+  const ref = doc(palettesCol);
+  const palette: Palette = { ...input, paletteId: ref.id };
+  await setDoc(ref, palette);
+  return palette;
+}
+
+export async function updatePalette(paletteId: string, patch: Partial<Palette>) {
+  await updateDoc(doc(palettesCol, paletteId), patch);
+}
+
+export async function deletePalette(paletteId: string) {
+  await deleteDoc(doc(palettesCol, paletteId));
 }
 
 export async function addRsvpResponse(

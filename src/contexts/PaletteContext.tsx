@@ -1,10 +1,19 @@
 "use client";
 
-import { createContext, useContext, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
+import { getPalette } from "@/lib/firebase/firestore";
+import type { Palette } from "@/types";
 
-export type PaletteId = "royal-gold" | "blush-temple" | "modern-minimal";
+const PaletteContext = createContext<string>("royal-gold");
 
-const PaletteContext = createContext<PaletteId>("royal-gold");
+const KNOWN_IDS = ["royal-gold", "blush-temple", "modern-minimal"];
 
 export function PaletteProvider({
   palette,
@@ -13,18 +22,39 @@ export function PaletteProvider({
   palette: string;
   children: ReactNode;
 }) {
-  const id: PaletteId = isPaletteId(palette) ? palette : "royal-gold";
+  const [resolved, setResolved] = useState<Palette | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getPalette(palette).then((p) => {
+      if (!cancelled) setResolved(p);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [palette]);
+
+  // Falls back to the Royal Gold static CSS block while the palette loads,
+  // or permanently for an unknown/deleted custom palette id.
+  const dataPaletteId = KNOWN_IDS.includes(palette) ? palette : "royal-gold";
+  const style: CSSProperties | undefined = resolved
+    ? ({
+        "--color-gold": resolved.gold,
+        "--color-gold-light": resolved.goldLight,
+        "--color-maroon": resolved.maroon,
+        "--color-cream": resolved.cream,
+      } as CSSProperties)
+    : undefined;
+
   return (
-    <PaletteContext.Provider value={id}>
-      <div data-palette={id}>{children}</div>
+    <PaletteContext.Provider value={palette}>
+      <div data-palette={dataPaletteId} style={style}>
+        {children}
+      </div>
     </PaletteContext.Provider>
   );
 }
 
 export function usePalette() {
   return useContext(PaletteContext);
-}
-
-function isPaletteId(value: string): value is PaletteId {
-  return value === "royal-gold" || value === "blush-temple" || value === "modern-minimal";
 }

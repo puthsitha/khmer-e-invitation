@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "@/i18n/navigation";
 import { createInvitation, listTemplates } from "@/lib/firebase/firestore";
 import { generateUniqueSlug } from "@/lib/slug";
-import { PALETTE_SWATCHES } from "@/lib/palettes";
+import { usePalettes } from "@/hooks/usePalettes";
 import type { InvitationCategory, Template } from "@/types";
 
 const CATEGORIES: InvitationCategory[] = ["wedding", "birthday", "event"];
@@ -19,6 +19,7 @@ export default function NewInvitationPage() {
   const [title, setTitle] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const palettes = usePalettes();
 
   useEffect(() => {
     listTemplates(category).then((list) => {
@@ -96,10 +97,11 @@ export default function NewInvitationPage() {
 
         {(() => {
           const selected = templates.find((t) => t.templateId === templateId);
-          const swatches =
-            selected &&
-            PALETTE_SWATCHES[selected.defaultColorPalette as keyof typeof PALETTE_SWATCHES];
-          if (!swatches) return null;
+          const selectedPalette = palettes?.find(
+            (p) => p.paletteId === selected?.defaultColorPalette,
+          );
+          if (!selected || !selectedPalette) return null;
+          const swatches = [selectedPalette.gold, selectedPalette.maroon, selectedPalette.cream];
           return (
             <div className="flex items-center gap-2 text-sm text-maroon/70">
               <span>Palette:</span>

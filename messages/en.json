@@ -144,5 +144,64 @@
         "notAttending": "Not attending"
       }
     }
+  },
+  "common": {
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "save": "Save"
+  },
+  "admin": {
+    "loading": "Loading…",
+    "signOut": "Sign out",
+    "nav": {
+      "overview": "Admin",
+      "users": "Users",
+      "templates": "Templates",
+      "palettes": "Palettes"
+    },
+    "overview": {
+      "title": "Overview",
+      "users": "Registered users",
+      "invitations": "Invitations",
+      "published": "Published"
+    },
+    "users": {
+      "title": "Users",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "active": "Active",
+      "suspended": "Suspended",
+      "suspend": "Suspend",
+      "reinstate": "Reinstate",
+      "makeAdmin": "Make admin",
+      "demote": "Demote"
+    },
+    "templates": {
+      "title": "Templates",
+      "name": "Name",
+      "category": "Category",
+      "previewImage": "Preview image URL",
+      "palette": "Palette",
+      "add": "Add template",
+      "delete": "Delete",
+      "empty": "No templates yet — add your first one above.",
+      "deleteConfirmTitle": "Delete \"{name}\"?",
+      "deleteConfirmBody": "This template will be removed permanently. Invitations already using it keep their content."
+    },
+    "palettes": {
+      "title": "Palettes",
+      "name": "Name",
+      "gold": "Gold",
+      "goldLight": "Gold (light)",
+      "maroon": "Maroon",
+      "cream": "Cream",
+      "add": "Add palette",
+      "delete": "Delete",
+      "empty": "No palettes yet.",
+      "deleteConfirmTitle": "Delete \"{name}\"?",
+      "deleteConfirmBody": "Invitations using this palette will fall back to Royal Gold."
+    }
   }
 }
