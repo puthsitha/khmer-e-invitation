@@ -1,13 +1,26 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { useAuth } from "@/contexts/AuthContext";
 import { listAllUsers, setUserStatus } from "@/lib/firebase/firestore";
 import type { AppUser } from "@/types";
 
+const listVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06 } },
+};
+
+const rowVariants = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as const } },
+};
+
 export default function AdminUsersPage() {
   const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<AppUser[]>([]);
+  const t = useTranslations("admin.users");
 
   useEffect(() => {
     listAllUsers().then(setUsers);
@@ -27,49 +40,96 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-10">
-      <h1 className="mb-6 font-[family-name:var(--font-heading-km)] text-2xl text-maroon">
-        Users
-      </h1>
-      <table className="w-full text-left text-sm">
-        <thead>
-          <tr className="border-b border-gold/30 text-maroon/60">
-            <th className="py-2">Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Status</th>
-            <th />
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((u) => (
-            <tr key={u.uid} className="border-b border-gold/10">
-              <td className="py-2">{u.name}</td>
-              <td>{u.email}</td>
-              <td>{u.role}</td>
-              <td>{u.suspended ? "Suspended" : "Active"}</td>
-              <td className="flex gap-2 py-2">
-                <button
-                  type="button"
-                  onClick={() => toggleSuspended(u)}
-                  disabled={u.uid === currentUser?.uid}
-                  className="rounded-full border border-gold/60 px-3 py-1 text-xs text-maroon disabled:opacity-40"
-                >
-                  {u.suspended ? "Reinstate" : "Suspend"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => toggleRole(u)}
-                  disabled={u.uid === currentUser?.uid}
-                  className="rounded-full border border-gold/60 px-3 py-1 text-xs text-maroon disabled:opacity-40"
-                >
-                  {u.role === "admin" ? "Demote" : "Make admin"}
-                </button>
-              </td>
+    <main className="mx-auto max-w-4xl px-6 py-10 sm:py-14">
+      <motion.h1
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="mb-8 font-[family-name:var(--font-heading-km)] text-2xl text-maroon sm:text-3xl"
+      >
+        {t("title")}
+      </motion.h1>
+
+      <div className="overflow-x-auto rounded-2xl border border-gold/30 bg-white shadow-sm">
+        <table className="w-full min-w-[640px] text-left text-sm">
+          <thead>
+            <tr className="border-b border-gold/20 text-xs uppercase tracking-wide text-maroon/50">
+              <th className="px-5 py-3 font-medium">{t("name")}</th>
+              <th className="px-2 py-3 font-medium">{t("email")}</th>
+              <th className="px-2 py-3 font-medium">{t("role")}</th>
+              <th className="px-2 py-3 font-medium">{t("status")}</th>
+              <th className="px-5 py-3" />
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <motion.tbody variants={listVariants} initial="hidden" animate="show">
+            {users.map((u) => (
+              <motion.tr
+                key={u.uid}
+                variants={rowVariants}
+                className="border-b border-gold/10 last:border-0 transition-colors hover:bg-cream/60"
+              >
+                <td className="px-5 py-3">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gold/20 text-xs font-semibold text-maroon">
+                      {u.name?.[0]?.toUpperCase() ?? "?"}
+                    </span>
+                    <span className="font-medium text-maroon">{u.name}</span>
+                  </div>
+                </td>
+                <td className="px-2 py-3 text-maroon/70">{u.email}</td>
+                <td className="px-2 py-3">
+                  <span
+                    className={
+                      u.role === "admin"
+                        ? "rounded-full bg-maroon/10 px-2.5 py-1 text-xs font-medium text-maroon"
+                        : "rounded-full bg-cream px-2.5 py-1 text-xs text-maroon/60"
+                    }
+                  >
+                    {u.role}
+                  </span>
+                </td>
+                <td className="px-2 py-3">
+                  <span className="inline-flex items-center gap-1.5 text-xs">
+                    <span
+                      aria-hidden
+                      className={
+                        u.suspended
+                          ? "h-2 w-2 rounded-full bg-red-500"
+                          : "h-2 w-2 rounded-full bg-green-500"
+                      }
+                    />
+                    {u.suspended ? t("suspended") : t("active")}
+                  </span>
+                </td>
+                <td className="px-5 py-3">
+                  <div className="flex justify-end gap-2">
+                    <motion.button
+                      type="button"
+                      onClick={() => toggleSuspended(u)}
+                      disabled={u.uid === currentUser?.uid}
+                      whileHover={{ scale: u.uid === currentUser?.uid ? 1 : 1.04 }}
+                      whileTap={{ scale: u.uid === currentUser?.uid ? 1 : 0.96 }}
+                      className="rounded-full border border-gold/60 px-3 py-1 text-xs text-maroon transition-colors hover:bg-gold/10 disabled:opacity-40"
+                    >
+                      {u.suspended ? t("reinstate") : t("suspend")}
+                    </motion.button>
+                    <motion.button
+                      type="button"
+                      onClick={() => toggleRole(u)}
+                      disabled={u.uid === currentUser?.uid}
+                      whileHover={{ scale: u.uid === currentUser?.uid ? 1 : 1.04 }}
+                      whileTap={{ scale: u.uid === currentUser?.uid ? 1 : 0.96 }}
+                      className="rounded-full border border-gold/60 px-3 py-1 text-xs text-maroon transition-colors hover:bg-gold/10 disabled:opacity-40"
+                    >
+                      {u.role === "admin" ? t("demote") : t("makeAdmin")}
+                    </motion.button>
+                  </div>
+                </td>
+              </motion.tr>
+            ))}
+          </motion.tbody>
+        </table>
+      </div>
     </main>
   );
 }

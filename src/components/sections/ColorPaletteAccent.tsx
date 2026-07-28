@@ -1,15 +1,27 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { PALETTE_SWATCHES } from "@/lib/palettes";
-import type { Invitation } from "@/types";
+import { getPalette } from "@/lib/firebase/firestore";
+import type { Invitation, Palette } from "@/types";
 
 export function ColorPaletteAccent({ invitation }: { invitation: Invitation }) {
   const t = useTranslations("viewer");
-  const swatches =
-    PALETTE_SWATCHES[invitation.colorPalette as keyof typeof PALETTE_SWATCHES] ??
-    PALETTE_SWATCHES["royal-gold"];
+  const [palette, setPalette] = useState<Palette | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getPalette(invitation.colorPalette).then((p) => {
+      if (!cancelled) setPalette(p);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [invitation.colorPalette]);
+
+  if (!palette) return null;
+  const swatches = [palette.gold, palette.maroon, palette.cream];
 
   return (
     <div className="flex w-full flex-col items-center gap-4 py-8">
