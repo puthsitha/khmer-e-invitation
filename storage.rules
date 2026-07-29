@@ -7,6 +7,12 @@ service firebase.storage {
       return request.auth != null;
     }
 
+    function isAdmin() {
+      return isSignedIn() &&
+        firestore.exists(/databases/(default)/documents/users/$(request.auth.uid)) &&
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
     function invitationOwner(invitationId) {
       return firestore.get(
         /databases/(default)/documents/invitations/$(invitationId)
@@ -51,6 +57,16 @@ service firebase.storage {
         request.resource.size < 500 * 1024 &&
         request.resource.contentType.matches('image/(jpeg|png|webp)');
       allow delete: if isInvitationOwner(invitationId);
+    }
+
+    // Template preview images — admin-managed, public read (shown in the
+    // template picker), same image caps as gallery.
+    match /templates/{templateId}/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() &&
+        request.resource.size < 500 * 1024 &&
+        request.resource.contentType.matches('image/(jpeg|png|webp)');
+      allow delete: if isAdmin();
     }
   }
 }

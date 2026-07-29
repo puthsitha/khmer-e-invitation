@@ -191,13 +191,17 @@
       "title": "Templates",
       "name": "Name",
       "category": "Category",
-      "previewImage": "Preview image URL",
+      "previewImage": "Preview image",
       "palette": "Palette",
       "add": "Add template",
       "delete": "Delete",
       "empty": "No templates yet — add your first one above.",
       "deleteConfirmTitle": "Delete \"{name}\"?",
-      "deleteConfirmBody": "This template will be removed permanently. Invitations already using it keep their content."
+      "deleteConfirmBody": "This template will be removed permanently. Invitations already using it keep their content.",
+      "uploadImage": "Upload image",
+      "changeImage": "Change image",
+      "uploading": "Uploading…",
+      "uploadError": "Couldn't upload image. Try a JPEG/PNG/WebP under 500KB."
     },
     "palettes": {
       "title": "Palettes",
