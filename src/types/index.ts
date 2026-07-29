@@ -79,14 +79,14 @@ export interface Template {
   defaultFonts: { heading: string; body: string };
 }
 
-/** A named gold/maroon/cream color set applied as CSS variables to a template or invitation. */
+/** A named color set applied as CSS variables to a template or invitation. */
 export interface Palette {
   paletteId: string;
   name: string;
-  gold: string;
-  goldLight: string;
-  maroon: string;
-  cream: string;
+  primary: string;
+  primaryLight: string;
+  secondary: string;
+  background: string;
 }
 
 export interface RsvpResponse {

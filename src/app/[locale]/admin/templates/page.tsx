@@ -10,6 +10,7 @@ import {
 } from "@/lib/firebase/firestore";
 import { usePalettes } from "@/hooks/usePalettes";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { Select } from "@/components/ui/Select";
 import type { InvitationCategory, Template } from "@/types";
 
 const CATEGORIES: InvitationCategory[] = ["wedding", "birthday", "event"];
@@ -40,6 +41,10 @@ export default function AdminTemplatesPage() {
   const tCommon = useTranslations("common");
 
   const selectedPalette = colorPalette || palettes?.[0]?.paletteId || "";
+  const selectedPaletteSwatches = (() => {
+    const palette = palettes?.find((p) => p.paletteId === selectedPalette);
+    return palette ? [palette.primary, palette.secondary, palette.background] : null;
+  })();
 
   function refresh() {
     listTemplates().then(setTemplates);
@@ -90,6 +95,7 @@ export default function AdminTemplatesPage() {
           {t("name")}
           <input
             required
+            placeholder="Elegant Rose Wedding"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className={inputClassName}
@@ -97,21 +103,21 @@ export default function AdminTemplatesPage() {
         </label>
         <label className="flex flex-col gap-1 text-sm text-maroon">
           {t("category")}
-          <select
+          <Select
             value={category}
             onChange={(e) => setCategory(e.target.value as InvitationCategory)}
-            className={inputClassName}
           >
             {CATEGORIES.map((c) => (
               <option key={c} value={c}>
                 {tCategory(c)}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <label className="flex flex-col gap-1 text-sm text-maroon">
           {t("previewImage")}
           <input
+            placeholder="https://example.com/preview.jpg"
             value={previewImage}
             onChange={(e) => setPreviewImage(e.target.value)}
             className={inputClassName}
@@ -119,17 +125,29 @@ export default function AdminTemplatesPage() {
         </label>
         <label className="flex flex-col gap-1 text-sm text-maroon">
           {t("palette")}
-          <select
-            value={selectedPalette}
-            onChange={(e) => setColorPalette(e.target.value)}
-            className={inputClassName}
-          >
-            {palettes?.map((p) => (
-              <option key={p.paletteId} value={p.paletteId}>
-                {p.name}
-              </option>
-            ))}
-          </select>
+          <span className="flex items-center gap-2">
+            <Select
+              value={selectedPalette}
+              onChange={(e) => setColorPalette(e.target.value)}
+            >
+              {palettes?.map((p) => (
+                <option key={p.paletteId} value={p.paletteId}>
+                  {p.name}
+                </option>
+              ))}
+            </Select>
+            {selectedPaletteSwatches && (
+              <span className="flex -space-x-1" aria-hidden>
+                {selectedPaletteSwatches.map((color, i) => (
+                  <span
+                    key={i}
+                    className="h-6 w-6 rounded-full border-2 border-white shadow"
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </span>
+            )}
+          </span>
         </label>
         <motion.button
           type="submit"
@@ -165,7 +183,7 @@ export default function AdminTemplatesPage() {
                 <span className="flex items-center gap-3">
                   {palette && (
                     <span className="flex -space-x-1" aria-hidden>
-                      {[palette.gold, palette.maroon, palette.cream].map((color) => (
+                      {[palette.primary, palette.secondary, palette.background].map((color) => (
                         <span
                           key={color}
                           className="h-4 w-4 rounded-full border border-white shadow"

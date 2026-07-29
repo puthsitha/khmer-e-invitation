@@ -5,7 +5,10 @@ import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/contexts/AuthContext";
 import { listAllUsers, setUserStatus } from "@/lib/firebase/firestore";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import type { AppUser } from "@/types";
+
+type PendingAction = { user: AppUser; type: "suspend" | "role" };
 
 const listVariants = {
   hidden: {},
@@ -20,7 +23,9 @@ const rowVariants = {
 export default function AdminUsersPage() {
   const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<AppUser[]>([]);
+  const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
   const t = useTranslations("admin.users");
+  const tCommon = useTranslations("common");
 
   useEffect(() => {
     listAllUsers().then(setUsers);
@@ -38,6 +43,49 @@ export default function AdminUsersPage() {
     await setUserStatus(u.uid, { role });
     setUsers((prev) => prev.map((x) => (x.uid === u.uid ? { ...x, role } : x)));
   }
+
+  async function confirmPendingAction() {
+    if (!pendingAction) return;
+    if (pendingAction.type === "suspend") {
+      await toggleSuspended(pendingAction.user);
+    } else {
+      await toggleRole(pendingAction.user);
+    }
+    setPendingAction(null);
+  }
+
+  const confirmCopy = (() => {
+    if (!pendingAction) return null;
+    const { user, type } = pendingAction;
+    if (type === "suspend") {
+      return user.suspended
+        ? {
+            title: t("confirmReinstateTitle", { name: user.name }),
+            body: t("confirmReinstateBody"),
+            confirmLabel: t("reinstate"),
+            destructive: false,
+          }
+        : {
+            title: t("confirmSuspendTitle", { name: user.name }),
+            body: t("confirmSuspendBody"),
+            confirmLabel: t("suspend"),
+            destructive: true,
+          };
+    }
+    return user.role === "admin"
+      ? {
+          title: t("confirmDemoteTitle", { name: user.name }),
+          body: t("confirmDemoteBody"),
+          confirmLabel: t("demote"),
+          destructive: true,
+        }
+      : {
+          title: t("confirmMakeAdminTitle", { name: user.name }),
+          body: t("confirmMakeAdminBody"),
+          confirmLabel: t("makeAdmin"),
+          destructive: false,
+        };
+  })();
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-10 sm:py-14">
@@ -105,7 +153,7 @@ export default function AdminUsersPage() {
                   <div className="flex justify-end gap-2">
                     <motion.button
                       type="button"
-                      onClick={() => toggleSuspended(u)}
+                      onClick={() => setPendingAction({ user: u, type: "suspend" })}
                       disabled={u.uid === currentUser?.uid}
                       whileHover={{ scale: u.uid === currentUser?.uid ? 1 : 1.04 }}
                       whileTap={{ scale: u.uid === currentUser?.uid ? 1 : 0.96 }}
@@ -115,7 +163,7 @@ export default function AdminUsersPage() {
                     </motion.button>
                     <motion.button
                       type="button"
-                      onClick={() => toggleRole(u)}
+                      onClick={() => setPendingAction({ user: u, type: "role" })}
                       disabled={u.uid === currentUser?.uid}
                       whileHover={{ scale: u.uid === currentUser?.uid ? 1 : 1.04 }}
                       whileTap={{ scale: u.uid === currentUser?.uid ? 1 : 0.96 }}
@@ -130,6 +178,17 @@ export default function AdminUsersPage() {
           </motion.tbody>
         </table>
       </div>
+
+      <ConfirmDialog
+        open={pendingAction !== null}
+        title={confirmCopy?.title ?? ""}
+        body={confirmCopy?.body}
+        confirmLabel={confirmCopy?.confirmLabel ?? ""}
+        cancelLabel={tCommon("cancel")}
+        destructive={confirmCopy?.destructive}
+        onConfirm={confirmPendingAction}
+        onCancel={() => setPendingAction(null)}
+      />
     </main>
   );
 }

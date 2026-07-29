@@ -94,6 +94,16 @@ textarea::placeholder {
   opacity: 1;
 }
 
+/* Browsers don't show a pointer cursor on <button> by default (only <a>
+   does) — restore it for every clickable control so hover state reads
+   as interactive. */
+button:not(:disabled),
+[role="button"],
+select,
+input[type="color"] {
+  cursor: pointer;
+}
+
 /* Subtle diagonal paper grain for the envelope/landing screens. */
 .paper-texture {
   background-image: repeating-linear-gradient(

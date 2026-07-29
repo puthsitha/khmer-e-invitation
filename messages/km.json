@@ -177,7 +177,15 @@
       "suspend": "ផ្អាក",
       "reinstate": "ស្តារឡើងវិញ",
       "makeAdmin": "ដំឡើងជាអ្នកគ្រប់គ្រង",
-      "demote": "ដកតួនាទី"
+      "demote": "ដកតួនាទី",
+      "confirmSuspendTitle": "ផ្អាក \"{name}\" ឬ?",
+      "confirmSuspendBody": "ពួកគេនឹងបាត់បង់សិទ្ធិចូលប្រើរហូតដល់ត្រូវបានស្តារឡើងវិញ។",
+      "confirmReinstateTitle": "ស្តារ \"{name}\" ឡើងវិញ ឬ?",
+      "confirmReinstateBody": "ពួកគេនឹងទទួលបានសិទ្ធិចូលប្រើឡើងវិញភ្លាមៗ។",
+      "confirmMakeAdminTitle": "ដំឡើង \"{name}\" ជាអ្នកគ្រប់គ្រង ឬ?",
+      "confirmMakeAdminBody": "ពួកគេនឹងទទួលបានសិទ្ធិចូលប្រើប្រព័ន្ធគ្រប់គ្រងពេញលេញ។",
+      "confirmDemoteTitle": "ដករបស់ \"{name}\" ពីតួនាទីអ្នកគ្រប់គ្រង ឬ?",
+      "confirmDemoteBody": "ពួកគេនឹងបាត់បង់សិទ្ធិចូលប្រើប្រព័ន្ធគ្រប់គ្រង។"
     },
     "templates": {
       "title": "គំរូ",
@@ -194,10 +202,10 @@
     "palettes": {
       "title": "ពណ៌ស្បែក",
       "name": "ឈ្មោះ",
-      "gold": "មាស",
-      "goldLight": "មាស (ស្រាល)",
-      "maroon": "ក្រហមចាស់",
-      "cream": "ក្រែម",
+      "primary": "ពណ៌ចម្បង",
+      "primaryLight": "ពណ៌ចម្បង (ស្រាល)",
+      "secondary": "ពណ៌រង",
+      "background": "ផ្ទៃខាងក្រោយ",
       "add": "បន្ថែមពណ៌ស្បែក",
       "delete": "លុប",
       "empty": "មិនទាន់មានពណ៌ស្បែកនៅឡើយទេ។",

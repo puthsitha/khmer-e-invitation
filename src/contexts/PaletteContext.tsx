@@ -39,10 +39,10 @@ export function PaletteProvider({
   const dataPaletteId = KNOWN_IDS.includes(palette) ? palette : "royal-gold";
   const style: CSSProperties | undefined = resolved
     ? ({
-        "--color-gold": resolved.gold,
-        "--color-gold-light": resolved.goldLight,
-        "--color-maroon": resolved.maroon,
-        "--color-cream": resolved.cream,
+        "--color-gold": resolved.primary,
+        "--color-gold-light": resolved.primaryLight,
+        "--color-maroon": resolved.secondary,
+        "--color-cream": resolved.background,
       } as CSSProperties)
     : undefined;
 

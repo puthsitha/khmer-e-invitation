@@ -61,6 +61,9 @@ export default function AdminLayout({
   const isActive = (href: string) =>
     href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
 
+  const currentTitle =
+    links.find((link) => isActive(link.href))?.label ?? t("nav.overview");
+
   const navLinks = (onNavigate?: () => void) => (
     <nav className="flex flex-1 flex-col gap-1 px-3">
       {links.map((link) => {
@@ -102,15 +105,12 @@ export default function AdminLayout({
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-gold/30 bg-cream/80 py-6 backdrop-blur-md lg:flex"
       >
-        <div className="mb-8 flex items-center justify-between px-6">
-          <Link
-            href="/admin"
-            className="font-[family-name:var(--font-heading-km)] text-xl text-maroon transition-opacity hover:opacity-80"
-          >
-            {t("nav.overview")}
-          </Link>
-          <LocaleSwitcher />
-        </div>
+        <Link
+          href="/admin"
+          className="mb-8 px-6 font-[family-name:var(--font-heading-km)] text-xl text-maroon transition-opacity hover:opacity-80"
+        >
+          {t("nav.overview")}
+        </Link>
         {navLinks()}
         <div className="mt-6 px-6">
           <motion.button
@@ -127,30 +127,29 @@ export default function AdminLayout({
       </motion.aside>
 
       <div className="flex min-h-screen flex-1 flex-col">
-        {/* Mobile top bar */}
+        {/* Content title bar — sticky, page title on the left, language
+            switcher on the right. Also carries the hamburger button on
+            mobile, since there's no room for a left sidebar there. */}
         <motion.header
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="sticky top-0 z-40 flex items-center justify-between gap-4 border-b border-gold/30 bg-cream/80 px-6 py-4 backdrop-blur-md lg:hidden"
+          className="sticky top-0 z-40 flex items-center justify-between gap-4 border-b border-gold/30 bg-cream/80 px-6 py-4 backdrop-blur-md"
         >
-          <Link
-            href="/admin"
-            className="font-[family-name:var(--font-heading-km)] text-xl text-maroon transition-opacity hover:opacity-80"
-          >
-            {t("nav.overview")}
-          </Link>
-          <div className="flex items-center gap-3">
-            <LocaleSwitcher />
+          <span className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setMobileNavOpen(true)}
               aria-label={t("nav.overview")}
-              className="flex h-11 w-11 items-center justify-center rounded-full text-maroon transition-colors hover:bg-gold/10"
+              className="flex h-11 w-11 items-center justify-center rounded-full text-maroon transition-colors hover:bg-gold/10 lg:hidden"
             >
               <Menu size={22} strokeWidth={1.75} />
             </button>
-          </div>
+            <span className="font-[family-name:var(--font-heading-km)] text-xl text-maroon">
+              {currentTitle}
+            </span>
+          </span>
+          <LocaleSwitcher />
         </motion.header>
 
         {/* Mobile nav drawer */}

@@ -101,7 +101,11 @@ export default function NewInvitationPage() {
             (p) => p.paletteId === selected?.defaultColorPalette,
           );
           if (!selected || !selectedPalette) return null;
-          const swatches = [selectedPalette.gold, selectedPalette.maroon, selectedPalette.cream];
+          const swatches = [
+            selectedPalette.primary,
+            selectedPalette.secondary,
+            selectedPalette.background,
+          ];
           return (
             <div className="flex items-center gap-2 text-sm text-maroon/70">
               <span>Palette:</span>

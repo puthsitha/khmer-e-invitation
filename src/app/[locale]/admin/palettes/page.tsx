@@ -12,7 +12,13 @@ import {
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import type { Palette } from "@/types";
 
-const EMPTY_FORM = { name: "", gold: "#c9a24b", goldLight: "#e6cd8a", maroon: "#7a1f2b", cream: "#fdf8f0" };
+const EMPTY_FORM = {
+  name: "",
+  primary: "#c9a24b",
+  primaryLight: "#e6cd8a",
+  secondary: "#7a1f2b",
+  background: "#fdf8f0",
+};
 
 const listVariants = {
   hidden: {},
@@ -70,7 +76,13 @@ export default function AdminPalettesPage() {
 
   function startEdit(p: Palette) {
     setEditingId(p.paletteId);
-    setForm({ name: p.name, gold: p.gold, goldLight: p.goldLight, maroon: p.maroon, cream: p.cream });
+    setForm({
+      name: p.name,
+      primary: p.primary,
+      primaryLight: p.primaryLight,
+      secondary: p.secondary,
+      background: p.background,
+    });
   }
 
   function cancelEdit() {
@@ -119,19 +131,32 @@ export default function AdminPalettesPage() {
           {t("name")}
           <input
             required
+            placeholder="Golden Rose"
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             className="rounded-lg border border-gold/40 px-3 py-1.5 transition-colors focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
           />
         </label>
-        <ColorField label={t("gold")} value={form.gold} onChange={(v) => setForm((f) => ({ ...f, gold: v }))} />
         <ColorField
-          label={t("goldLight")}
-          value={form.goldLight}
-          onChange={(v) => setForm((f) => ({ ...f, goldLight: v }))}
+          label={t("primary")}
+          value={form.primary}
+          onChange={(v) => setForm((f) => ({ ...f, primary: v }))}
         />
-        <ColorField label={t("maroon")} value={form.maroon} onChange={(v) => setForm((f) => ({ ...f, maroon: v }))} />
-        <ColorField label={t("cream")} value={form.cream} onChange={(v) => setForm((f) => ({ ...f, cream: v }))} />
+        <ColorField
+          label={t("primaryLight")}
+          value={form.primaryLight}
+          onChange={(v) => setForm((f) => ({ ...f, primaryLight: v }))}
+        />
+        <ColorField
+          label={t("secondary")}
+          value={form.secondary}
+          onChange={(v) => setForm((f) => ({ ...f, secondary: v }))}
+        />
+        <ColorField
+          label={t("background")}
+          value={form.background}
+          onChange={(v) => setForm((f) => ({ ...f, background: v }))}
+        />
         <div className="flex gap-2">
           <motion.button
             type="submit"
@@ -175,7 +200,7 @@ export default function AdminPalettesPage() {
                 className="flex items-center gap-3 text-left"
               >
                 <span className="flex -space-x-1" aria-hidden>
-                  {[p.gold, p.maroon, p.cream].map((color, i) => (
+                  {[p.primary, p.secondary, p.background].map((color, i) => (
                     <span
                       key={i}
                       className="h-6 w-6 rounded-full border-2 border-white shadow"
