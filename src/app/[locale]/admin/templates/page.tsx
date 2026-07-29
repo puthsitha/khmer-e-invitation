@@ -153,7 +153,7 @@ export default function AdminTemplatesPage() {
           type="submit"
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
-          className="rounded-full bg-maroon px-5 py-2 text-sm text-cream shadow-md shadow-maroon/20 transition-colors hover:bg-maroon/90"
+          className="cursor-pointer rounded-full bg-maroon px-5 py-2 text-sm text-cream shadow-md shadow-maroon/20 transition-colors hover:bg-maroon/90"
         >
           {t("add")}
         </motion.button>
@@ -205,7 +205,7 @@ export default function AdminTemplatesPage() {
                   onClick={() => setPendingDelete(tpl)}
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
-                  className="text-sm text-red-700 transition-colors hover:text-red-800"
+                  className="cursor-pointer text-sm text-red-700 transition-colors hover:text-red-800"
                 >
                   {t("delete")}
                 </motion.button>

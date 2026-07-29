@@ -31,9 +31,32 @@ const invitationsCol = collection(db, "invitations").withConverter(
 const templatesCol = collection(db, "templates").withConverter(
   converter<Template>(),
 );
-const palettesCol = collection(db, "palettes").withConverter(
-  converter<Palette>(),
-);
+// Palette docs seeded before the gold/goldLight/maroon/cream -> primary/
+// primaryLight/secondary/background field rename are still shaped the old
+// way in Firestore. Fall back to the legacy field so those documents don't
+// resolve to `undefined` colors (which breaks controlled inputs and swatch
+// rendering) until they're next saved through the admin UI.
+type LegacyPalette = {
+  gold?: string;
+  goldLight?: string;
+  maroon?: string;
+  cream?: string;
+};
+
+const palettesCol = collection(db, "palettes").withConverter({
+  toFirestore: (data: Palette) => data as unknown as Record<string, unknown>,
+  fromFirestore: (snapshot: QueryDocumentSnapshot) => {
+    const data = snapshot.data() as Palette & LegacyPalette;
+    return {
+      paletteId: data.paletteId,
+      name: data.name,
+      primary: data.primary ?? data.gold,
+      primaryLight: data.primaryLight ?? data.goldLight,
+      secondary: data.secondary ?? data.maroon,
+      background: data.background ?? data.cream,
+    } satisfies Palette;
+  },
+});
 
 // Seed data for the app's three built-in palettes — mirrors the
 // [data-palette] CSS variable overrides in globals.css. Used to seed the
