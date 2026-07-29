@@ -87,6 +87,38 @@ const DEFAULT_PALETTES: Palette[] = [
     secondary: "#2a2a2a",
     background: "#f5f2ec",
   },
+  {
+    paletteId: "lotus-blush",
+    name: "Lotus Blush",
+    primary: "#e3a6ad",
+    primaryLight: "#f7dde0",
+    secondary: "#9c4a55",
+    background: "#fff5f2",
+  },
+  {
+    paletteId: "imperial-jade",
+    name: "Imperial Jade & Gold",
+    primary: "#c9a24b",
+    primaryLight: "#e6cd8a",
+    secondary: "#0f3d3e",
+    background: "#f8f5ec",
+  },
+  {
+    paletteId: "naga-crimson",
+    name: "Naga Crimson",
+    primary: "#d4af37",
+    primaryLight: "#f0d878",
+    secondary: "#5c0a1a",
+    background: "#f9f1e7",
+  },
+  {
+    paletteId: "sbai-silk",
+    name: "Sbai Silk",
+    primary: "#e07a3f",
+    primaryLight: "#f6c453",
+    secondary: "#2f7a5c",
+    background: "#fff8ef",
+  },
 ];
 
 export async function getUserDoc(uid: string) {
@@ -243,15 +275,18 @@ export async function deleteTemplate(templateId: string) {
 
 export async function listPalettes() {
   const snap = await getDocs(query(palettesCol, orderBy("name")));
-  if (snap.empty) {
-    const batch = writeBatch(db);
-    for (const palette of DEFAULT_PALETTES) {
-      batch.set(doc(palettesCol, palette.paletteId), palette);
-    }
-    await batch.commit();
-    return DEFAULT_PALETTES;
+  const existing = snap.docs.map((d) => d.data());
+  const existingIds = new Set(existing.map((p) => p.paletteId));
+  const missing = DEFAULT_PALETTES.filter((p) => !existingIds.has(p.paletteId));
+
+  if (missing.length === 0) return existing;
+
+  const batch = writeBatch(db);
+  for (const palette of missing) {
+    batch.set(doc(palettesCol, palette.paletteId), palette);
   }
-  return snap.docs.map((d) => d.data());
+  await batch.commit();
+  return [...existing, ...missing].sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export async function getPalette(paletteId: string) {
