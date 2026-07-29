@@ -253,12 +253,19 @@ export async function getTemplate(templateId: string) {
   return snap.exists() ? snap.data() : null;
 }
 
+// Lets callers reserve a template id before the doc is created — needed to
+// upload the preview image (Storage path is templates/{templateId}/...)
+// before the template itself exists.
+export function newTemplateId() {
+  return doc(templatesCol).id;
+}
+
 export async function createTemplate(
   input: Omit<Template, "templateId">,
+  templateId: string = newTemplateId(),
 ) {
-  const ref = doc(templatesCol);
-  const template: Template = { ...input, templateId: ref.id };
-  await setDoc(ref, template);
+  const template: Template = { ...input, templateId };
+  await setDoc(doc(templatesCol, templateId), template);
   return template;
 }
 

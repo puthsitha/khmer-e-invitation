@@ -7,7 +7,12 @@ import {
   createTemplate,
   deleteTemplate,
   listTemplates,
+  newTemplateId,
 } from "@/lib/firebase/firestore";
+import {
+  UploadValidationError,
+  uploadTemplatePreviewImage,
+} from "@/lib/firebase/storage";
 import { usePalettes } from "@/hooks/usePalettes";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { CustomSelect } from "@/components/ui/CustomSelect";
@@ -33,6 +38,9 @@ export default function AdminTemplatesPage() {
   const [name, setName] = useState("");
   const [category, setCategory] = useState<InvitationCategory>("wedding");
   const [previewImage, setPreviewImage] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [templateId, setTemplateId] = useState(() => newTemplateId());
   const [colorPalette, setColorPalette] = useState("");
   const [pendingDelete, setPendingDelete] = useState<Template | null>(null);
   const palettes = usePalettes();
@@ -55,17 +63,38 @@ export default function AdminTemplatesPage() {
 
   useEffect(refresh, []);
 
+  async function handlePreviewImageChange(file: File | null) {
+    if (!file) return;
+    setUploading(true);
+    setUploadError(null);
+    try {
+      const url = await uploadTemplatePreviewImage(templateId, file);
+      setPreviewImage(url);
+    } catch (err) {
+      setUploadError(
+        err instanceof UploadValidationError ? err.message : t("uploadError"),
+      );
+    } finally {
+      setUploading(false);
+    }
+  }
+
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    await createTemplate({
-      category,
-      name,
-      previewImage,
-      defaultColorPalette: selectedPalette,
-      defaultFonts: { heading: "Moul", body: "Kantumruy Pro" },
-    });
+    await createTemplate(
+      {
+        category,
+        name,
+        previewImage,
+        defaultColorPalette: selectedPalette,
+        defaultFonts: { heading: "Moul", body: "Kantumruy Pro" },
+      },
+      templateId,
+    );
     setName("");
     setPreviewImage("");
+    setUploadError(null);
+    setTemplateId(newTemplateId());
     refresh();
   }
 
@@ -112,15 +141,34 @@ export default function AdminTemplatesPage() {
             options={categoryOptions}
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm text-maroon">
-          {t("previewImage")}
-          <input
-            placeholder="https://example.com/preview.jpg"
-            value={previewImage}
-            onChange={(e) => setPreviewImage(e.target.value)}
-            className={inputClassName}
-          />
-        </label>
+        <div className="flex flex-col gap-1 text-sm text-maroon">
+          <span>{t("previewImage")}</span>
+          <span className="flex items-center gap-3">
+            <input
+              id="template-preview-image"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              disabled={uploading}
+              onChange={(e) => handlePreviewImageChange(e.target.files?.[0] ?? null)}
+            />
+            <label
+              htmlFor="template-preview-image"
+              className="cursor-pointer rounded-lg border border-gold/40 px-3 py-1.5 text-sm text-maroon transition-colors hover:bg-gold/10"
+            >
+              {uploading ? t("uploading") : previewImage ? t("changeImage") : t("uploadImage")}
+            </label>
+            {previewImage && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={previewImage}
+                alt=""
+                className="h-10 w-10 rounded-lg border border-gold/30 object-cover"
+              />
+            )}
+          </span>
+          {uploadError && <span className="text-xs text-red-700">{uploadError}</span>}
+        </div>
         <label className="flex flex-col gap-1 text-sm text-maroon">
           {t("palette")}
           <CustomSelect
@@ -131,9 +179,10 @@ export default function AdminTemplatesPage() {
         </label>
         <motion.button
           type="submit"
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          className="cursor-pointer rounded-full bg-maroon px-5 py-2 text-sm text-cream shadow-md shadow-maroon/20 transition-colors hover:bg-maroon/90"
+          disabled={uploading}
+          whileHover={{ scale: uploading ? 1 : 1.03 }}
+          whileTap={{ scale: uploading ? 1 : 0.97 }}
+          className="cursor-pointer rounded-full bg-maroon px-5 py-2 text-sm text-cream shadow-md shadow-maroon/20 transition-colors hover:bg-maroon/90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {t("add")}
         </motion.button>

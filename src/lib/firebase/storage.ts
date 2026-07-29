@@ -86,6 +86,18 @@ export async function uploadStoryImage(invitationId: string, file: File) {
   return getDownloadURL(storageRef);
 }
 
+export async function uploadTemplatePreviewImage(templateId: string, file: File) {
+  assertUpload(file, {
+    maxBytes: UPLOAD_LIMITS.galleryImageMaxBytes,
+    allowedTypes: ALLOWED_IMAGE_TYPES,
+  });
+
+  const path = `templates/${templateId}/${Date.now()}-${file.name}`;
+  const storageRef = ref(storage, path);
+  await uploadBytes(storageRef, file, { contentType: file.type });
+  return getDownloadURL(storageRef);
+}
+
 export async function deleteMediaByUrl(url: string) {
   const storageRef = ref(storage, url);
   await deleteObject(storageRef);
