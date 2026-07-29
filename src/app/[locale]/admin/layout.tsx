@@ -8,6 +8,7 @@ import { Link, useRouter, usePathname } from "@/i18n/navigation";
 import { logout } from "@/lib/firebase/auth";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import {
+  ArrowLeft,
   LayoutDashboard,
   Menu,
   Palette,
@@ -81,6 +82,14 @@ export default function AdminLayout({
           </Link>
         );
       })}
+      <Link
+        href="/dashboard"
+        onClick={onNavigate}
+        className="mt-4 flex items-center gap-3 rounded-xl border-t border-gold/20 px-3 pt-4 text-sm text-maroon/70 transition-colors hover:bg-gold/10 hover:text-maroon"
+      >
+        <ArrowLeft size={18} strokeWidth={1.75} />
+        {t("nav.dashboard")}
+      </Link>
     </nav>
   );
 
@@ -93,22 +102,24 @@ export default function AdminLayout({
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-gold/30 bg-cream/80 py-6 backdrop-blur-md lg:flex"
       >
-        <Link
-          href="/admin"
-          className="mb-8 px-6 font-[family-name:var(--font-heading-km)] text-xl text-maroon transition-opacity hover:opacity-80"
-        >
-          {t("nav.overview")}
-        </Link>
-        {navLinks()}
-        <div className="mt-auto flex flex-col gap-3 px-6 pt-6">
+        <div className="mb-8 flex items-center justify-between px-6">
+          <Link
+            href="/admin"
+            className="font-[family-name:var(--font-heading-km)] text-xl text-maroon transition-opacity hover:opacity-80"
+          >
+            {t("nav.overview")}
+          </Link>
           <LocaleSwitcher />
+        </div>
+        {navLinks()}
+        <div className="mt-6 px-6">
           <motion.button
             type="button"
             onClick={() => logout()}
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
             transition={{ duration: 0.2 }}
-            className="rounded-full border border-gold/60 px-4 py-1.5 text-sm text-maroon transition-colors hover:bg-maroon hover:text-cream"
+            className="w-full rounded-full border border-gold/60 px-4 py-1.5 text-sm text-maroon transition-colors hover:bg-maroon hover:text-cream"
           >
             {t("signOut")}
           </motion.button>
@@ -129,14 +140,17 @@ export default function AdminLayout({
           >
             {t("nav.overview")}
           </Link>
-          <button
-            type="button"
-            onClick={() => setMobileNavOpen(true)}
-            aria-label={t("nav.overview")}
-            className="flex h-11 w-11 items-center justify-center rounded-full text-maroon transition-colors hover:bg-gold/10"
-          >
-            <Menu size={22} strokeWidth={1.75} />
-          </button>
+          <div className="flex items-center gap-3">
+            <LocaleSwitcher />
+            <button
+              type="button"
+              onClick={() => setMobileNavOpen(true)}
+              aria-label={t("nav.overview")}
+              className="flex h-11 w-11 items-center justify-center rounded-full text-maroon transition-colors hover:bg-gold/10"
+            >
+              <Menu size={22} strokeWidth={1.75} />
+            </button>
+          </div>
         </motion.header>
 
         {/* Mobile nav drawer */}
@@ -172,15 +186,14 @@ export default function AdminLayout({
                   </button>
                 </div>
                 {navLinks(() => setMobileNavOpen(false))}
-                <div className="mt-auto flex flex-col gap-3 px-6 pt-6">
-                  <LocaleSwitcher />
+                <div className="mt-6 px-6">
                   <motion.button
                     type="button"
                     onClick={() => logout()}
                     whileHover={{ scale: 1.04 }}
                     whileTap={{ scale: 0.97 }}
                     transition={{ duration: 0.2 }}
-                    className="rounded-full border border-gold/60 px-4 py-1.5 text-sm text-maroon transition-colors hover:bg-maroon hover:text-cream"
+                    className="w-full rounded-full border border-gold/60 px-4 py-1.5 text-sm text-maroon transition-colors hover:bg-maroon hover:text-cream"
                   >
                     {t("signOut")}
                   </motion.button>
