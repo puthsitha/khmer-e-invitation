@@ -56,7 +56,7 @@ export function ConfirmDialog({
                 onClick={onCancel}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                className="rounded-full border border-gold/60 px-4 py-1.5 text-sm text-maroon transition-colors hover:bg-gold/10"
+                className="cursor-pointer rounded-full border border-gold/60 px-4 py-1.5 text-sm text-maroon transition-colors hover:bg-gold/10"
               >
                 {cancelLabel}
               </motion.button>
@@ -67,8 +67,8 @@ export function ConfirmDialog({
                 whileTap={{ scale: 0.97 }}
                 className={
                   destructive
-                    ? "rounded-full bg-red-700 px-4 py-1.5 text-sm text-cream transition-colors hover:bg-red-800"
-                    : "rounded-full bg-maroon px-4 py-1.5 text-sm text-cream transition-colors hover:bg-maroon/90"
+                    ? "cursor-pointer rounded-full bg-red-700 px-4 py-1.5 text-sm text-cream transition-colors hover:bg-red-800"
+                    : "cursor-pointer rounded-full bg-maroon px-4 py-1.5 text-sm text-cream transition-colors hover:bg-maroon/90"
                 }
               >
                 {confirmLabel}

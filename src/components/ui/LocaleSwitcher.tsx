@@ -22,7 +22,7 @@ export function LocaleSwitcher() {
           type="button"
           onClick={() => router.replace(pathname, { locale: loc })}
           aria-current={loc === locale}
-          className={`rounded-full px-3 py-1 transition-colors ${
+          className={`cursor-pointer rounded-full px-3 py-1 transition-colors ${
             loc === locale
               ? "bg-maroon text-cream"
               : "text-maroon/70 hover:text-maroon"

@@ -157,7 +157,7 @@ export default function AdminUsersPage() {
                       disabled={u.uid === currentUser?.uid}
                       whileHover={{ scale: u.uid === currentUser?.uid ? 1 : 1.04 }}
                       whileTap={{ scale: u.uid === currentUser?.uid ? 1 : 0.96 }}
-                      className="rounded-full border border-gold/60 px-3 py-1 text-xs text-maroon transition-colors hover:bg-gold/10 disabled:opacity-40"
+                      className="cursor-pointer rounded-full border border-gold/60 px-3 py-1 text-xs text-maroon transition-colors hover:bg-gold/10 disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       {u.suspended ? t("reinstate") : t("suspend")}
                     </motion.button>
@@ -167,7 +167,7 @@ export default function AdminUsersPage() {
                       disabled={u.uid === currentUser?.uid}
                       whileHover={{ scale: u.uid === currentUser?.uid ? 1 : 1.04 }}
                       whileTap={{ scale: u.uid === currentUser?.uid ? 1 : 0.96 }}
-                      className="rounded-full border border-gold/60 px-3 py-1 text-xs text-maroon transition-colors hover:bg-gold/10 disabled:opacity-40"
+                      className="cursor-pointer rounded-full border border-gold/60 px-3 py-1 text-xs text-maroon transition-colors hover:bg-gold/10 disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       {u.role === "admin" ? t("demote") : t("makeAdmin")}
                     </motion.button>

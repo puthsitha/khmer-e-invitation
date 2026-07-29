@@ -162,7 +162,7 @@ export default function AdminPalettesPage() {
             type="submit"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className="rounded-full bg-maroon px-5 py-2 text-sm text-cream shadow-md shadow-maroon/20 transition-colors hover:bg-maroon/90"
+            className="cursor-pointer rounded-full bg-maroon px-5 py-2 text-sm text-cream shadow-md shadow-maroon/20 transition-colors hover:bg-maroon/90"
           >
             {editingId ? tCommon("save") : t("add")}
           </motion.button>
@@ -172,7 +172,7 @@ export default function AdminPalettesPage() {
               onClick={cancelEdit}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="rounded-full border border-gold/60 px-4 py-2 text-sm text-maroon transition-colors hover:bg-gold/10"
+              className="cursor-pointer rounded-full border border-gold/60 px-4 py-2 text-sm text-maroon transition-colors hover:bg-gold/10"
             >
               {tCommon("cancel")}
             </motion.button>
@@ -197,7 +197,7 @@ export default function AdminPalettesPage() {
               <button
                 type="button"
                 onClick={() => startEdit(p)}
-                className="flex items-center gap-3 text-left"
+                className="flex cursor-pointer items-center gap-3 text-left"
               >
                 <span className="flex -space-x-1" aria-hidden>
                   {[p.primary, p.secondary, p.background].map((color, i) => (
@@ -215,7 +215,7 @@ export default function AdminPalettesPage() {
                 onClick={() => setPendingDelete(p)}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                className="text-sm text-red-700 transition-colors hover:text-red-800"
+                className="cursor-pointer text-sm text-red-700 transition-colors hover:text-red-800"
               >
                 {t("delete")}
               </motion.button>

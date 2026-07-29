@@ -119,7 +119,7 @@ export default function AdminLayout({
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
             transition={{ duration: 0.2 }}
-            className="w-full rounded-full border border-gold/60 px-4 py-1.5 text-sm text-maroon transition-colors hover:bg-maroon hover:text-cream"
+            className="w-full cursor-pointer rounded-full border border-gold/60 px-4 py-1.5 text-sm text-maroon transition-colors hover:bg-maroon hover:text-cream"
           >
             {t("signOut")}
           </motion.button>
@@ -141,7 +141,7 @@ export default function AdminLayout({
               type="button"
               onClick={() => setMobileNavOpen(true)}
               aria-label={t("nav.overview")}
-              className="flex h-11 w-11 items-center justify-center rounded-full text-maroon transition-colors hover:bg-gold/10 lg:hidden"
+              className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-maroon transition-colors hover:bg-gold/10 lg:hidden"
             >
               <Menu size={22} strokeWidth={1.75} />
             </button>
@@ -179,7 +179,7 @@ export default function AdminLayout({
                     type="button"
                     onClick={() => setMobileNavOpen(false)}
                     aria-label={t("signOut")}
-                    className="flex h-11 w-11 items-center justify-center rounded-full text-maroon transition-colors hover:bg-gold/10"
+                    className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-maroon transition-colors hover:bg-gold/10"
                   >
                     <X size={20} strokeWidth={1.75} />
                   </button>
