@@ -10,7 +10,7 @@ import {
 } from "@/lib/firebase/firestore";
 import { usePalettes } from "@/hooks/usePalettes";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { Select } from "@/components/ui/Select";
+import { CustomSelect } from "@/components/ui/CustomSelect";
 import type { InvitationCategory, Template } from "@/types";
 
 const CATEGORIES: InvitationCategory[] = ["wedding", "birthday", "event"];
@@ -41,10 +41,13 @@ export default function AdminTemplatesPage() {
   const tCommon = useTranslations("common");
 
   const selectedPalette = colorPalette || palettes?.[0]?.paletteId || "";
-  const selectedPaletteSwatches = (() => {
-    const palette = palettes?.find((p) => p.paletteId === selectedPalette);
-    return palette ? [palette.primary, palette.secondary, palette.background] : null;
-  })();
+  const categoryOptions = CATEGORIES.map((c) => ({ value: c, label: tCategory(c) }));
+  const paletteOptions =
+    palettes?.map((p) => ({
+      value: p.paletteId,
+      label: p.name,
+      swatches: [p.primary, p.secondary, p.background],
+    })) ?? [];
 
   function refresh() {
     listTemplates().then(setTemplates);
@@ -103,16 +106,11 @@ export default function AdminTemplatesPage() {
         </label>
         <label className="flex flex-col gap-1 text-sm text-maroon">
           {t("category")}
-          <Select
+          <CustomSelect
             value={category}
-            onChange={(e) => setCategory(e.target.value as InvitationCategory)}
-          >
-            {CATEGORIES.map((c) => (
-              <option key={c} value={c}>
-                {tCategory(c)}
-              </option>
-            ))}
-          </Select>
+            onChange={(v) => setCategory(v as InvitationCategory)}
+            options={categoryOptions}
+          />
         </label>
         <label className="flex flex-col gap-1 text-sm text-maroon">
           {t("previewImage")}
@@ -125,29 +123,11 @@ export default function AdminTemplatesPage() {
         </label>
         <label className="flex flex-col gap-1 text-sm text-maroon">
           {t("palette")}
-          <span className="flex items-center gap-2">
-            <Select
-              value={selectedPalette}
-              onChange={(e) => setColorPalette(e.target.value)}
-            >
-              {palettes?.map((p) => (
-                <option key={p.paletteId} value={p.paletteId}>
-                  {p.name}
-                </option>
-              ))}
-            </Select>
-            {selectedPaletteSwatches && (
-              <span className="flex -space-x-1" aria-hidden>
-                {selectedPaletteSwatches.map((color, i) => (
-                  <span
-                    key={i}
-                    className="h-6 w-6 rounded-full border-2 border-white shadow"
-                    style={{ backgroundColor: color }}
-                  />
-                ))}
-              </span>
-            )}
-          </span>
+          <CustomSelect
+            value={selectedPalette}
+            onChange={setColorPalette}
+            options={paletteOptions}
+          />
         </label>
         <motion.button
           type="submit"
