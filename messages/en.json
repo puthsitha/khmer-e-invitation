@@ -177,7 +177,15 @@
       "suspend": "Suspend",
       "reinstate": "Reinstate",
       "makeAdmin": "Make admin",
-      "demote": "Demote"
+      "demote": "Demote",
+      "confirmSuspendTitle": "Suspend \"{name}\"?",
+      "confirmSuspendBody": "They will lose access until reinstated.",
+      "confirmReinstateTitle": "Reinstate \"{name}\"?",
+      "confirmReinstateBody": "They will regain access immediately.",
+      "confirmMakeAdminTitle": "Make \"{name}\" an admin?",
+      "confirmMakeAdminBody": "They will gain full access to the admin panel.",
+      "confirmDemoteTitle": "Remove admin from \"{name}\"?",
+      "confirmDemoteBody": "They will lose access to the admin panel."
     },
     "templates": {
       "title": "Templates",
@@ -194,10 +202,10 @@
     "palettes": {
       "title": "Palettes",
       "name": "Name",
-      "gold": "Gold",
-      "goldLight": "Gold (light)",
-      "maroon": "Maroon",
-      "cream": "Cream",
+      "primary": "Primary",
+      "primaryLight": "Primary (light)",
+      "secondary": "Secondary",
+      "background": "Background",
       "add": "Add palette",
       "delete": "Delete",
       "empty": "No palettes yet.",

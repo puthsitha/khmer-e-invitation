@@ -21,7 +21,7 @@ export function ColorPaletteAccent({ invitation }: { invitation: Invitation }) {
   }, [invitation.colorPalette]);
 
   if (!palette) return null;
-  const swatches = [palette.gold, palette.maroon, palette.cream];
+  const swatches = [palette.primary, palette.secondary, palette.background];
 
   return (
     <div className="flex w-full flex-col items-center gap-4 py-8">
