@@ -58,6 +58,12 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // palettes/{paletteId} — public read-only library, admin-managed.
+    match /palettes/{paletteId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     // rsvps/{invitationId}/responses/{responseId} — guests can submit a
     // response to a published invitation; only the invitation owner/admin
     // can read the guest list.

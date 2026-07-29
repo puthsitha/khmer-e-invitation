@@ -157,7 +157,8 @@
       "overview": "Admin",
       "users": "Users",
       "templates": "Templates",
-      "palettes": "Palettes"
+      "palettes": "Palettes",
+      "dashboard": "Back to dashboard"
     },
     "overview": {
       "title": "Overview",
