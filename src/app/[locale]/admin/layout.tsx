@@ -57,7 +57,11 @@ export default function AdminLayout({
   const links = [
     { href: "/admin", label: t("nav.overview"), icon: LayoutDashboard },
     { href: "/admin/users", label: t("nav.users"), icon: Users },
-    { href: "/admin/templates", label: t("nav.templates"), icon: LayoutTemplate },
+    {
+      href: "/admin/templates",
+      label: t("nav.templates"),
+      icon: LayoutTemplate,
+    },
     { href: "/admin/palettes", label: t("nav.palettes"), icon: Palette },
   ] as const;
 
@@ -108,12 +112,9 @@ export default function AdminLayout({
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-gold/30 bg-cream/80 py-6 backdrop-blur-md lg:flex"
       >
-        <Link
-          href="/admin"
-          className="mb-8 px-6 font-[family-name:var(--font-heading-km)] text-xl text-maroon transition-opacity hover:opacity-80"
-        >
+        <div className="mb-8 px-6 font-[family-name:var(--font-heading-km)] text-xl text-maroon transition-opacity">
           {t("nav.overview")}
-        </Link>
+        </div>
         {navLinks()}
         <div className="mt-6 px-6">
           <motion.button
