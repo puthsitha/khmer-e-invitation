@@ -186,6 +186,7 @@
       "name": "Name",
       "category": "Category",
       "previewImage": "Preview image",
+      "previewImageHint": "JPEG, PNG, or WebP — max {size}.",
       "palette": "Palette",
       "add": "Add template",
       "delete": "Delete",
