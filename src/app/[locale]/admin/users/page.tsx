@@ -89,15 +89,6 @@ export default function AdminUsersPage() {
 
   return (
     <main className="max-w-4xl px-6 py-10 sm:py-14">
-      <motion.h1
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="mb-8 font-[family-name:var(--font-heading-km)] text-2xl text-maroon sm:text-3xl"
-      >
-        {t("title")}
-      </motion.h1>
-
       <div className="overflow-x-auto rounded-2xl border border-gold/30 bg-white shadow-sm">
         <table className="w-full min-w-[640px] text-left text-sm">
           <thead>
