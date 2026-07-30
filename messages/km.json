@@ -186,6 +186,7 @@
       "name": "ឈ្មោះ",
       "category": "ប្រភេទ",
       "previewImage": "រូបភាពមើលជាមុន",
+      "previewImageHint": "JPEG, PNG, ឬ WebP — មិនលើសពី {size}។",
       "palette": "ពណ៌ស្បែក",
       "add": "បន្ថែមគំរូ",
       "delete": "លុប",

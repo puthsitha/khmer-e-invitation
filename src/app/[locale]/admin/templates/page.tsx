@@ -16,9 +16,11 @@ import {
 import { usePalettes } from "@/hooks/usePalettes";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { CustomSelect } from "@/components/ui/CustomSelect";
+import { UPLOAD_LIMITS } from "@/lib/constants";
 import type { InvitationCategory, Template } from "@/types";
 
 const CATEGORIES: InvitationCategory[] = ["wedding", "birthday", "event"];
+const PREVIEW_IMAGE_MAX_KB = Math.floor(UPLOAD_LIMITS.galleryImageMaxBytes / 1024);
 
 const inputClassName =
   "rounded-lg border border-gold/40 px-3 py-1.5 transition-colors focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20";
@@ -166,6 +168,9 @@ export default function AdminTemplatesPage() {
                 className="h-10 w-10 rounded-lg border border-gold/30 object-cover"
               />
             )}
+          </span>
+          <span className="text-xs text-maroon/60">
+            {t("previewImageHint", { size: `${PREVIEW_IMAGE_MAX_KB}KB` })}
           </span>
           {uploadError && <span className="text-xs text-red-700">{uploadError}</span>}
         </div>
