@@ -34,7 +34,7 @@ export default function AdminOverviewPage() {
   }, []);
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-10 sm:py-14">
+    <main className="max-w-3xl px-6 py-10 sm:py-14">
       <motion.h1
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}

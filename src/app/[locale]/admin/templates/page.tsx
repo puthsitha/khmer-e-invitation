@@ -108,7 +108,7 @@ export default function AdminTemplatesPage() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-10 sm:py-14">
+    <main className="max-w-3xl px-6 py-10 sm:py-14">
       <motion.h1
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
@@ -123,7 +123,7 @@ export default function AdminTemplatesPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut", delay: 0.05 }}
         onSubmit={handleSubmit}
-        className="mb-8 flex flex-wrap items-end gap-3 rounded-2xl border border-gold/30 bg-white p-5 shadow-sm"
+        className="mb-8 flex max-w-md flex-col gap-4 rounded-2xl border border-gold/30 bg-white p-5 shadow-sm"
       >
         <label className="flex flex-col gap-1 text-sm text-maroon">
           {t("name")}
@@ -132,7 +132,7 @@ export default function AdminTemplatesPage() {
             placeholder="Elegant Rose Wedding"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className={inputClassName}
+            className={`${inputClassName} w-full`}
           />
         </label>
         <label className="flex flex-col gap-1 text-sm text-maroon">
@@ -187,7 +187,7 @@ export default function AdminTemplatesPage() {
           disabled={uploading}
           whileHover={{ scale: uploading ? 1 : 1.03 }}
           whileTap={{ scale: uploading ? 1 : 0.97 }}
-          className="cursor-pointer rounded-full bg-maroon px-5 py-2 text-sm text-cream shadow-md shadow-maroon/20 transition-colors hover:bg-maroon/90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="cursor-pointer self-start rounded-full bg-maroon px-5 py-2 text-sm text-cream shadow-md shadow-maroon/20 transition-colors hover:bg-maroon/90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {t("add")}
         </motion.button>
