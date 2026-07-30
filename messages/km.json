@@ -6,7 +6,6 @@
   "nav": {
     "home": "ទំព័រដើម",
     "login": "ចូល",
-    "register": "ចុះឈ្មោះ",
     "dashboard": "ផ្ទាំងគ្រប់គ្រង",
     "admin": "អ្នកគ្រប់គ្រង",
     "logout": "ចាកចេញ"
@@ -20,17 +19,9 @@
   },
   "auth": {
     "loginTitle": "ចូលគណនី",
-    "registerTitle": "បង្កើតគណនី",
-    "name": "ឈ្មោះ",
     "email": "អ៊ីមែល",
     "password": "លេខសម្ងាត់",
     "loginButton": "ចូល",
-    "registerButton": "ចុះឈ្មោះ",
-    "googleButton": "ចូលដោយ Google",
-    "noAccount": "មិនទាន់មានគណនី?",
-    "haveAccount": "មានគណនីរួចហើយ?",
-    "goRegister": "ចុះឈ្មោះនៅទីនេះ",
-    "goLogin": "ចូលនៅទីនេះ",
     "genericError": "មានបញ្ហាកើតឡើង។ សូមព្យាយាមម្តងទៀត។"
   },
   "viewer": {
@@ -148,7 +139,10 @@
   "common": {
     "cancel": "បោះបង់",
     "delete": "លុប",
-    "save": "រក្សាទុក"
+    "save": "រក្សាទុក",
+    "signOut": "ចាកចេញ",
+    "signOutTitle": "ចាកចេញ?",
+    "signOutBody": "អ្នកនឹងត្រូវចូលគណនីម្តងទៀត ដើម្បីចូលប្រើគណនីរបស់អ្នក។"
   },
   "admin": {
     "loading": "កំពុងផ្ទុក…",

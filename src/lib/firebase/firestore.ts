@@ -126,26 +126,6 @@ export async function getUserDoc(uid: string) {
   return snap.exists() ? snap.data() : null;
 }
 
-export async function createUserDocIfMissing(user: {
-  uid: string;
-  name: string;
-  email: string;
-}) {
-  const ref = doc(usersCol, user.uid);
-  const existing = await getDoc(ref);
-  if (existing.exists()) return existing.data();
-
-  const appUser: AppUser = {
-    uid: user.uid,
-    name: user.name,
-    email: user.email,
-    role: "user",
-    suspended: false,
-    createdAt: Date.now(),
-  };
-  await setDoc(ref, appUser);
-  return appUser;
-}
 
 export async function listAllUsers() {
   const snap = await getDocs(query(usersCol, orderBy("createdAt", "desc")));

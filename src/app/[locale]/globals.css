@@ -142,3 +142,24 @@ input[type="color"] {
     transform: translateX(340%) skewX(-20deg);
   }
 }
+
+/* Slow ambient drift for the sign-in screen's blurred backdrop orbs. */
+@keyframes login-orb-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(var(--orb-drift-x, 4%), var(--orb-drift-y, -6%)) scale(1.08);
+  }
+}
+
+.login-orb {
+  animation: login-orb-drift 16s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-orb {
+    animation: none;
+  }
+}
