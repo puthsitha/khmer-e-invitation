@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useRouter } from "@/i18n/navigation";
 import { logout } from "@/lib/firebase/auth";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 export default function DashboardLayout({
   children,
@@ -15,6 +16,8 @@ export default function DashboardLayout({
   const { user, appUser, loading } = useAuth();
   const router = useRouter();
   const t = useTranslations("dashboard");
+  const tCommon = useTranslations("common");
+  const [confirmingSignOut, setConfirmingSignOut] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -62,7 +65,7 @@ export default function DashboardLayout({
         </Link>
         <motion.button
           type="button"
-          onClick={() => logout()}
+          onClick={() => setConfirmingSignOut(true)}
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.97 }}
           transition={{ duration: 0.2 }}
@@ -72,6 +75,18 @@ export default function DashboardLayout({
         </motion.button>
       </motion.header>
       {children}
+      <ConfirmDialog
+        open={confirmingSignOut}
+        title={tCommon("signOutTitle")}
+        body={tCommon("signOutBody")}
+        confirmLabel={tCommon("signOut")}
+        cancelLabel={tCommon("cancel")}
+        onConfirm={() => {
+          setConfirmingSignOut(false);
+          logout();
+        }}
+        onCancel={() => setConfirmingSignOut(false)}
+      />
     </div>
   );
 }

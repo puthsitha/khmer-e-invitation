@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Link, useRouter, usePathname } from "@/i18n/navigation";
 import { logout } from "@/lib/firebase/auth";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import {
   ArrowLeft,
   LayoutDashboard,
@@ -26,7 +27,9 @@ export default function AdminLayout({
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations("admin");
+  const tCommon = useTranslations("common");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [confirmingSignOut, setConfirmingSignOut] = useState(false);
 
   useEffect(() => {
     if (loading) return;
@@ -115,7 +118,7 @@ export default function AdminLayout({
         <div className="mt-6 px-6">
           <motion.button
             type="button"
-            onClick={() => logout()}
+            onClick={() => setConfirmingSignOut(true)}
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
             transition={{ duration: 0.2 }}
@@ -161,7 +164,7 @@ export default function AdminLayout({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.25 }}
-                className="fixed inset-0 z-50 bg-maroon/40 lg:hidden"
+                className="fixed inset-0 z-50 bg-maroon/40 backdrop-blur-sm lg:hidden"
                 onClick={() => setMobileNavOpen(false)}
               />
               <motion.aside
@@ -188,7 +191,7 @@ export default function AdminLayout({
                 <div className="mt-6 px-6">
                   <motion.button
                     type="button"
-                    onClick={() => logout()}
+                    onClick={() => setConfirmingSignOut(true)}
                     whileHover={{ scale: 1.04 }}
                     whileTap={{ scale: 0.97 }}
                     transition={{ duration: 0.2 }}
@@ -204,6 +207,19 @@ export default function AdminLayout({
 
         <div className="flex-1">{children}</div>
       </div>
+
+      <ConfirmDialog
+        open={confirmingSignOut}
+        title={tCommon("signOutTitle")}
+        body={tCommon("signOutBody")}
+        confirmLabel={tCommon("signOut")}
+        cancelLabel={tCommon("cancel")}
+        onConfirm={() => {
+          setConfirmingSignOut(false);
+          logout();
+        }}
+        onCancel={() => setConfirmingSignOut(false)}
+      />
     </div>
   );
 }

@@ -39,7 +39,7 @@ export default function HomePage() {
               {t("subheading")}
             </p>
             <Link
-              href="/register"
+              href="/login"
               className="rounded-full bg-gold px-8 py-3 font-[family-name:var(--font-body-km)] text-cream shadow-lg transition-transform hover:scale-105"
             >
               {t("cta")}
