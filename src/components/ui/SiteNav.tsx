@@ -17,19 +17,19 @@ export function SiteNav() {
     <nav className="flex items-center gap-4 text-sm text-maroon">
       {loading ? null : user ? (
         <>
-          <Link href="/dashboard" className="hover:underline">
-            {t("dashboard")}
-          </Link>
-          {appUser?.role === "admin" && (
+          {appUser?.role === "admin" ? (
             <Link href="/admin" className="hover:underline">
-              {t("admin")}
+              {t("adminDashboard")}
+            </Link>
+          ) : (
+            <Link href="/dashboard" className="hover:underline">
+              {t("dashboard")}
             </Link>
           )}
           <button
             type="button"
             onClick={() => setConfirmingSignOut(true)}
-            className="hover:underline"
-          >
+            className="hover:underline">
             {t("logout")}
           </button>
           <ConfirmDialog

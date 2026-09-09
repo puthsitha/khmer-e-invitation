@@ -27,10 +27,11 @@ export default function HomePage() {
               {t("welcomeBack", { name: appUser?.name ?? user.email ?? "" })}
             </p>
             <Link
-              href="/dashboard"
-              className="rounded-full bg-gold px-8 py-3 font-[family-name:var(--font-body-km)] text-cream shadow-lg transition-transform hover:scale-105"
-            >
-              {t("goToDashboard")}
+              href={appUser?.role === "admin" ? "/admin" : "/dashboard"}
+              className="rounded-full bg-gold px-8 py-3 font-[family-name:var(--font-body-km)] text-cream shadow-lg transition-transform hover:scale-105">
+              {appUser?.role === "admin"
+                ? t("goToAdminDashboard")
+                : t("goToDashboard")}
             </Link>
           </>
         ) : (
@@ -40,8 +41,7 @@ export default function HomePage() {
             </p>
             <Link
               href="/login"
-              className="rounded-full bg-gold px-8 py-3 font-[family-name:var(--font-body-km)] text-cream shadow-lg transition-transform hover:scale-105"
-            >
+              className="rounded-full bg-gold px-8 py-3 font-[family-name:var(--font-body-km)] text-cream shadow-lg transition-transform hover:scale-105">
               {t("cta")}
             </Link>
           </>

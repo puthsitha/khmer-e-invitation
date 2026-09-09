@@ -8,6 +8,7 @@
     "login": "Log in",
     "dashboard": "Dashboard",
     "admin": "Admin",
+    "adminDashboard": "Admin Dashboard",
     "logout": "Log out"
   },
   "home": {
@@ -15,7 +16,8 @@
     "subheading": "Create and send beautiful digital invitations for your wedding",
     "cta": "Get started",
     "welcomeBack": "Welcome back, {name}",
-    "goToDashboard": "Go to dashboard"
+    "goToDashboard": "Go to dashboard",
+    "goToAdminDashboard": "Go to Admin Dashboard"
   },
   "auth": {
     "loginTitle": "Log in",
@@ -147,12 +149,13 @@
   "admin": {
     "loading": "Loading…",
     "signOut": "Sign out",
+    "title": "Admin Dashboard",
     "nav": {
-      "overview": "Dashboard",
+      "title": "Admin Dashboard",
+      "overview": "Overview",
       "users": "Users",
       "templates": "Templates",
-      "palettes": "Palettes",
-      "dashboard": "Back to dashboard"
+      "palettes": "Palettes"
     },
     "overview": {
       "title": "Overview",

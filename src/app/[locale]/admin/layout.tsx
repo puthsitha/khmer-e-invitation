@@ -9,7 +9,6 @@ import { logout } from "@/lib/firebase/auth";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import {
-  ArrowLeft,
   LayoutDashboard,
   Menu,
   Palette,
@@ -46,8 +45,7 @@ export default function AdminLayout({
         <motion.p
           animate={{ opacity: [0.4, 1, 0.4] }}
           transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-          className="font-[family-name:var(--font-body-km)]"
-        >
+          className="font-[family-name:var(--font-body-km)]">
           {t("loading")}
         </motion.p>
       </main>
@@ -85,21 +83,12 @@ export default function AdminLayout({
               active
                 ? "bg-maroon text-cream"
                 : "text-maroon/70 hover:bg-gold/10 hover:text-maroon"
-            }`}
-          >
+            }`}>
             <Icon size={18} strokeWidth={1.75} />
             {link.label}
           </Link>
         );
       })}
-      <Link
-        href="/dashboard"
-        onClick={onNavigate}
-        className="mt-4 flex items-center gap-3 rounded-xl border-t border-gold/20 px-3 pt-4 text-sm text-maroon/70 transition-colors hover:bg-gold/10 hover:text-maroon"
-      >
-        <ArrowLeft size={18} strokeWidth={1.75} />
-        {t("nav.dashboard")}
-      </Link>
     </nav>
   );
 
@@ -110,10 +99,9 @@ export default function AdminLayout({
         initial={{ opacity: 0, x: -12 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-gold/30 bg-cream/80 py-6 backdrop-blur-md lg:flex"
-      >
+        className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-gold/30 bg-cream/80 py-6 backdrop-blur-md lg:flex">
         <div className="mb-8 px-6 font-[family-name:var(--font-heading-km)] text-xl text-maroon transition-opacity">
-          {t("nav.overview")}
+          {t("title")}
         </div>
         {navLinks()}
         <div className="mt-6 px-6">
@@ -123,8 +111,7 @@ export default function AdminLayout({
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
             transition={{ duration: 0.2 }}
-            className="w-full cursor-pointer rounded-full border border-gold/60 px-4 py-1.5 text-sm text-maroon transition-colors hover:bg-maroon hover:text-cream"
-          >
+            className="w-full cursor-pointer rounded-full border border-gold/60 px-4 py-1.5 text-sm text-maroon transition-colors hover:bg-maroon hover:text-cream">
             {t("signOut")}
           </motion.button>
         </div>
@@ -138,15 +125,13 @@ export default function AdminLayout({
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="sticky top-0 z-40 flex items-center justify-between gap-4 border-b border-gold/30 bg-cream/80 px-6 py-4 backdrop-blur-md"
-        >
+          className="sticky top-0 z-40 flex items-center justify-between gap-4 border-b border-gold/30 bg-cream/80 px-6 py-4 backdrop-blur-md">
           <span className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setMobileNavOpen(true)}
               aria-label={t("nav.overview")}
-              className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-maroon transition-colors hover:bg-gold/10 lg:hidden"
-            >
+              className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-maroon transition-colors hover:bg-gold/10 lg:hidden">
               <Menu size={22} strokeWidth={1.75} />
             </button>
             <span className="font-[family-name:var(--font-heading-km)] text-xl text-maroon">
@@ -173,18 +158,16 @@ export default function AdminLayout({
                 animate={{ x: 0 }}
                 exit={{ x: "-100%" }}
                 transition={{ duration: 0.35, ease: "easeOut" }}
-                className="fixed inset-y-0 left-0 z-50 flex w-72 max-w-[80vw] flex-col bg-cream py-6 shadow-xl lg:hidden"
-              >
+                className="fixed inset-y-0 left-0 z-50 flex w-72 max-w-[80vw] flex-col bg-cream py-6 shadow-xl lg:hidden">
                 <div className="mb-8 flex items-center justify-between px-6">
                   <span className="font-[family-name:var(--font-heading-km)] text-xl text-maroon">
-                    {t("nav.overview")}
+                    {t("title")}
                   </span>
                   <button
                     type="button"
                     onClick={() => setMobileNavOpen(false)}
                     aria-label={t("signOut")}
-                    className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-maroon transition-colors hover:bg-gold/10"
-                  >
+                    className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-maroon transition-colors hover:bg-gold/10">
                     <X size={20} strokeWidth={1.75} />
                   </button>
                 </div>
@@ -196,8 +179,7 @@ export default function AdminLayout({
                     whileHover={{ scale: 1.04 }}
                     whileTap={{ scale: 0.97 }}
                     transition={{ duration: 0.2 }}
-                    className="w-full rounded-full border border-gold/60 px-4 py-1.5 text-sm text-maroon transition-colors hover:bg-maroon hover:text-cream"
-                  >
+                    className="w-full rounded-full border border-gold/60 px-4 py-1.5 text-sm text-maroon transition-colors hover:bg-maroon hover:text-cream">
                     {t("signOut")}
                   </motion.button>
                 </div>
