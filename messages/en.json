@@ -20,10 +20,15 @@
     "goToAdminDashboard": "Go to Admin Dashboard"
   },
   "auth": {
-    "loginTitle": "Log in",
+    "loginTitle": "Welcome back!",
+    "subtitle": "Please enter your details to sign in",
     "email": "Email",
     "password": "Password",
     "loginButton": "Log in",
+    "loggingIn": "Logging in…",
+    "invalidGmail": "Please enter a valid Gmail address (e.g. name@gmail.com)",
+    "emailRequired": "Gmail address is required",
+    "passwordRequired": "Password is required",
     "genericError": "Something went wrong. Please try again."
   },
   "viewer": {

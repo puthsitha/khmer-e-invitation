@@ -20,10 +20,15 @@
     "goToAdminDashboard": "ទៅផ្ទាំងគ្រប់គ្រងអ្នកគ្រប់គ្រង"
   },
   "auth": {
-    "loginTitle": "ចូលគណនី",
+    "loginTitle": "សូមស្វាគមន៍មកវិញ!",
+    "subtitle": "សូមបញ្ចូលព័ត៌មានរបស់អ្នកដើម្បីចូលគណនី",
     "email": "អ៊ីមែល",
     "password": "លេខសម្ងាត់",
     "loginButton": "ចូល",
+    "loggingIn": "កំពុងចូល…",
+    "invalidGmail": "សូមបញ្ចូលអាសយដ្ឋាន Gmail ដែលត្រឹមត្រូវ (ឧ. name@gmail.com)",
+    "emailRequired": "សូមបញ្ចូលអាសយដ្ឋាន Gmail",
+    "passwordRequired": "សូមបញ្ចូលលេខសម្ងាត់",
     "genericError": "មានបញ្ហាកើតឡើង។ សូមព្យាយាមម្តងទៀត។"
   },
   "viewer": {
