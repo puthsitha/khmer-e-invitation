@@ -1,5 +1,4 @@
 import {
-  addDoc,
   collection,
   deleteDoc,
   doc,
@@ -307,12 +306,12 @@ export async function addRsvpResponse(
     invitationId,
     "responses",
   ).withConverter(converter<RsvpResponse>());
-  const ref = await addDoc(responsesCol, {
-    responseId: "",
+  const ref = doc(responsesCol);
+  await setDoc(ref, {
+    responseId: ref.id,
     ...input,
     createdAt: Date.now(),
   } as RsvpResponse);
-  await updateDoc(ref, { responseId: ref.id });
   return ref.id;
 }
 
@@ -327,3 +326,51 @@ export async function listRsvpResponses(invitationId: string) {
   const snap = await getDocs(q);
   return snap.docs.map((d) => d.data());
 }
+
+export async function seedMockInvitation(
+  ownerUid: string,
+  slug: string,
+  data: Omit<
+    Invitation,
+    | "invitationId"
+    | "ownerUid"
+    | "slug"
+    | "status"
+    | "createdAt"
+    | "updatedAt"
+  >,
+  rsvps?: RsvpResponse[],
+) {
+  const ref = doc(invitationsCol);
+  const invitation: Invitation = {
+    ...data,
+    invitationId: ref.id,
+    ownerUid,
+    slug,
+    status: "published",
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  };
+
+  const batch = writeBatch(db);
+  batch.set(ref, invitation);
+  batch.set(doc(db, "slugs", slug), { invitationId: ref.id });
+  await batch.commit();
+
+  if (rsvps && rsvps.length > 0) {
+    for (const rsvp of rsvps) {
+      try {
+        await addRsvpResponse(ref.id, {
+          guestName: rsvp.guestName,
+          attending: rsvp.attending,
+          message: rsvp.message,
+        });
+      } catch (err) {
+        console.warn("Could not seed mock RSVP response (non-fatal):", err);
+      }
+    }
+  }
+
+  return invitation;
+}
+

@@ -1,13 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const ALLOWED_HOSTNAME = "firebasestorage.googleapis.com";
+const ALLOWED_HOSTNAMES = new Set([
+  "firebasestorage.googleapis.com",
+  "assets.mixkit.co",
+  "cdn.pixabay.com",
+  "www.soundhelix.com",
+]);
+
+function isAllowedHost(hostname: string): boolean {
+  if (ALLOWED_HOSTNAMES.has(hostname)) return true;
+  if (hostname.endsWith(".firebasestorage.app")) return true;
+  if (process.env.NODE_ENV !== "production") return true;
+  return false;
+}
 
 /**
- * Streams Firebase Storage audio through our own origin. The client-side
- * Web Audio fetch() in useBackgroundMusic needs a CORS-safe response, and
- * Firebase Storage's bucket CORS policy isn't something this repo can
- * configure — so we fetch it server-side (no CORS applies here) and
- * re-serve it same-origin instead.
+ * Streams Firebase Storage and audio CDN tracks through our own origin. The
+ * client-side Web Audio fetch() in useBackgroundMusic needs a CORS-safe
+ * response, so we fetch it server-side and re-serve it same-origin instead.
  */
 export async function GET(request: NextRequest) {
   const url = request.nextUrl.searchParams.get("url");
@@ -22,7 +32,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Invalid url" }, { status: 400 });
   }
 
-  if (target.hostname !== ALLOWED_HOSTNAME) {
+  if (!isAllowedHost(target.hostname)) {
     return NextResponse.json({ error: "Host not allowed" }, { status: 400 });
   }
 

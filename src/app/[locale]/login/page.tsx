@@ -9,6 +9,7 @@ import { getUserDoc } from "@/lib/firebase/firestore";
 import { MuiInput } from "@/components/ui/MuiInput";
 import { OrnamentDivider } from "@/components/ui/OrnamentDivider";
 import { InteractiveAuthHero } from "@/components/auth/InteractiveAuthHero";
+import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { AlertCircle } from "lucide-react";
 
 const GMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@gmail\.com$/i;
@@ -94,6 +95,11 @@ export default function LoginPage() {
 
   return (
     <main className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-cream px-4 py-12 sm:px-6">
+      {/* Top right Language Switcher */}
+      <div className="absolute right-4 top-4 z-30">
+        <LocaleSwitcher />
+      </div>
+
       {/* Ambient animated backdrop: soft drifting gold/maroon orbs */}
       <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
         <div

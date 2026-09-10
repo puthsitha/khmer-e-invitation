@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "prepare": "git config core.hooksPath .githooks",
+    "seed:wedding": "node scripts/seed-mock-wedding.mjs",
     "firebase:rules:dev": "firebase deploy --only firestore:rules,storage -P dev",
     "firebase:rules:uat": "firebase deploy --only firestore:rules,storage -P uat",
     "firebase:rules:prod": "firebase deploy --only firestore:rules,storage -P production"

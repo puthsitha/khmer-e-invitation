@@ -30,11 +30,13 @@ export function CustomSelect({
   onChange,
   options,
   className = "",
+  buttonClassName = "",
 }: {
   value: string;
   onChange: (value: string) => void;
   options: SelectOption[];
   className?: string;
+  buttonClassName?: string;
 }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -65,8 +67,9 @@ export function CustomSelect({
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex w-full cursor-pointer items-center justify-between gap-2 rounded-xl border border-gold/40 bg-white py-1.5 pl-3 pr-2.5 text-sm text-maroon shadow-sm transition-colors hover:border-gold/70 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
-      >
+        className={`flex w-full cursor-pointer items-center justify-between gap-2 rounded-xl border border-gold/40 bg-white text-sm text-maroon shadow-sm transition-colors hover:border-gold/70 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20 ${
+          buttonClassName || "py-1.5 pl-3 pr-2.5"
+        }`}>
         <span className="flex items-center gap-2 truncate">
           {selected?.swatches && <Swatches colors={selected.swatches} />}
           {selected?.label ?? ""}
@@ -86,10 +89,12 @@ export function CustomSelect({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.98 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="absolute z-20 mt-1.5 w-full min-w-max overflow-hidden rounded-xl border border-gold/30 bg-white p-1 shadow-lg"
-          >
+            className="absolute z-20 mt-1.5 w-full min-w-max overflow-hidden rounded-xl border border-gold/30 bg-white p-1 shadow-lg">
             {options.map((option) => (
-              <li key={option.value} role="option" aria-selected={option.value === value}>
+              <li
+                key={option.value}
+                role="option"
+                aria-selected={option.value === value}>
                 <button
                   type="button"
                   onClick={() => {
@@ -100,12 +105,15 @@ export function CustomSelect({
                     option.value === value
                       ? "bg-gold/15 text-maroon"
                       : "text-maroon/80 hover:bg-cream"
-                  }`}
-                >
+                  }`}>
                   {option.swatches && <Swatches colors={option.swatches} />}
                   <span className="flex-1 truncate">{option.label}</span>
                   {option.value === value && (
-                    <Check size={14} strokeWidth={2.5} className="shrink-0 text-maroon" />
+                    <Check
+                      size={14}
+                      strokeWidth={2.5}
+                      className="shrink-0 text-maroon"
+                    />
                   )}
                 </button>
               </li>

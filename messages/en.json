@@ -87,6 +87,20 @@
         "published": "Published"
       }
     },
+    "new": {
+      "title": "New invitation",
+      "category": "Category",
+      "template": "Template",
+      "noTemplates": "No templates yet",
+      "palette": "Palette",
+      "titleLabel": "Title (used to generate the link, e.g. couple names)",
+      "titlePlaceholder": "sokha-dara",
+      "titleRequired": "Title is required to generate the invitation link",
+      "create": "Create invitation",
+      "creating": "Creating invitation…",
+      "noTemplateError": "No template available for this category yet. Ask an admin to add one.",
+      "genericError": "Could not create the invitation. Please try again."
+    },
     "editor": {
       "back": "Back to invitations",
       "loading": "Loading…",

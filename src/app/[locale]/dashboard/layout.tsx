@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Link, useRouter } from "@/i18n/navigation";
 import { logout } from "@/lib/firebase/auth";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 
 export default function DashboardLayout({
   children,
@@ -63,15 +64,18 @@ export default function DashboardLayout({
           className="font-[family-name:var(--font-heading-km)] text-xl text-maroon transition-opacity hover:opacity-80">
           {appUser?.name ?? user.email}
         </Link>
-        <motion.button
-          type="button"
-          onClick={() => setConfirmingSignOut(true)}
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.97 }}
-          transition={{ duration: 0.2 }}
-          className="rounded-full border border-gold/60 px-4 py-1.5 text-sm text-maroon transition-colors hover:bg-maroon hover:text-cream">
-          {t("signOut")}
-        </motion.button>
+        <div className="flex items-center gap-3">
+          <LocaleSwitcher />
+          <motion.button
+            type="button"
+            onClick={() => setConfirmingSignOut(true)}
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ duration: 0.2 }}
+            className="rounded-full border border-gold/60 px-4 py-1.5 text-sm text-maroon transition-colors hover:bg-maroon hover:text-cream">
+            {t("signOut")}
+          </motion.button>
+        </div>
       </motion.header>
       {children}
       <ConfirmDialog
