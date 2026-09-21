@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
 import {
   getInvitation,
   listRsvpResponses,
@@ -21,8 +20,29 @@ import {
 import { QrCode } from "@/components/ui/QrCode";
 import { BilingualField } from "@/components/dashboard/BilingualField";
 import { TimeSelect12h } from "@/components/dashboard/TimeSelect12h";
+import { VideoPreviewCard } from "@/components/dashboard/VideoPreviewCard";
+import { PaletteSelector } from "@/components/dashboard/PaletteSelector";
+import { ImageUploadManager } from "@/components/dashboard/ImageUploadManager";
+import { RsvpManager } from "@/components/dashboard/RsvpManager";
+import { DateTimePicker } from "@/components/dashboard/DateTimePicker";
+import { AutoDismissToast } from "@/components/dashboard/AutoDismissToast";
+import { DashboardSkeleton } from "@/components/dashboard/DashboardSkeleton";
+import {
+  InvitationSidebar,
+  InvitationSectionKey,
+} from "@/components/dashboard/InvitationSidebar";
+import { InvitationTopNav } from "@/components/dashboard/InvitationTopNav";
 import { usePalettes } from "@/hooks/usePalettes";
 import { asBilingual, EMPTY_BILINGUAL } from "@/lib/bilingual";
+import {
+  MapPin,
+  Video,
+  Music,
+  Trash2,
+  UploadCloud,
+  Plus,
+  Share2,
+} from "lucide-react";
 import type {
   AgendaItem,
   FamilyMembers,
@@ -32,31 +52,34 @@ import type {
 } from "@/types";
 
 const inputClassName =
-  "rounded-lg border border-gold/40 px-4 py-2 transition-colors focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20";
+  "w-full rounded-xl border border-gold/40 bg-white/90 px-4 py-2.5 text-sm text-maroon shadow-xs transition-all duration-200 placeholder:text-maroon/30 hover:border-gold/70 focus:border-maroon focus:bg-white focus:outline-none focus:ring-2 focus:ring-maroon/15";
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
 };
 
 function Section({
+  id,
   title,
   children,
   delay = 0,
 }: {
+  id?: string;
   title: string;
   children: React.ReactNode;
   delay?: number;
 }) {
   return (
     <motion.section
+      id={id}
       initial="hidden"
       animate="show"
       variants={sectionVariants}
-      transition={{ duration: 0.6, ease: "easeOut", delay }}
-      className="mb-8 flex flex-col gap-4 rounded-2xl border border-gold/30 bg-white p-6 shadow-sm sm:p-8"
+      transition={{ duration: 0.5, ease: "easeOut", delay }}
+      className="mb-8 scroll-mt-20 flex flex-col gap-5 rounded-3xl border border-gold/30 bg-white p-6 shadow-sm sm:p-8"
     >
-      <h2 className="font-[family-name:var(--font-heading-km)] text-lg text-maroon">
+      <h2 className="font-[family-name:var(--font-heading-km)] text-xl text-maroon">
         {title}
       </h2>
       {children}
@@ -70,6 +93,9 @@ export default function EditInvitationPage() {
   const [rsvps, setRsvps] = useState<RsvpResponse[]>([]);
   const [status, setStatus] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [activeSection, setActiveSection] = useState<InvitationSectionKey>("content");
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
   const t = useTranslations("dashboard.editor");
   const tStatus = useTranslations("dashboard.list.status");
   const palettes = usePalettes();
@@ -79,18 +105,34 @@ export default function EditInvitationPage() {
     listRsvpResponses(invitationId).then(setRsvps);
   }, [invitationId]);
 
+  // Scroll-Spy to track and highlight active section on the Left Nav Bar
+  useEffect(() => {
+    const sectionKeys: InvitationSectionKey[] = [
+      "content",
+      "story",
+      "agenda",
+      "media",
+      "publish",
+      "rsvp",
+    ];
+
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 120;
+      for (let i = sectionKeys.length - 1; i >= 0; i--) {
+        const el = document.getElementById(`section-${sectionKeys[i]}`);
+        if (el && el.offsetTop <= scrollPosition) {
+          setActiveSection(sectionKeys[i]);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   if (!invitation) {
-    return (
-      <main className="mx-auto max-w-3xl px-6 py-10">
-        <motion.p
-          animate={{ opacity: [0.4, 1, 0.4] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-          className="text-maroon/60"
-        >
-          {t("loading")}
-        </motion.p>
-      </main>
-    );
+    return <DashboardSkeleton type="editor" />;
   }
 
   async function save(patch: Partial<Invitation>) {
@@ -111,7 +153,16 @@ export default function EditInvitationPage() {
     return save({ content: { ...invitation!.content, ...patch } });
   }
 
-  async function handleGalleryUpload(files: FileList | null) {
+  function handleSelectSection(sectionKey: InvitationSectionKey) {
+    setActiveSection(sectionKey);
+    const element = document.getElementById(`section-${sectionKey}`);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  // --- Media Handlers ------------------------------------------------
+  async function handleGalleryUpload(files: FileList) {
     if (!files || !invitation) return;
     setStatus(null);
     const gallery = [...invitation.mediaUrls.gallery];
@@ -158,7 +209,7 @@ export default function EditInvitationPage() {
     }
   }
 
-  async function handleEnvelopeQrUpload(files: FileList | null) {
+  async function handleEnvelopeQrUpload(files: FileList) {
     const file = files?.[0];
     if (!file || !invitation) return;
     setStatus(null);
@@ -173,7 +224,6 @@ export default function EditInvitationPage() {
   }
 
   // --- Family fields -------------------------------------------------
-
   function updateFamily(
     key: "groomFamily" | "brideFamily",
     patch: Partial<FamilyMembers>,
@@ -184,7 +234,6 @@ export default function EditInvitationPage() {
   }
 
   // --- Our Story -------------------------------------------------------
-
   const story = Array.isArray(invitation.content.story) ? invitation.content.story : [];
 
   function updateStory(index: number, patch: Partial<StoryItem>) {
@@ -206,7 +255,7 @@ export default function EditInvitationPage() {
     saveContent({ story: story.filter((_, i) => i !== index) });
   }
 
-  async function handleStoryImageUpload(index: number, files: FileList | null) {
+  async function handleStoryImageUpload(index: number, files: FileList) {
     const file = files?.[0];
     if (!file || !invitation) return;
     setStatus(null);
@@ -221,7 +270,6 @@ export default function EditInvitationPage() {
   }
 
   // --- Agenda ------------------------------------------------------------
-
   const agenda = Array.isArray(invitation.content.agenda) ? invitation.content.agenda : [];
 
   function updateAgendaItem(index: number, patch: Partial<AgendaItem>) {
@@ -247,394 +295,531 @@ export default function EditInvitationPage() {
       : "";
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-10 sm:py-14">
-      <Link
-        href="/dashboard"
-        className="group inline-flex items-center gap-1.5 text-sm text-maroon/70 transition-colors hover:text-maroon"
-      >
-        <motion.span
-          aria-hidden
-          className="inline-block"
-          animate={{ x: 0 }}
-          whileHover={{ x: -2 }}
-          transition={{ duration: 0.2 }}
-        >
-          ←
-        </motion.span>
-        {t("back")}
-      </Link>
+    <div className="flex min-h-screen flex-col bg-cream">
+      {/* Sticky Top Navigation Bar */}
+      <InvitationTopNav
+        slug={invitation.slug}
+        shareUrl={shareUrl}
+        onOpenMobileMenu={() => setMobileSidebarOpen(true)}
+      />
 
-      <motion.h1
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="mb-8 mt-2 font-[family-name:var(--font-heading-km)] text-2xl text-maroon sm:text-3xl"
-      >
-        {invitation.slug}
-      </motion.h1>
-
-      <Section title={t("content.title")} delay={0}>
-        <BilingualField
-          label={t("content.groomName")}
-          value={asBilingual(invitation.content.groomName)}
-          onBlur={(v) => saveContent({ groomName: v })}
-        />
-        <BilingualField
-          label={t("content.brideName")}
-          value={asBilingual(invitation.content.brideName)}
-          onBlur={(v) => saveContent({ brideName: v })}
+      {/* Main Page Layout: Left Nav Bar + Content Container */}
+      <div className="flex flex-1">
+        {/* Left Navigation Bar (Sections navigation + Back button) */}
+        <InvitationSidebar
+          slug={invitation.slug}
+          status={invitation.status}
+          activeSection={activeSection}
+          onSelectSection={handleSelectSection}
+          counts={{
+            story: story.length,
+            agenda: agenda.length,
+            gallery: invitation.mediaUrls.gallery.length,
+            rsvps: rsvps.length,
+          }}
+          shareUrl={shareUrl}
+          isOpenMobile={mobileSidebarOpen}
+          onCloseMobile={() => setMobileSidebarOpen(false)}
+          tStatus={tStatus}
         />
 
-        <div>
-          <p className="mb-2 text-sm font-medium text-maroon">
-            {t("content.groomFamily")}
-          </p>
-          <div className="flex flex-col gap-4 rounded-xl bg-cream/60 p-4">
-            <BilingualField
-              label={t("content.father")}
-              value={asBilingual(invitation.content.groomFamily?.father)}
-              onBlur={(v) => updateFamily("groomFamily", { father: v })}
-            />
-            <BilingualField
-              label={t("content.mother")}
-              value={asBilingual(invitation.content.groomFamily?.mother)}
-              onBlur={(v) => updateFamily("groomFamily", { mother: v })}
-            />
-          </div>
-        </div>
+        {/* Content Area */}
+        <div className="flex-1 overflow-x-hidden">
+          <div className="mx-auto max-w-3xl px-4 py-8 sm:px-8 sm:py-10">
+            {/* Header Title / Slug */}
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="mb-8 flex flex-wrap items-center justify-between gap-4"
+            >
+              <div>
+                <h1 className="font-[family-name:var(--font-heading-km)] text-2xl text-maroon sm:text-3xl">
+                  {invitation.slug}
+                </h1>
+                <p className="mt-1 text-xs text-maroon/60">
+                  Invitation ID: <span className="font-mono">{invitation.invitationId}</span>
+                </p>
+              </div>
 
-        <div>
-          <p className="mb-2 text-sm font-medium text-maroon">
-            {t("content.brideFamily")}
-          </p>
-          <div className="flex flex-col gap-4 rounded-xl bg-cream/60 p-4">
-            <BilingualField
-              label={t("content.father")}
-              value={asBilingual(invitation.content.brideFamily?.father)}
-              onBlur={(v) => updateFamily("brideFamily", { father: v })}
-            />
-            <BilingualField
-              label={t("content.mother")}
-              value={asBilingual(invitation.content.brideFamily?.mother)}
-              onBlur={(v) => updateFamily("brideFamily", { mother: v })}
-            />
-          </div>
-        </div>
-
-        <BilingualField
-          label={t("content.invitationText")}
-          value={asBilingual(invitation.content.invitationText)}
-          onBlur={(v) => saveContent({ invitationText: v })}
-          textarea
-        />
-        <BilingualField
-          label={t("content.address")}
-          value={asBilingual(invitation.content.address)}
-          onBlur={(v) => saveContent({ address: v })}
-          textarea
-        />
-
-        <label className="flex flex-col gap-1 text-sm font-medium text-maroon">
-          {t("content.mapUrl")}
-          <input
-            type="text"
-            defaultValue={invitation.content.mapUrl ?? ""}
-            onBlur={(e) => saveContent({ mapUrl: e.target.value })}
-            className={inputClassName}
-          />
-        </label>
-
-        <label className="flex flex-col gap-1 text-sm font-medium text-maroon">
-          {t("content.coverVideo")}
-          <input
-            type="text"
-            defaultValue={invitation.coverVideoEmbedUrl ?? ""}
-            onBlur={(e) => save({ coverVideoEmbedUrl: e.target.value })}
-            className={inputClassName}
-          />
-        </label>
-
-        <label className="flex flex-col gap-1 text-sm font-medium text-maroon">
-          {t("content.eventDate")}
-          <input
-            type="datetime-local"
-            defaultValue={toLocalInputValue(invitation.eventDate)}
-            onBlur={(e) =>
-              save({ eventDate: new Date(e.target.value).getTime() })
-            }
-            className={inputClassName}
-          />
-        </label>
-
-        <label className="flex flex-col gap-1 text-sm font-medium text-maroon">
-          {t("content.colorPalette")}
-          <select
-            defaultValue={invitation.colorPalette}
-            onChange={(e) => save({ colorPalette: e.target.value })}
-            className={inputClassName}
-          >
-            {palettes?.map((p) => (
-              <option key={p.paletteId} value={p.paletteId}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-        </label>
-      </Section>
-
-      <Section title={t("story.title")} delay={0.05}>
-        <div className="flex flex-col gap-4">
-          <AnimatePresence initial={false}>
-            {story.map((item, index) => (
-              <motion.div
-                key={index}
-                layout
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-                className="flex flex-col gap-3 rounded-xl border border-gold/20 bg-cream/60 p-4"
+              <span
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold shadow-xs ${
+                  invitation.status === "published"
+                    ? "bg-emerald-100 text-emerald-800"
+                    : "bg-gold/15 text-maroon"
+                }`}
               >
-                <BilingualField
-                  label={t("story.itemTitle")}
-                  value={item.title}
-                  onBlur={(v) => updateStory(index, { title: v })}
+                <span
+                  className={`h-2 w-2 rounded-full ${
+                    invitation.status === "published" ? "bg-emerald-600" : "bg-gold"
+                  }`}
                 />
-                <BilingualField
-                  label={t("story.description")}
-                  value={item.description}
-                  onBlur={(v) => updateStory(index, { description: v })}
-                  textarea
-                />
-                <div>
-                  <p className="mb-1 text-xs text-maroon/60">{t("story.image")}</p>
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    onChange={(e) => handleStoryImageUpload(index, e.target.files)}
+                {tStatus(invitation.status)}
+              </span>
+            </motion.div>
+
+            {/* Section 1: Content */}
+            <Section id="section-content" title={t("content.title")} delay={0}>
+              {/* Couple Names */}
+              <BilingualField
+                label={t("content.groomName")}
+                value={asBilingual(invitation.content.groomName)}
+                placeholderKm="ឈ្មោះកូនកម្លោះ"
+                placeholderEn="Groom's full name"
+                onBlur={(v) => saveContent({ groomName: v })}
+              />
+              <BilingualField
+                label={t("content.brideName")}
+                value={asBilingual(invitation.content.brideName)}
+                placeholderKm="ឈ្មោះកូនក្រមុំ"
+                placeholderEn="Bride's full name"
+                onBlur={(v) => saveContent({ brideName: v })}
+              />
+
+              {/* Groom's Family */}
+              <div className="rounded-2xl border border-gold/30 bg-cream/40 p-4 sm:p-5">
+                <p className="mb-3 text-sm font-semibold text-maroon">
+                  {t("content.groomFamily")}
+                </p>
+                <div className="flex flex-col gap-4">
+                  <BilingualField
+                    label={t("content.father")}
+                    value={asBilingual(invitation.content.groomFamily?.father)}
+                    onBlur={(v) => updateFamily("groomFamily", { father: v })}
                   />
-                  {item.image && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={item.image}
-                      alt=""
-                      className="mt-2 h-24 w-24 rounded-lg object-cover"
-                    />
+                  <BilingualField
+                    label={t("content.mother")}
+                    value={asBilingual(invitation.content.groomFamily?.mother)}
+                    onBlur={(v) => updateFamily("groomFamily", { mother: v })}
+                  />
+                </div>
+              </div>
+
+              {/* Bride's Family */}
+              <div className="rounded-2xl border border-gold/30 bg-cream/40 p-4 sm:p-5">
+                <p className="mb-3 text-sm font-semibold text-maroon">
+                  {t("content.brideFamily")}
+                </p>
+                <div className="flex flex-col gap-4">
+                  <BilingualField
+                    label={t("content.father")}
+                    value={asBilingual(invitation.content.brideFamily?.father)}
+                    onBlur={(v) => updateFamily("brideFamily", { father: v })}
+                  />
+                  <BilingualField
+                    label={t("content.mother")}
+                    value={asBilingual(invitation.content.brideFamily?.mother)}
+                    onBlur={(v) => updateFamily("brideFamily", { mother: v })}
+                  />
+                </div>
+              </div>
+
+              {/* Invitation Text */}
+              <BilingualField
+                label={t("content.invitationText")}
+                value={asBilingual(invitation.content.invitationText)}
+                onBlur={(v) => saveContent({ invitationText: v })}
+                textarea
+              />
+
+              {/* Address */}
+              <BilingualField
+                label={t("content.address")}
+                value={asBilingual(invitation.content.address)}
+                onBlur={(v) => saveContent({ address: v })}
+                textarea
+              />
+
+              {/* Map URL */}
+              <label className="flex flex-col gap-1.5 text-sm font-semibold text-maroon">
+                <div className="flex items-center gap-1.5">
+                  <MapPin className="h-4 w-4 text-gold" />
+                  <span>{t("content.mapUrl")}</span>
+                </div>
+                <input
+                  type="url"
+                  defaultValue={invitation.content.mapUrl ?? ""}
+                  placeholder="https://maps.google.com/?q=..."
+                  onBlur={(e) => saveContent({ mapUrl: e.target.value })}
+                  className={inputClassName}
+                />
+              </label>
+
+              {/* Cover Video Input & Live Preview */}
+              <div className="flex flex-col gap-3">
+                <label className="flex flex-col gap-1.5 text-sm font-semibold text-maroon">
+                  <div className="flex items-center gap-1.5">
+                    <Video className="h-4 w-4 text-gold" />
+                    <span>{t("content.coverVideo")}</span>
+                  </div>
+                  <input
+                    type="url"
+                    defaultValue={invitation.coverVideoEmbedUrl ?? ""}
+                    placeholder={t("content.coverVideoPlaceholder")}
+                    onBlur={(e) => save({ coverVideoEmbedUrl: e.target.value })}
+                    className={inputClassName}
+                  />
+                </label>
+
+                <VideoPreviewCard
+                  url={invitation.coverVideoEmbedUrl ?? ""}
+                  onClear={() => save({ coverVideoEmbedUrl: "" })}
+                  labels={{
+                    previewTitle: t("content.videoPreviewTitle"),
+                    previewEmpty: t("content.videoPreviewEmpty"),
+                    previewHint: t("content.videoPreviewHint"),
+                    validYoutube: t("content.videoValidYoutube"),
+                    validVimeo: t("content.videoValidVimeo"),
+                    openLink: t("content.openVideoLink"),
+                    clear: t("content.clearVideo"),
+                  }}
+                />
+              </div>
+
+              {/* Event Date & Time */}
+              <DateTimePicker
+                value={invitation.eventDate}
+                onChange={(newTimestamp) => save({ eventDate: newTimestamp })}
+                label={t("content.eventDate")}
+              />
+
+              {/* Color Palette Selector */}
+              <PaletteSelector
+                palettes={palettes ?? []}
+                selectedId={invitation.colorPalette}
+                onSelect={(pId) => save({ colorPalette: pId })}
+                title={t("content.colorPalette")}
+                description={t("content.colorPaletteDescription")}
+              />
+            </Section>
+
+            {/* Section 2: Our Story */}
+            <Section id="section-story" title={t("story.title")} delay={0.05}>
+              <div className="flex flex-col gap-4">
+                <AnimatePresence initial={false}>
+                  {story.map((item, index) => (
+                    <motion.div
+                      key={index}
+                      layout
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="flex flex-col gap-4 rounded-2xl border border-gold/30 bg-cream/30 p-5"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-maroon">
+                          Story Milestone #{index + 1}
+                        </span>
+                        <motion.button
+                          type="button"
+                          onClick={() => removeStoryItem(index)}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 transition-colors hover:text-red-700"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          <span>{t("story.remove")}</span>
+                        </motion.button>
+                      </div>
+
+                      <BilingualField
+                        label={t("story.itemTitle")}
+                        value={item.title}
+                        onBlur={(v) => updateStory(index, { title: v })}
+                      />
+                      <BilingualField
+                        label={t("story.description")}
+                        value={item.description}
+                        onBlur={(v) => updateStory(index, { description: v })}
+                        textarea
+                      />
+
+                      <div>
+                        <ImageUploadManager
+                          images={item.image ? [item.image] : []}
+                          multiple={false}
+                          onUpload={(files) => handleStoryImageUpload(index, files)}
+                          onRemove={async () => {
+                            if (item.image) await deleteMediaByUrl(item.image).catch(() => {});
+                            updateStory(index, { image: undefined });
+                          }}
+                          labels={{
+                            dropzoneTitle: t("story.image"),
+                            browseFiles: t("media.browseFiles"),
+                            uploading: t("media.uploading"),
+                            removeImage: t("story.remove"),
+                          }}
+                        />
+                      </div>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+
+              <motion.button
+                type="button"
+                onClick={addStoryItem}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="mt-2 inline-flex items-center gap-1.5 self-start rounded-full border border-gold/60 bg-gold/10 px-4 py-2 text-xs font-semibold text-maroon transition-colors hover:bg-gold/20"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>{t("story.add")}</span>
+              </motion.button>
+            </Section>
+
+            {/* Section 3: Agenda */}
+            <Section id="section-agenda" title={t("agenda.title")} delay={0.1}>
+              <div className="flex flex-col gap-4">
+                <AnimatePresence initial={false}>
+                  {agenda.map((item, index) => (
+                    <motion.div
+                      key={index}
+                      layout
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="flex flex-col gap-3 rounded-2xl border border-gold/30 bg-cream/30 p-4 sm:p-5"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <span className="text-xs font-bold text-maroon">
+                          Agenda Event #{index + 1}
+                        </span>
+                        <motion.button
+                          type="button"
+                          onClick={() => removeAgendaItem(index)}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 transition-colors hover:text-red-700"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          <span>{t("agenda.remove")}</span>
+                        </motion.button>
+                      </div>
+
+                      <div>
+                        <p className="mb-1.5 text-xs font-semibold text-maroon/70">
+                          {t("agenda.time")}
+                        </p>
+                        <TimeSelect12h
+                          value={item.time}
+                          onChange={(time) => updateAgendaItem(index, { time })}
+                        />
+                      </div>
+
+                      <BilingualField
+                        label={t("agenda.itemTitle")}
+                        value={item.title}
+                        onBlur={(v) => updateAgendaItem(index, { title: v })}
+                      />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+
+              <motion.button
+                type="button"
+                onClick={addAgendaItem}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="mt-2 inline-flex items-center gap-1.5 self-start rounded-full border border-gold/60 bg-gold/10 px-4 py-2 text-xs font-semibold text-maroon transition-colors hover:bg-gold/20"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>{t("agenda.add")}</span>
+              </motion.button>
+            </Section>
+
+            {/* Section 4: Media */}
+            <Section id="section-media" title={t("media.title")} delay={0.15}>
+              {/* Gallery */}
+              <div className="flex flex-col gap-2 rounded-2xl border border-gold/30 bg-cream/20 p-5">
+                <h3 className="text-sm font-semibold text-maroon">Photo Gallery</h3>
+                <ImageUploadManager
+                  images={invitation.mediaUrls.gallery}
+                  onUpload={handleGalleryUpload}
+                  onRemove={removeGalleryImage}
+                  multiple={true}
+                  note={t("media.galleryNote")}
+                  labels={{
+                    dropzoneTitle: t("media.dropzoneTitle"),
+                    browseFiles: t("media.browseFiles"),
+                    uploading: t("media.uploading"),
+                    removeImage: t("media.removeImage"),
+                    coverPhotoBadge: t("media.coverPhotoBadge"),
+                    addImage: t("media.addImage"),
+                  }}
+                />
+              </div>
+
+              {/* Background Music */}
+              <div className="flex flex-col gap-3 rounded-2xl border border-gold/30 bg-cream/20 p-5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gold/20 text-maroon">
+                      <Music className="h-4 w-4" />
+                    </span>
+                    <div>
+                      <h4 className="text-sm font-semibold text-maroon">Background Music</h4>
+                      <p className="text-xs text-maroon/60">{t("media.musicNote")}</p>
+                    </div>
+                  </div>
+
+                  {invitation.mediaUrls.bgMusic && (
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        if (!invitation.mediaUrls.bgMusic) return;
+                        await deleteMediaByUrl(invitation.mediaUrls.bgMusic).catch(() => {});
+                        await save({ mediaUrls: { ...invitation.mediaUrls, bgMusic: undefined } });
+                      }}
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      <span>{t("media.removeImage")}</span>
+                    </button>
                   )}
                 </div>
-                <motion.button
-                  type="button"
-                  onClick={() => removeStoryItem(index)}
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="self-start text-sm text-red-700 transition-colors hover:text-red-800"
-                >
-                  {t("story.remove")}
-                </motion.button>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-        <motion.button
-          type="button"
-          onClick={addStoryItem}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          className="mt-4 self-start rounded-full border border-gold/60 px-4 py-1.5 text-sm text-maroon transition-colors hover:bg-gold/10"
-        >
-          + {t("story.add")}
-        </motion.button>
-      </Section>
 
-      <Section title={t("agenda.title")} delay={0.1}>
-        <div className="flex flex-col gap-4">
-          <AnimatePresence initial={false}>
-            {agenda.map((item, index) => (
-              <motion.div
-                key={index}
-                layout
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-                className="flex flex-col gap-3 rounded-xl border border-gold/20 bg-cream/60 p-4"
-              >
-                <div>
-                  <p className="mb-1 text-xs text-maroon/60">{t("agenda.time")}</p>
-                  <TimeSelect12h
-                    value={item.time}
-                    onChange={(time) => updateAgendaItem(index, { time })}
+                <div className="mt-1">
+                  <input
+                    type="file"
+                    id="bg-music-input"
+                    accept="audio/mpeg,audio/mp4,audio/wav"
+                    onChange={(e) => handleMusicUpload(e.target.files)}
+                    className="hidden"
                   />
-                </div>
-                <BilingualField
-                  label={t("agenda.itemTitle")}
-                  value={item.title}
-                  onBlur={(v) => updateAgendaItem(index, { title: v })}
-                />
-                <motion.button
-                  type="button"
-                  onClick={() => removeAgendaItem(index)}
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="self-start text-sm text-red-700 transition-colors hover:text-red-800"
-                >
-                  {t("agenda.remove")}
-                </motion.button>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-        <motion.button
-          type="button"
-          onClick={addAgendaItem}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          className="mt-4 self-start rounded-full border border-gold/60 px-4 py-1.5 text-sm text-maroon transition-colors hover:bg-gold/10"
-        >
-          + {t("agenda.add")}
-        </motion.button>
-      </Section>
-
-      <Section title={t("media.title")} delay={0.15}>
-        <div>
-          <p className="mb-2 text-sm text-maroon/60">{t("media.galleryNote")}</p>
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            multiple
-            onChange={(e) => handleGalleryUpload(e.target.files)}
-          />
-          <div className="mt-3 flex flex-wrap gap-3">
-            <AnimatePresence>
-              {invitation.mediaUrls.gallery.map((url) => (
-                <motion.div
-                  key={url}
-                  layout
-                  initial={{ opacity: 0, scale: 0.85 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.85 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="relative"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={url}
-                    alt=""
-                    className="h-20 w-20 rounded-lg object-cover shadow-sm"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeGalleryImage(url)}
-                    className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-maroon text-xs text-cream shadow transition-transform hover:scale-110"
+                  <label
+                    htmlFor="bg-music-input"
+                    className="inline-flex items-center gap-2 rounded-xl border border-gold/40 bg-white px-4 py-2.5 text-xs font-semibold text-maroon shadow-xs transition-colors hover:bg-gold/15 cursor-pointer"
                   >
-                    ×
-                  </button>
-                </motion.div>
-              ))}
-            </AnimatePresence>
+                    <UploadCloud className="h-4 w-4 text-gold" />
+                    <span>{invitation.mediaUrls.bgMusic ? "Change Audio Track" : "Upload Audio Track"}</span>
+                  </label>
+                </div>
+
+                {invitation.mediaUrls.bgMusic && (
+                  <div className="rounded-xl border border-gold/30 bg-white p-3 shadow-xs">
+                    <audio className="w-full" controls src={invitation.mediaUrls.bgMusic} />
+                  </div>
+                )}
+              </div>
+
+              {/* Digital Envelope QR */}
+              <div className="flex flex-col gap-2 rounded-2xl border border-gold/30 bg-cream/20 p-5">
+                <h3 className="text-sm font-semibold text-maroon">Digital Envelope (Gift QR)</h3>
+                <ImageUploadManager
+                  images={invitation.mediaUrls.digitalEnvelopeQr ? [invitation.mediaUrls.digitalEnvelopeQr] : []}
+                  multiple={false}
+                  note={t("media.envelopeNote")}
+                  onUpload={handleEnvelopeQrUpload}
+                  onRemove={async () => {
+                    if (invitation.mediaUrls.digitalEnvelopeQr) {
+                      await deleteMediaByUrl(invitation.mediaUrls.digitalEnvelopeQr).catch(() => {});
+                      await save({ mediaUrls: { ...invitation.mediaUrls, digitalEnvelopeQr: undefined } });
+                    }
+                  }}
+                  labels={{
+                    dropzoneTitle: t("media.dropzoneTitle"),
+                    browseFiles: t("media.browseFiles"),
+                    uploading: t("media.uploading"),
+                    removeImage: t("media.removeImage"),
+                  }}
+                />
+              </div>
+            </Section>
+
+            {/* Section 5: Publish & Share */}
+            <Section id="section-publish" title={t("publish.title")} delay={0.2}>
+              <div className="flex flex-col gap-4 rounded-2xl border border-gold/30 bg-cream/30 p-5">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs text-maroon/60">{t("publish.status")}</p>
+                    <p className="font-semibold text-maroon capitalize">
+                      {tStatus(invitation.status)}
+                    </p>
+                  </div>
+
+                  <motion.button
+                    type="button"
+                    disabled={saving}
+                    onClick={() =>
+                      save({ status: invitation.status === "published" ? "draft" : "published" })
+                    }
+                    whileHover={{ scale: saving ? 1 : 1.03 }}
+                    whileTap={{ scale: saving ? 1 : 0.97 }}
+                    className={`rounded-full px-6 py-2 text-sm font-semibold shadow-md transition-all disabled:opacity-60 cursor-pointer ${
+                      invitation.status === "published"
+                        ? "border border-gold/60 bg-white text-maroon hover:bg-gold/10"
+                        : "bg-maroon text-cream hover:bg-maroon/90 shadow-maroon/20"
+                    }`}
+                  >
+                    {invitation.status === "published" ? t("publish.unpublish") : t("publish.publish")}
+                  </motion.button>
+                </div>
+
+                <AnimatePresence>
+                  {invitation.status === "published" && shareUrl && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="flex flex-col items-start gap-3 border-t border-gold/20 pt-4"
+                    >
+                      <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-maroon">
+                        <Share2 className="h-3.5 w-3.5 text-gold" />
+                        <span>Shareable Link:</span>
+                      </span>
+                      <a
+                        href={shareUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-xl border border-gold/30 bg-white px-3.5 py-2 text-xs font-medium text-maroon underline hover:text-gold transition-colors break-all"
+                      >
+                        {shareUrl}
+                      </a>
+                      <div className="mt-1 rounded-2xl border border-gold/30 bg-white p-4 shadow-xs">
+                        <QrCode value={shareUrl} size={160} />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </Section>
+
+            {/* Section 6: RSVPs */}
+            <Section id="section-rsvp" title={t("rsvp.title", { count: rsvps.length })} delay={0.25}>
+              <RsvpManager
+                rsvps={rsvps}
+                labels={{
+                  title: t("rsvp.title", { count: rsvps.length }),
+                  empty: t("rsvp.empty"),
+                  attending: t("rsvp.attending"),
+                  notAttending: t("rsvp.notAttending"),
+                  total: t("rsvp.total"),
+                  attendingCount: t("rsvp.attendingCount"),
+                  declinedCount: t("rsvp.declinedCount"),
+                  rate: t("rsvp.rate"),
+                  searchPlaceholder: t("rsvp.searchPlaceholder"),
+                  filterAll: t("rsvp.filterAll"),
+                  filterAttending: t("rsvp.filterAttending"),
+                  filterDeclined: t("rsvp.filterDeclined"),
+                  noResults: t("rsvp.noResults"),
+                }}
+              />
+            </Section>
           </div>
         </div>
+      </div>
 
-        <div>
-          <p className="mb-2 mt-2 text-sm text-maroon/60">{t("media.musicNote")}</p>
-          <input
-            type="file"
-            accept="audio/mpeg,audio/mp4,audio/wav"
-            onChange={(e) => handleMusicUpload(e.target.files)}
-          />
-          {invitation.mediaUrls.bgMusic && (
-            <audio className="mt-2 w-full" controls src={invitation.mediaUrls.bgMusic} />
-          )}
-        </div>
-
-        <div>
-          <p className="mb-2 mt-2 text-sm text-maroon/60">{t("media.envelopeNote")}</p>
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            onChange={(e) => handleEnvelopeQrUpload(e.target.files)}
-          />
-          {invitation.mediaUrls.digitalEnvelopeQr && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={invitation.mediaUrls.digitalEnvelopeQr}
-              alt=""
-              className="mt-2 h-32 w-32 rounded-lg object-cover shadow-sm"
-            />
-          )}
-        </div>
-      </Section>
-
-      <Section title={t("publish.title")} delay={0.2}>
-        <p className="text-sm text-maroon/60">
-          {t("publish.status")}:{" "}
-          <strong className="text-maroon">{tStatus(invitation.status)}</strong>
-        </p>
-        <motion.button
-          type="button"
-          disabled={saving}
-          onClick={() =>
-            save({ status: invitation.status === "published" ? "draft" : "published" })
-          }
-          whileHover={{ scale: saving ? 1 : 1.03 }}
-          whileTap={{ scale: saving ? 1 : 0.97 }}
-          className="self-start rounded-full bg-maroon px-6 py-2.5 text-cream shadow-md shadow-maroon/20 transition-opacity disabled:opacity-60"
-        >
-          {invitation.status === "published" ? t("publish.unpublish") : t("publish.publish")}
-        </motion.button>
-
-        <AnimatePresence>
-          {invitation.status === "published" && shareUrl && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="mt-2 flex flex-col items-start gap-3"
-            >
-              <a href={shareUrl} className="break-all text-maroon underline">
-                {shareUrl}
-              </a>
-              <QrCode value={shareUrl} size={160} />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </Section>
-
-      <Section title={`${t("rsvp.title", { count: rsvps.length })}`} delay={0.25}>
-        {rsvps.length === 0 && (
-          <p className="text-sm text-maroon/60">{t("rsvp.empty")}</p>
-        )}
-        <ul className="flex flex-col gap-2">
-          {rsvps.map((r) => (
-            <li key={r.responseId} className="text-sm">
-              <strong className="text-maroon">{r.guestName}</strong> —{" "}
-              {r.attending ? t("rsvp.attending") : t("rsvp.notAttending")}
-              {r.message ? ` — "${r.message}"` : ""}
-            </li>
-          ))}
-        </ul>
-      </Section>
-
-      <AnimatePresence>
-        {status && (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 16 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full bg-maroon px-5 py-2.5 text-sm text-cream shadow-lg"
-          >
-            {status}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </main>
+      {/* Auto-dismissing Floating Save Status Toast */}
+      <AutoDismissToast
+        message={status}
+        onClose={() => setStatus(null)}
+        duration={3000}
+      />
+    </div>
   );
-}
-
-function toLocalInputValue(timestamp: number) {
-  const d = new Date(timestamp);
-  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-  return d.toISOString().slice(0, 16);
 }

@@ -119,8 +119,18 @@
         "address": "Address",
         "mapUrl": "Map URL",
         "coverVideo": "Cover video (YouTube/Vimeo embed URL)",
+        "coverVideoPlaceholder": "https://www.youtube.com/watch?v=... or https://vimeo.com/...",
+        "videoPreviewTitle": "Cover Video Live Preview",
+        "videoPreviewEmpty": "No cover video added yet. Enter a YouTube or Vimeo link above to see a live preview.",
+        "videoPreviewHint": "This video plays as an atmospheric backdrop on your invitation.",
+        "videoValidYoutube": "YouTube video linked",
+        "videoValidVimeo": "Vimeo video linked",
+        "videoInvalid": "Please provide a valid YouTube or Vimeo URL",
+        "openVideoLink": "Open video",
+        "clearVideo": "Clear",
         "eventDate": "Event date & time",
-        "colorPalette": "Color palette"
+        "colorPalette": "Color palette",
+        "colorPaletteDescription": "Select the color theme for your wedding invitation"
       },
       "story": {
         "title": "Our Story",
@@ -141,7 +151,13 @@
         "title": "Media",
         "galleryNote": "Gallery — up to 20 images, 500KB each (JPEG/PNG/WebP).",
         "musicNote": "Background music — up to 3MB (MP3/M4A/WAV).",
-        "envelopeNote": "Digital envelope QR (gift/money) — up to 500KB (JPEG/PNG/WebP)."
+        "envelopeNote": "Digital envelope QR (gift/money) — up to 500KB (JPEG/PNG/WebP).",
+        "dropzoneTitle": "Drag & drop image(s) here, or",
+        "browseFiles": "Browse files",
+        "uploading": "Uploading…",
+        "removeImage": "Remove",
+        "coverPhotoBadge": "Cover photo",
+        "addImage": "Add images"
       },
       "publish": {
         "title": "Publish & share",
@@ -153,7 +169,16 @@
         "title": "RSVPs ({count})",
         "empty": "No responses yet.",
         "attending": "Attending",
-        "notAttending": "Not attending"
+        "notAttending": "Not attending",
+        "total": "Total responses",
+        "attendingCount": "Attending",
+        "declinedCount": "Declined",
+        "rate": "Attendance rate",
+        "searchPlaceholder": "Search guests…",
+        "filterAll": "All",
+        "filterAttending": "Attending",
+        "filterDeclined": "Declined",
+        "noResults": "No guest responses match your filter."
       }
     }
   },

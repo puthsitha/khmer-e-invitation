@@ -119,8 +119,18 @@
         "address": "អាសយដ្ឋាន",
         "mapUrl": "តំណផែនទី",
         "coverVideo": "វីដេអូគម្រប (តំណបញ្ចូល YouTube/Vimeo)",
+        "coverVideoPlaceholder": "https://www.youtube.com/watch?v=... ឬ https://vimeo.com/...",
+        "videoPreviewTitle": "ការមើលវីដេអូគម្របផ្ទាល់",
+        "videoPreviewEmpty": "មិនទាន់បានបញ្ចូលវីដេអូគម្របនៅឡើយទេ។ សូមបញ្ចូលតំណ YouTube ឬ Vimeo ខាងលើ ដើម្បីមើលការបង្ហាញផ្ទាល់។",
+        "videoPreviewHint": "វីដេអូនេះនឹងចាក់ជាផ្ទៃខាងក្រោយដ៏ស្រស់ស្អាតនៅលើលិខិតអញ្ជើញរបស់អ្នក។",
+        "videoValidYoutube": "បានភ្ជាប់វីដេអូ YouTube",
+        "videoValidVimeo": "បានភ្ជាប់វីដេអូ Vimeo",
+        "videoInvalid": "សូមផ្តល់តំណភ្ជាប់ YouTube ឬ Vimeo ដែលត្រឹមត្រូវ",
+        "openVideoLink": "បើកវីដេអូ",
+        "clearVideo": "សម្អាត",
         "eventDate": "កាលបរិច្ឆេទ និងម៉ោងព្រឹត្តិការណ៍",
-        "colorPalette": "ពណ៌ស្បែក"
+        "colorPalette": "ពណ៌ស្បែក",
+        "colorPaletteDescription": "ជ្រើសរើសស្ទីលពណ៌ដ៏ប្រណិតសម្រាប់លិខិតអញ្ជើញអាពាហ៍ពិពាហ៍របស់អ្នក"
       },
       "story": {
         "title": "រឿងរបស់យើង",
@@ -141,7 +151,13 @@
         "title": "មេឌា",
         "galleryNote": "វិចិត្រសាល — រហូតដល់ ២០ រូបភាព, ៥០០KB ក្នុងមួយ (JPEG/PNG/WebP)។",
         "musicNote": "តន្ត្រីផ្ទៃខាងក្រោយ — រហូតដល់ ៣MB (MP3/M4A/WAV)។",
-        "envelopeNote": "QR ស្រោមអំណោយឌីជីថល (អំណោយ/ប្រាក់) — រហូតដល់ ៥០០KB (JPEG/PNG/WebP)។"
+        "envelopeNote": "QR ស្រោមអំណោយឌីជីថល (អំណោយ/ប្រាក់) — រហូតដល់ ៥០០KB (JPEG/PNG/WebP)។",
+        "dropzoneTitle": "ទាញ និងទម្លាក់រូបភាពនៅទីនេះ ឬ",
+        "browseFiles": "ជ្រើសរើសឯកសារ",
+        "uploading": "កំពុងផ្ទុកឡើង…",
+        "removeImage": "លុប",
+        "coverPhotoBadge": "រូបភាពគម្រប",
+        "addImage": "បន្ថែមរូបភាព"
       },
       "publish": {
         "title": "ផ្សព្វផ្សាយ និងចែករំលែក",
@@ -153,7 +169,16 @@
         "title": "ការឆ្លើយតបចូលរួម ({count})",
         "empty": "មិនទាន់មានការឆ្លើយតបនៅឡើយទេ។",
         "attending": "នឹងចូលរួម",
-        "notAttending": "មិនចូលរួម"
+        "notAttending": "មិនចូលរួម",
+        "total": "ការឆ្លើយតបសរុប",
+        "attendingCount": "នឹងចូលរួម",
+        "declinedCount": "មិនចូលរួម",
+        "rate": "អត្រាចូលរួម",
+        "searchPlaceholder": "ស្វែងរកភ្ញៀវ…",
+        "filterAll": "ទាំងអស់",
+        "filterAttending": "នឹងចូលរួម",
+        "filterDeclined": "មិនចូលរួម",
+        "noResults": "មិនមានភ្ញៀវដែលត្រូវគ្នានឹងការស្វែងរកឡើយ។"
       }
     }
   },

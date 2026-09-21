@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/contexts/AuthContext";
-import { Link, useRouter } from "@/i18n/navigation";
+import { Link, useRouter, usePathname } from "@/i18n/navigation";
 import { logout } from "@/lib/firebase/auth";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
@@ -16,6 +16,7 @@ export default function DashboardLayout({
 }) {
   const { user, appUser, loading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const t = useTranslations("dashboard");
   const tCommon = useTranslations("common");
   const [confirmingSignOut, setConfirmingSignOut] = useState(false);
@@ -32,12 +33,12 @@ export default function DashboardLayout({
   if (loading || !user || appUser?.role === "admin") {
     return (
       <main className="flex min-h-screen items-center justify-center bg-cream text-maroon">
-        <motion.p
-          animate={{ opacity: [0.4, 1, 0.4] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-          className="font-[family-name:var(--font-body-km)]">
-          {t("loading")}
-        </motion.p>
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-10 w-10 animate-spin rounded-full border-3 border-gold/30 border-t-maroon" />
+          <p className="font-[family-name:var(--font-heading-km)] text-sm text-maroon/70">
+            {t("loading")}
+          </p>
+        </div>
       </main>
     );
   }
@@ -52,32 +53,44 @@ export default function DashboardLayout({
     );
   }
 
+  // Check if we are inside an invitation editor dashboard (/dashboard/[invitationId])
+  const isInvitationEditor =
+    pathname.startsWith("/dashboard/") && pathname !== "/dashboard/new";
+
   return (
     <div className="min-h-screen bg-cream">
-      <motion.header
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="sticky top-0 z-40 flex items-center justify-between border-b border-gold/30 bg-cream/80 px-6 py-4 backdrop-blur-md">
-        <Link
-          href="/dashboard"
-          className="font-[family-name:var(--font-heading-km)] text-xl text-maroon transition-opacity hover:opacity-80">
-          {appUser?.name ?? user.email}
-        </Link>
-        <div className="flex items-center gap-3">
-          <LocaleSwitcher />
-          <motion.button
-            type="button"
-            onClick={() => setConfirmingSignOut(true)}
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.97 }}
-            transition={{ duration: 0.2 }}
-            className="rounded-full border border-gold/60 px-4 py-1.5 text-sm text-maroon transition-colors hover:bg-maroon hover:text-cream">
-            {t("signOut")}
-          </motion.button>
-        </div>
-      </motion.header>
+      {/* Standard top header shown on /dashboard and /dashboard/new */}
+      {!isInvitationEditor && (
+        <motion.header
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="sticky top-0 z-40 flex items-center justify-between border-b border-gold/30 bg-cream/85 px-6 py-4 backdrop-blur-md"
+        >
+          <Link
+            href="/dashboard"
+            className="font-[family-name:var(--font-heading-km)] text-xl text-maroon transition-opacity hover:opacity-80"
+          >
+            {appUser?.name ?? user.displayName ?? user.email?.split("@")[0]}
+          </Link>
+          <div className="flex items-center gap-3">
+            <LocaleSwitcher />
+            <motion.button
+              type="button"
+              onClick={() => setConfirmingSignOut(true)}
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ duration: 0.2 }}
+              className="cursor-pointer rounded-full border border-gold/60 px-4 py-1.5 text-xs font-semibold text-maroon transition-colors hover:bg-maroon hover:text-cream"
+            >
+              {t("signOut")}
+            </motion.button>
+          </div>
+        </motion.header>
+      )}
+
       {children}
+
       <ConfirmDialog
         open={confirmingSignOut}
         title={tCommon("signOutTitle")}

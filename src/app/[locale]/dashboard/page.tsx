@@ -4,14 +4,9 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/contexts/AuthContext";
-import { Link, useRouter } from "@/i18n/navigation";
-import {
-  listInvitationsByOwner,
-  seedMockInvitation,
-} from "@/lib/firebase/firestore";
-import { generateUniqueSlug } from "@/lib/slug";
-import { MOCK_RSVPS, MOCK_WEDDING_INVITATION } from "@/lib/mockInvitation";
-import { Sparkles } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { listInvitationsByOwner } from "@/lib/firebase/firestore";
+import { DashboardSkeleton } from "@/components/dashboard/DashboardSkeleton";
 import type { Invitation } from "@/types";
 
 const listVariants = {
@@ -26,47 +21,13 @@ const itemVariants = {
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const router = useRouter();
   const [invitations, setInvitations] = useState<Invitation[] | null>(null);
-  const [seeding, setSeeding] = useState(false);
   const t = useTranslations("dashboard.list");
-
-  const isDev =
-    process.env.NEXT_PUBLIC_APP_ENV === "dev" ||
-    process.env.NODE_ENV !== "production";
 
   useEffect(() => {
     if (!user) return;
     listInvitationsByOwner(user.uid).then(setInvitations);
   }, [user]);
-
-  async function handleSeedMock() {
-    if (!user || seeding) return;
-    setSeeding(true);
-    try {
-      const slug = await generateUniqueSlug("chenda-monyroth-wedding");
-      const inv = await seedMockInvitation(
-        user.uid,
-        slug,
-        {
-          category: MOCK_WEDDING_INVITATION.category,
-          templateId: MOCK_WEDDING_INVITATION.templateId,
-          defaultLocale: MOCK_WEDDING_INVITATION.defaultLocale,
-          colorPalette: MOCK_WEDDING_INVITATION.colorPalette,
-          eventDate: MOCK_WEDDING_INVITATION.eventDate,
-          content: MOCK_WEDDING_INVITATION.content,
-          coverVideoEmbedUrl: MOCK_WEDDING_INVITATION.coverVideoEmbedUrl,
-          mediaUrls: MOCK_WEDDING_INVITATION.mediaUrls,
-        },
-        MOCK_RSVPS,
-      );
-      router.push(`/dashboard/${inv.invitationId}`);
-    } catch (err) {
-      console.error("Failed to seed mock wedding:", err);
-    } finally {
-      setSeeding(false);
-    }
-  }
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-10 sm:py-14">
@@ -80,20 +41,6 @@ export default function DashboardPage() {
           {t("title")}
         </h1>
         <div className="flex flex-wrap items-center gap-2.5">
-          {isDev && (
-            <motion.button
-              type="button"
-              disabled={seeding || !user}
-              onClick={handleSeedMock}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
-              className="flex items-center gap-1.5 rounded-full border border-gold/60 bg-gold/15 px-4 py-2 text-xs font-semibold text-maroon shadow-xs transition-colors hover:bg-gold/25 disabled:opacity-50"
-              title="Seed a realistic sample wedding invitation in Dev"
-            >
-              <Sparkles className="h-3.5 w-3.5 text-gold" />
-              <span>{seeding ? "Seeding..." : "⚡ Seed Mock Wedding"}</span>
-            </motion.button>
-          )}
           <Link href="/dashboard/new">
             <motion.span
               whileHover={{ scale: 1.05 }}
@@ -108,15 +55,7 @@ export default function DashboardPage() {
         </div>
       </motion.div>
 
-      {invitations === null && (
-        <motion.p
-          animate={{ opacity: [0.4, 1, 0.4] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-          className="text-maroon/60"
-        >
-          {t("loading")}
-        </motion.p>
-      )}
+      {invitations === null && <DashboardSkeleton type="list" />}
 
       {invitations?.length === 0 && (
         <motion.div
@@ -130,21 +69,6 @@ export default function DashboardPage() {
             {t("emptyTitle")}
           </p>
           <p className="text-sm text-maroon/60">{t("emptyBody")}</p>
-          {isDev && (
-            <button
-              type="button"
-              disabled={seeding || !user}
-              onClick={handleSeedMock}
-              className="mt-3 inline-flex items-center gap-2 rounded-full border border-gold/60 bg-gold/15 px-4 py-2 text-xs font-semibold text-maroon transition-colors hover:bg-gold/25 disabled:opacity-50"
-            >
-              <Sparkles className="h-3.5 w-3.5 text-gold" />
-              <span>
-                {seeding
-                  ? "Creating Mock Wedding..."
-                  : "⚡ Quick Load Sample Mock Wedding"}
-              </span>
-            </button>
-          )}
         </motion.div>
       )}
 
