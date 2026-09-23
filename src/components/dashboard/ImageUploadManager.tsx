@@ -2,7 +2,8 @@
 
 import { useState, useRef, DragEvent, ChangeEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { UploadCloud, Image as ImageIcon, Trash2, Plus, Sparkles } from "lucide-react";
+import { UploadCloud, Image as ImageIcon, Trash2, Plus, Sparkles, Eye } from "lucide-react";
+import { ImageLightbox } from "@/components/viewer/ImageLightbox";
 
 interface ImageUploadManagerProps {
   images: string[];
@@ -18,6 +19,8 @@ interface ImageUploadManagerProps {
     removeImage: string;
     coverPhotoBadge?: string;
     addImage?: string;
+    supportsNote?: string;
+    imagesCount?: string;
   };
 }
 
@@ -32,6 +35,7 @@ export function ImageUploadManager({
 }: ImageUploadManagerProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [previewIndex, setPreviewIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function handleFiles(files: FileList | null) {
@@ -139,7 +143,7 @@ export function ImageUploadManager({
               )}
             </p>
             <p className="text-[11px] text-maroon/50">
-              Supports JPEG, PNG, WebP (up to 500KB per image)
+              {labels.supportsNote || "Supports JPEG, PNG, WebP (up to 500KB per image)"}
             </p>
           </div>
         </div>
@@ -152,7 +156,9 @@ export function ImageUploadManager({
             <div className="flex items-center gap-1.5 text-xs font-semibold text-maroon">
               <ImageIcon className="h-3.5 w-3.5 text-gold" />
               <span>
-                {images.length} {images.length === 1 ? "Image" : "Images"}
+                {labels.imagesCount
+                  ? labels.imagesCount.replace("{count}", String(images.length))
+                  : `${images.length} ${images.length === 1 ? "Image" : "Images"}`}
               </span>
             </div>
 
@@ -182,7 +188,8 @@ export function ImageUploadManager({
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ duration: 0.25 }}
-                    className="group relative aspect-square overflow-hidden rounded-2xl border border-gold/40 bg-white shadow-xs"
+                    onClick={() => setPreviewIndex(index)}
+                    className="group relative aspect-square overflow-hidden rounded-2xl border border-gold/40 bg-white shadow-xs cursor-pointer"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -193,6 +200,13 @@ export function ImageUploadManager({
 
                     {/* Gradient Overlay on hover */}
                     <div className="absolute inset-0 bg-gradient-to-t from-maroon/80 via-maroon/20 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+
+                    {/* Centered Preview Zoom Icon on hover */}
+                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-all duration-200 group-hover:opacity-100 group-hover:scale-105">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white shadow-lg backdrop-blur-xs ring-1 ring-white/30">
+                        <Eye className="h-4 w-4" />
+                      </span>
+                    </div>
 
                     {/* Cover Photo Badge */}
                     {isCover && multiple && labels.coverPhotoBadge && (
@@ -219,7 +233,7 @@ export function ImageUploadManager({
                           e.stopPropagation();
                           onRemove(url);
                         }}
-                        className="flex h-7 w-7 items-center justify-center rounded-full bg-red-600 text-white shadow-md transition-colors hover:bg-red-700"
+                        className="flex h-7 w-7 items-center justify-center rounded-full bg-red-600 text-white shadow-md transition-colors hover:bg-red-700 cursor-pointer"
                         title={labels.removeImage}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -232,6 +246,18 @@ export function ImageUploadManager({
           </div>
         </div>
       )}
+
+      {/* Full-Screen Lightbox View for all uploaded images */}
+      <AnimatePresence>
+        {previewIndex !== null && (
+          <ImageLightbox
+            photos={images}
+            index={previewIndex}
+            onClose={() => setPreviewIndex(null)}
+            onChangeIndex={setPreviewIndex}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

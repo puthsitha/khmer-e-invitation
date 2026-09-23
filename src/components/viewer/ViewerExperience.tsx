@@ -5,7 +5,9 @@ import { Suspense, useEffect, useState } from "react";
 import { NextIntlClientProvider, useLocale, useTranslations } from "next-intl";
 import { AnimatePresence } from "framer-motion";
 import { Hourglass, Loader2, MailQuestion } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { getInvitationBySlug } from "@/lib/firebase/firestore";
+import { decryptGuestToken } from "@/lib/guestToken";
 import { useAutoScroll } from "@/hooks/useAutoScroll";
 import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 import { PaletteProvider } from "@/contexts/PaletteContext";
@@ -45,6 +47,9 @@ const DigitalEnvelope = dynamic(() =>
 const GratitudeApology = dynamic(() =>
   import("@/components/sections/GratitudeApology").then((m) => m.GratitudeApology),
 );
+const RsvpSection = dynamic(() =>
+  import("@/components/sections/RsvpSection").then((m) => m.RsvpSection),
+);
 const ColorPaletteAccent = dynamic(() =>
   import("@/components/sections/ColorPaletteAccent").then(
     (m) => m.ColorPaletteAccent,
@@ -58,6 +63,13 @@ type Stage = "closed" | "landing" | "opened";
 
 export function ViewerExperience({ slug }: { slug: string }) {
   const t = useTranslations("viewer");
+  const searchParams = useSearchParams();
+  const token = searchParams.get("g");
+  const initialTo = searchParams.get("to")?.trim();
+  const [guestInfo, setGuestInfo] = useState<{ guestId?: string; name?: string } | null>(
+    initialTo ? { name: initialTo } : null,
+  );
+
   const urlLocale = useLocale();
   const [invitation, setInvitation] = useState<Invitation | null | undefined>(
     undefined,
@@ -73,6 +85,16 @@ export function ViewerExperience({ slug }: { slug: string }) {
   useEffect(() => {
     getInvitationBySlug(slug).then(setInvitation);
   }, [slug]);
+
+  useEffect(() => {
+    if (token) {
+      decryptGuestToken(token, invitation?.invitationId).then((res) => {
+        if (res) {
+          setGuestInfo({ guestId: res.guestId, name: res.name });
+        }
+      });
+    }
+  }, [token, invitation?.invitationId]);
 
   useAutoScroll(stage === "opened");
 
@@ -136,7 +158,10 @@ export function ViewerExperience({ slug }: { slug: string }) {
           <AnimatePresence>
             {stage === "closed" && (
               <Suspense fallback={null}>
-                <EnvelopeOpening onOpen={handleOpenEnvelope} />
+                <EnvelopeOpening
+                  onOpen={handleOpenEnvelope}
+                  guestName={guestInfo?.name}
+                />
               </Suspense>
             )}
           </AnimatePresence>
@@ -145,6 +170,7 @@ export function ViewerExperience({ slug }: { slug: string }) {
             <Suspense fallback={null}>
               <Hero
                 invitation={invitation}
+                guestName={guestInfo?.name}
                 onOpen={handleOpenInvitation}
                 onStartMusic={startMusic}
               />
@@ -163,6 +189,11 @@ export function ViewerExperience({ slug }: { slug: string }) {
               <Agenda invitation={invitation} />
               <DigitalEnvelope invitation={invitation} />
               <GratitudeApology />
+              <RsvpSection
+                invitation={invitation}
+                guestId={guestInfo?.guestId}
+                guestName={guestInfo?.name}
+              />
               <ColorPaletteAccent invitation={invitation} />
               <Closing invitation={invitation} />
             </>

@@ -13,7 +13,8 @@ import {
   type QueryDocumentSnapshot,
 } from "firebase/firestore";
 import { db } from "./client";
-import type { AppUser, Invitation, Palette, RsvpResponse, Template } from "@/types";
+import type { AppUser, Invitation, Palette, RsvpResponse, Template, WeddingGuest, RsvpDecision } from "@/types";
+import { encryptGuestToken } from "@/lib/guestToken";
 
 function converter<T>() {
   return {
@@ -326,6 +327,195 @@ export async function listRsvpResponses(invitationId: string) {
   const snap = await getDocs(q);
   return snap.docs.map((d) => d.data());
 }
+
+export async function listWeddingGuests(invitationId: string): Promise<WeddingGuest[]> {
+  const guestsCol = collection(
+    db,
+    "invitations",
+    invitationId,
+    "guests",
+  ).withConverter(converter<WeddingGuest>());
+  const q = query(guestsCol, orderBy("createdAt", "asc"));
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => d.data());
+}
+
+export async function createWeddingGuest(
+  invitationId: string,
+  guest: Omit<
+    WeddingGuest,
+    "guestId" | "token" | "createdAt" | "updatedAt" | "invitationId" | "rsvpStatus"
+  > & { rsvpStatus?: RsvpDecision },
+): Promise<WeddingGuest> {
+  const guestsCol = collection(
+    db,
+    "invitations",
+    invitationId,
+    "guests",
+  ).withConverter(converter<WeddingGuest>());
+  const ref = doc(guestsCol);
+  const now = Date.now();
+  const token = await encryptGuestToken({
+    guestId: ref.id,
+    name: guest.name,
+    invitationId,
+  });
+
+  const newGuest: WeddingGuest = {
+    ...guest,
+    guestId: ref.id,
+    invitationId,
+    token,
+    isInvited: guest.isInvited ?? false,
+    rsvpStatus: guest.rsvpStatus ?? "pending",
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  await setDoc(ref, newGuest);
+  return newGuest;
+}
+
+export async function updateWeddingGuest(
+  invitationId: string,
+  guestId: string,
+  patch: Partial<WeddingGuest>,
+): Promise<void> {
+  const guestRef = doc(db, "invitations", invitationId, "guests", guestId);
+  const updateData: Record<string, unknown> = {
+    ...patch,
+    updatedAt: Date.now(),
+  };
+
+  if (patch.name) {
+    updateData.token = await encryptGuestToken({
+      guestId,
+      name: patch.name,
+      invitationId,
+    });
+  }
+
+  await updateDoc(guestRef, updateData);
+}
+
+export async function toggleGuestInvitedStatus(
+  invitationId: string,
+  guestId: string,
+  isInvited: boolean,
+): Promise<void> {
+  const guestRef = doc(db, "invitations", invitationId, "guests", guestId);
+  await updateDoc(guestRef, {
+    isInvited,
+    invitedAt: isInvited ? Date.now() : null,
+    updatedAt: Date.now(),
+  });
+}
+
+export async function deleteWeddingGuest(
+  invitationId: string,
+  guestId: string,
+): Promise<void> {
+  await deleteDoc(doc(db, "invitations", invitationId, "guests", guestId));
+}
+
+export async function batchImportWeddingGuests(
+  invitationId: string,
+  guests: Array<{
+    no?: number;
+    name: string;
+    from?: string;
+    by?: string;
+    note?: string;
+  }>,
+): Promise<WeddingGuest[]> {
+  const guestsCol = collection(
+    db,
+    "invitations",
+    invitationId,
+    "guests",
+  ).withConverter(converter<WeddingGuest>());
+  const batch = writeBatch(db);
+  const now = Date.now();
+  const created: WeddingGuest[] = [];
+
+  for (let i = 0; i < guests.length; i++) {
+    const item = guests[i];
+    const ref = doc(guestsCol);
+    const token = await encryptGuestToken({
+      guestId: ref.id,
+      name: item.name,
+      invitationId,
+    });
+
+    const guest: WeddingGuest = {
+      guestId: ref.id,
+      invitationId,
+      no: item.no ?? i + 1,
+      name: item.name,
+      from: item.from,
+      by: item.by,
+      note: item.note,
+      token,
+      isInvited: false,
+      rsvpStatus: "pending",
+      createdAt: now + i,
+      updatedAt: now + i,
+    };
+
+    batch.set(ref, guest);
+    created.push(guest);
+  }
+
+  await batch.commit();
+  return created;
+}
+
+export async function submitGuestRsvp(
+  invitationId: string,
+  data: {
+    guestId?: string;
+    guestName: string;
+    status: RsvpDecision;
+    message?: string;
+  },
+): Promise<void> {
+  const now = Date.now();
+  const attending = data.status === "attending";
+
+  // 1. Record response in rsvps collection
+  const responsesCol = collection(
+    db,
+    "rsvps",
+    invitationId,
+    "responses",
+  ).withConverter(converter<RsvpResponse>());
+  const respRef = doc(responsesCol);
+  await setDoc(respRef, {
+    responseId: respRef.id,
+    guestId: data.guestId || null,
+    guestName: data.guestName,
+    attending,
+    status: data.status,
+    message: data.message?.trim() || "",
+    createdAt: now,
+  } as unknown as RsvpResponse);
+
+  // 2. If guestId exists, also update guest document in Firestore
+  if (data.guestId) {
+    try {
+      const guestRef = doc(db, "invitations", invitationId, "guests", data.guestId);
+      await updateDoc(guestRef, {
+        rsvpStatus: data.status,
+        rsvpMessage: data.message?.trim() || "",
+        rsvpUpdatedAt: now,
+        updatedAt: now,
+      });
+    } catch (err) {
+      console.warn("Could not update guest document RSVP status (non-fatal):", err);
+    }
+  }
+}
+
 
 export async function seedMockInvitation(
   ownerUid: string,

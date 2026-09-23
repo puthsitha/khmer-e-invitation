@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { ViewerExperience } from "@/components/viewer/ViewerExperience";
 
 export default async function ViewerPage({
@@ -7,5 +8,10 @@ export default async function ViewerPage({
 }) {
   const { invitationSlug } = await params;
 
-  return <ViewerExperience slug={invitationSlug} />;
+  return (
+    <Suspense fallback={null}>
+      <ViewerExperience slug={invitationSlug} />
+    </Suspense>
+  );
 }
+

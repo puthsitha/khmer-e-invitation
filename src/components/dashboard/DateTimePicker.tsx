@@ -1,8 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { Calendar, CalendarDays } from "lucide-react";
 import { TimeSelect12h } from "./TimeSelect12h";
+import { formatDateTime } from "@/lib/khmerDate";
 
 interface DateTimePickerProps {
   value: number;
@@ -15,6 +17,9 @@ export function DateTimePicker({
   onChange,
   label,
 }: DateTimePickerProps) {
+  const t = useTranslations("dashboard.editor.dateTimePicker");
+  const locale = useLocale();
+
   // Convert timestamp to local date strings
   const { dateStr, timeStr, formattedPreview } = useMemo(() => {
     const d = new Date(value);
@@ -29,15 +34,10 @@ export function DateTimePicker({
     const minutes = String(d.getMinutes()).padStart(2, "0");
     const timeStr = `${hours}:${minutes} ${period}`;
 
-    const formattedPreview = d.toLocaleDateString(undefined, {
-      weekday: "short",
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    }) + ` at ${timeStr}`;
+    const formattedPreview = formatDateTime(value, locale, "medium");
 
     return { dateStr, timeStr, formattedPreview };
-  }, [value]);
+  }, [value, locale]);
 
   function handleDateChange(newDateStr: string) {
     if (!newDateStr) return;
@@ -72,7 +72,7 @@ export function DateTimePicker({
             <CalendarDays className="h-4 w-4" />
           </span>
           <span className="text-sm font-semibold text-maroon">
-            {label || "Event Date & Time"}
+            {label || t("dateLabel")}
           </span>
         </div>
 
@@ -87,7 +87,7 @@ export function DateTimePicker({
         {/* Date Input */}
         <div className="flex flex-col gap-1.5">
           <span className="text-xs font-semibold text-maroon/70">
-            Calendar Date
+            {t("dateLabel")}
           </span>
           <div className="relative flex items-center">
             <input
@@ -102,7 +102,7 @@ export function DateTimePicker({
         {/* Time Selector */}
         <div className="flex flex-col gap-1.5">
           <span className="text-xs font-semibold text-maroon/70">
-            Event Time (12-Hour)
+            {t("timeLabel")}
           </span>
           <TimeSelect12h
             value={timeStr}

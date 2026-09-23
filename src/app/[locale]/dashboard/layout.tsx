@@ -8,6 +8,7 @@ import { Link, useRouter, usePathname } from "@/i18n/navigation";
 import { logout } from "@/lib/firebase/auth";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
+import Image from "next/image";
 
 export default function DashboardLayout({
   children,
@@ -69,9 +70,19 @@ export default function DashboardLayout({
         >
           <Link
             href="/dashboard"
-            className="font-[family-name:var(--font-heading-km)] text-xl text-maroon transition-opacity hover:opacity-80"
+            className="group flex items-center gap-2.5 font-[family-name:var(--font-heading-km)] text-xl text-maroon transition-opacity hover:opacity-80"
           >
-            {appUser?.name ?? user.displayName ?? user.email?.split("@")[0]}
+            <div className="relative h-7 w-7 transition-transform duration-300 group-hover:scale-110 sm:h-8 sm:w-8">
+              <Image
+                src="/images/Frame_1.png"
+                alt="Logo"
+                fill
+                sizes="32px"
+                className="object-contain drop-shadow-xs"
+                priority
+              />
+            </div>
+            <span>{appUser?.name ?? user.displayName ?? user.email?.split("@")[0]}</span>
           </Link>
           <div className="flex items-center gap-3">
             <LocaleSwitcher />

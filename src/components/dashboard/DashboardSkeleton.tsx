@@ -2,12 +2,14 @@
 
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface DashboardSkeletonProps {
   type?: "list" | "editor";
 }
 
 export function DashboardSkeleton({ type = "list" }: DashboardSkeletonProps) {
+  const t = useTranslations("dashboard");
   if (type === "list") {
     return (
       <div className="mx-auto max-w-3xl px-6 py-10 sm:py-14">
@@ -42,7 +44,7 @@ export function DashboardSkeleton({ type = "list" }: DashboardSkeletonProps) {
         {/* Subtle loading badge */}
         <div className="mt-8 flex items-center justify-center gap-2 text-xs font-medium text-maroon/50">
           <Sparkles className="h-3.5 w-3.5 text-gold animate-spin" />
-          <span>Fetching invitations…</span>
+          <span>{t("list.fetching")}</span>
         </div>
       </div>
     );
@@ -81,7 +83,7 @@ export function DashboardSkeleton({ type = "list" }: DashboardSkeletonProps) {
 
       <div className="mt-8 flex items-center justify-center gap-2 text-xs font-medium text-maroon/50">
         <div className="h-4 w-4 animate-spin rounded-full border-2 border-gold/30 border-t-maroon" />
-        <span>Loading invitation details…</span>
+        <span>{t("editor.loadingDetails")}</span>
       </div>
     </div>
   );

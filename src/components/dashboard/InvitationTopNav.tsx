@@ -1,9 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
-import { Menu, ChevronRight, ExternalLink, ArrowLeft } from "lucide-react";
+import { Menu, ChevronRight, ExternalLink } from "lucide-react";
+import Image from "next/image";
 
 interface InvitationTopNavProps {
   slug: string;
@@ -16,12 +18,14 @@ export function InvitationTopNav({
   shareUrl,
   onOpenMobileMenu,
 }: InvitationTopNavProps) {
+  const t = useTranslations("dashboard.topNav");
+
   return (
     <motion.header
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-gold/30 bg-cream/90 px-4 py-3 sm:px-6 backdrop-blur-md"
+      className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b border-gold/30 bg-cream/90 px-4 sm:px-6 backdrop-blur-md"
     >
       {/* Left: Mobile hamburger & breadcrumbs */}
       <div className="flex items-center gap-3">
@@ -37,11 +41,19 @@ export function InvitationTopNav({
         <div className="flex items-center gap-2 text-xs sm:text-sm">
           <Link
             href="/dashboard"
-            className="group flex items-center gap-1 font-semibold text-maroon/60 transition-colors hover:text-maroon"
+            className="group flex items-center gap-1.5 font-semibold text-maroon/70 transition-colors hover:text-maroon"
           >
-            <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
-            <span className="hidden sm:inline">All Invitations</span>
-            <span className="sm:hidden">Back</span>
+            <div className="relative h-5 w-5 shrink-0 transition-transform group-hover:scale-110">
+              <Image
+                src="/images/Frame_1.png"
+                alt="Logo"
+                fill
+                sizes="20px"
+                className="object-contain drop-shadow-xs"
+              />
+            </div>
+            <span className="hidden sm:inline">{t("allInvitations")}</span>
+            <span className="sm:hidden">{t("back")}</span>
           </Link>
 
           <ChevronRight size={14} className="text-maroon/30" />
@@ -60,10 +72,10 @@ export function InvitationTopNav({
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 rounded-full bg-gold/15 px-3 py-1.5 text-xs font-bold text-maroon transition-colors hover:bg-gold/25"
-            title="Open live invitation page in a new tab"
+            title={t("previewLiveTitle")}
           >
             <ExternalLink size={13} />
-            <span className="hidden sm:inline">Preview Live</span>
+            <span className="hidden sm:inline">{t("previewLive")}</span>
           </a>
         )}
 

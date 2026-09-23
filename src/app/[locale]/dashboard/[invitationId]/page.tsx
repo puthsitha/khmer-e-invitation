@@ -7,8 +7,17 @@ import { useTranslations } from "next-intl";
 import {
   getInvitation,
   listRsvpResponses,
+  listWeddingGuests,
+  createWeddingGuest,
+  updateWeddingGuest,
+  deleteWeddingGuest,
+  toggleGuestInvitedStatus,
+  batchImportWeddingGuests,
   updateInvitation,
 } from "@/lib/firebase/firestore";
+import type { WeddingGuest, RsvpDecision } from "@/types";
+import type { ParsedGuestRow } from "@/lib/excel";
+
 import {
   deleteMediaByUrl,
   uploadBgMusic,
@@ -90,6 +99,7 @@ function Section({
 export default function EditInvitationPage() {
   const { invitationId } = useParams<{ invitationId: string }>();
   const [invitation, setInvitation] = useState<Invitation | null>(null);
+  const [guests, setGuests] = useState<WeddingGuest[]>([]);
   const [rsvps, setRsvps] = useState<RsvpResponse[]>([]);
   const [status, setStatus] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -103,33 +113,73 @@ export default function EditInvitationPage() {
   useEffect(() => {
     getInvitation(invitationId).then(setInvitation);
     listRsvpResponses(invitationId).then(setRsvps);
+    listWeddingGuests(invitationId).then(setGuests);
   }, [invitationId]);
 
-  // Scroll-Spy to track and highlight active section on the Left Nav Bar
-  useEffect(() => {
-    const sectionKeys: InvitationSectionKey[] = [
-      "content",
-      "story",
-      "agenda",
-      "media",
-      "publish",
-      "rsvp",
-    ];
+  async function handleAddGuest(guestData: {
+    name: string;
+    from?: string;
+    by?: string;
+    note?: string;
+    isInvited: boolean;
+    rsvpStatus?: RsvpDecision;
+  }) {
+    try {
+      const created = await createWeddingGuest(invitationId, guestData);
+      setGuests((prev) => [...prev, created]);
+      setStatus(t("rsvp.addSuccess"));
+    } catch {
+      setStatus(t("saveError"));
+    }
+  }
 
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY + 120;
-      for (let i = sectionKeys.length - 1; i >= 0; i--) {
-        const el = document.getElementById(`section-${sectionKeys[i]}`);
-        if (el && el.offsetTop <= scrollPosition) {
-          setActiveSection(sectionKeys[i]);
-          break;
-        }
-      }
-    };
+  async function handleUpdateGuest(guestId: string, patch: Partial<WeddingGuest>) {
+    try {
+      await updateWeddingGuest(invitationId, guestId, patch);
+      setGuests((prev) =>
+        prev.map((g) => (g.guestId === guestId ? { ...g, ...patch, updatedAt: Date.now() } : g)),
+      );
+      setStatus(t("rsvp.updateSuccess"));
+    } catch {
+      setStatus(t("saveError"));
+    }
+  }
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  async function handleDeleteGuest(guestId: string) {
+    try {
+      await deleteWeddingGuest(invitationId, guestId);
+      setGuests((prev) => prev.filter((g) => g.guestId !== guestId));
+      setStatus(t("rsvp.deleteSuccess"));
+    } catch {
+      setStatus(t("saveError"));
+    }
+  }
+
+  async function handleToggleInvited(guestId: string, currentStatus: boolean) {
+    const newStatus = !currentStatus;
+    setGuests((prev) =>
+      prev.map((g) => (g.guestId === guestId ? { ...g, isInvited: newStatus } : g)),
+    );
+    try {
+      await toggleGuestInvitedStatus(invitationId, guestId, newStatus);
+    } catch {
+      setGuests((prev) =>
+        prev.map((g) => (g.guestId === guestId ? { ...g, isInvited: currentStatus } : g)),
+      );
+      setStatus(t("saveError"));
+    }
+  }
+
+  async function handleBatchImportGuests(importedRows: ParsedGuestRow[]) {
+    try {
+      const created = await batchImportWeddingGuests(invitationId, importedRows);
+      setGuests((prev) => [...prev, ...created]);
+      setStatus(t("rsvp.importSuccess", { count: created.length }));
+    } catch {
+      setStatus(t("saveError"));
+    }
+  }
+
 
   if (!invitation) {
     return <DashboardSkeleton type="editor" />;
@@ -155,10 +205,6 @@ export default function EditInvitationPage() {
 
   function handleSelectSection(sectionKey: InvitationSectionKey) {
     setActiveSection(sectionKey);
-    const element = document.getElementById(`section-${sectionKey}`);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
   }
 
   // --- Media Handlers ------------------------------------------------
@@ -307,43 +353,40 @@ export default function EditInvitationPage() {
       <div className="flex flex-1">
         {/* Left Navigation Bar (Sections navigation + Back button) */}
         <InvitationSidebar
-          slug={invitation.slug}
-          status={invitation.status}
           activeSection={activeSection}
           onSelectSection={handleSelectSection}
           counts={{
             story: story.length,
             agenda: agenda.length,
             gallery: invitation.mediaUrls.gallery.length,
-            rsvps: rsvps.length,
+            rsvps: guests.length || rsvps.length,
           }}
           shareUrl={shareUrl}
           isOpenMobile={mobileSidebarOpen}
           onCloseMobile={() => setMobileSidebarOpen(false)}
-          tStatus={tStatus}
         />
 
         {/* Content Area */}
-        <div className="flex-1 overflow-x-hidden">
-          <div className="mx-auto max-w-3xl px-4 py-8 sm:px-8 sm:py-10">
-            {/* Header Title / Slug */}
-            <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-              className="mb-8 flex flex-wrap items-center justify-between gap-4"
-            >
-              <div>
-                <h1 className="font-[family-name:var(--font-heading-km)] text-2xl text-maroon sm:text-3xl">
+        <div className="flex-1 min-w-0 overflow-x-clip">
+          {/* Sticky Header: Slug, ID, Status */}
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="sticky top-14 z-20 border-b border-gold/25 bg-cream/95 px-6 py-4 shadow-xs backdrop-blur-md sm:px-8"
+          >
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex flex-col justify-center">
+                <h1 className="font-[family-name:var(--font-heading-km)] text-xl text-maroon sm:text-2xl">
                   {invitation.slug}
                 </h1>
-                <p className="mt-1 text-xs text-maroon/60">
-                  Invitation ID: <span className="font-mono">{invitation.invitationId}</span>
+                <p className="mt-0.5 text-xs text-maroon/60">
+                  {t("invitationId")}: <span className="font-mono">{invitation.invitationId}</span>
                 </p>
               </div>
 
               <span
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold shadow-xs ${
+                className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-semibold shadow-xs ${
                   invitation.status === "published"
                     ? "bg-emerald-100 text-emerald-800"
                     : "bg-gold/15 text-maroon"
@@ -356,10 +399,14 @@ export default function EditInvitationPage() {
                 />
                 {tStatus(invitation.status)}
               </span>
-            </motion.div>
+            </div>
+          </motion.div>
+
+          <div className="w-full px-6 py-6 sm:px-8 sm:py-8">
 
             {/* Section 1: Content */}
-            <Section id="section-content" title={t("content.title")} delay={0}>
+            {activeSection === "content" && (
+              <Section id="section-content" title={t("content.title")} delay={0}>
               {/* Couple Names */}
               <BilingualField
                 label={t("content.groomName")}
@@ -491,10 +538,12 @@ export default function EditInvitationPage() {
                 title={t("content.colorPalette")}
                 description={t("content.colorPaletteDescription")}
               />
-            </Section>
+              </Section>
+            )}
 
             {/* Section 2: Our Story */}
-            <Section id="section-story" title={t("story.title")} delay={0.05}>
+            {activeSection === "story" && (
+              <Section id="section-story" title={t("story.title")} delay={0}>
               <div className="flex flex-col gap-4">
                 <AnimatePresence initial={false}>
                   {story.map((item, index) => (
@@ -509,7 +558,7 @@ export default function EditInvitationPage() {
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-maroon">
-                          Story Milestone #{index + 1}
+                          {t("story.milestone", { number: index + 1 })}
                         </span>
                         <motion.button
                           type="button"
@@ -549,6 +598,9 @@ export default function EditInvitationPage() {
                             browseFiles: t("media.browseFiles"),
                             uploading: t("media.uploading"),
                             removeImage: t("story.remove"),
+                            supportsNote: t("media.supportsNote"),
+                            imagesCount: t("media.imagesCount", { count: item.image ? 1 : 0 }),
+                            addImage: t("media.addImage"),
                           }}
                         />
                       </div>
@@ -567,10 +619,12 @@ export default function EditInvitationPage() {
                 <Plus className="h-3.5 w-3.5" />
                 <span>{t("story.add")}</span>
               </motion.button>
-            </Section>
+              </Section>
+            )}
 
             {/* Section 3: Agenda */}
-            <Section id="section-agenda" title={t("agenda.title")} delay={0.1}>
+            {activeSection === "agenda" && (
+              <Section id="section-agenda" title={t("agenda.title")} delay={0}>
               <div className="flex flex-col gap-4">
                 <AnimatePresence initial={false}>
                   {agenda.map((item, index) => (
@@ -585,7 +639,7 @@ export default function EditInvitationPage() {
                     >
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <span className="text-xs font-bold text-maroon">
-                          Agenda Event #{index + 1}
+                          {t("agenda.event", { number: index + 1 })}
                         </span>
                         <motion.button
                           type="button"
@@ -629,13 +683,15 @@ export default function EditInvitationPage() {
                 <Plus className="h-3.5 w-3.5" />
                 <span>{t("agenda.add")}</span>
               </motion.button>
-            </Section>
+              </Section>
+            )}
 
             {/* Section 4: Media */}
-            <Section id="section-media" title={t("media.title")} delay={0.15}>
+            {activeSection === "media" && (
+              <Section id="section-media" title={t("media.title")} delay={0}>
               {/* Gallery */}
               <div className="flex flex-col gap-2 rounded-2xl border border-gold/30 bg-cream/20 p-5">
-                <h3 className="text-sm font-semibold text-maroon">Photo Gallery</h3>
+                <h3 className="text-sm font-semibold text-maroon">{t("media.galleryTitle")}</h3>
                 <ImageUploadManager
                   images={invitation.mediaUrls.gallery}
                   onUpload={handleGalleryUpload}
@@ -649,6 +705,8 @@ export default function EditInvitationPage() {
                     removeImage: t("media.removeImage"),
                     coverPhotoBadge: t("media.coverPhotoBadge"),
                     addImage: t("media.addImage"),
+                    supportsNote: t("media.supportsNote"),
+                    imagesCount: t("media.imagesCount", { count: invitation.mediaUrls.gallery.length }),
                   }}
                 />
               </div>
@@ -661,7 +719,7 @@ export default function EditInvitationPage() {
                       <Music className="h-4 w-4" />
                     </span>
                     <div>
-                      <h4 className="text-sm font-semibold text-maroon">Background Music</h4>
+                      <h4 className="text-sm font-semibold text-maroon">{t("media.musicTitle")}</h4>
                       <p className="text-xs text-maroon/60">{t("media.musicNote")}</p>
                     </div>
                   </div>
@@ -695,7 +753,7 @@ export default function EditInvitationPage() {
                     className="inline-flex items-center gap-2 rounded-xl border border-gold/40 bg-white px-4 py-2.5 text-xs font-semibold text-maroon shadow-xs transition-colors hover:bg-gold/15 cursor-pointer"
                   >
                     <UploadCloud className="h-4 w-4 text-gold" />
-                    <span>{invitation.mediaUrls.bgMusic ? "Change Audio Track" : "Upload Audio Track"}</span>
+                    <span>{invitation.mediaUrls.bgMusic ? t("media.changeAudio") : t("media.uploadAudio")}</span>
                   </label>
                 </div>
 
@@ -708,7 +766,7 @@ export default function EditInvitationPage() {
 
               {/* Digital Envelope QR */}
               <div className="flex flex-col gap-2 rounded-2xl border border-gold/30 bg-cream/20 p-5">
-                <h3 className="text-sm font-semibold text-maroon">Digital Envelope (Gift QR)</h3>
+                <h3 className="text-sm font-semibold text-maroon">{t("media.envelopeTitle")}</h3>
                 <ImageUploadManager
                   images={invitation.mediaUrls.digitalEnvelopeQr ? [invitation.mediaUrls.digitalEnvelopeQr] : []}
                   multiple={false}
@@ -725,13 +783,17 @@ export default function EditInvitationPage() {
                     browseFiles: t("media.browseFiles"),
                     uploading: t("media.uploading"),
                     removeImage: t("media.removeImage"),
+                    supportsNote: t("media.supportsNote"),
+                    imagesCount: t("media.imagesCount", { count: invitation.mediaUrls.digitalEnvelopeQr ? 1 : 0 }),
                   }}
                 />
               </div>
-            </Section>
+              </Section>
+            )}
 
             {/* Section 5: Publish & Share */}
-            <Section id="section-publish" title={t("publish.title")} delay={0.2}>
+            {activeSection === "publish" && (
+              <Section id="section-publish" title={t("publish.title")} delay={0}>
               <div className="flex flex-col gap-4 rounded-2xl border border-gold/30 bg-cream/30 p-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
@@ -770,7 +832,7 @@ export default function EditInvitationPage() {
                     >
                       <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-maroon">
                         <Share2 className="h-3.5 w-3.5 text-gold" />
-                        <span>Shareable Link:</span>
+                        <span>{t("publish.shareableLink")}:</span>
                       </span>
                       <a
                         href={shareUrl}
@@ -787,29 +849,24 @@ export default function EditInvitationPage() {
                   )}
                 </AnimatePresence>
               </div>
-            </Section>
+              </Section>
+            )}
 
-            {/* Section 6: RSVPs */}
-            <Section id="section-rsvp" title={t("rsvp.title", { count: rsvps.length })} delay={0.25}>
-              <RsvpManager
-                rsvps={rsvps}
-                labels={{
-                  title: t("rsvp.title", { count: rsvps.length }),
-                  empty: t("rsvp.empty"),
-                  attending: t("rsvp.attending"),
-                  notAttending: t("rsvp.notAttending"),
-                  total: t("rsvp.total"),
-                  attendingCount: t("rsvp.attendingCount"),
-                  declinedCount: t("rsvp.declinedCount"),
-                  rate: t("rsvp.rate"),
-                  searchPlaceholder: t("rsvp.searchPlaceholder"),
-                  filterAll: t("rsvp.filterAll"),
-                  filterAttending: t("rsvp.filterAttending"),
-                  filterDeclined: t("rsvp.filterDeclined"),
-                  noResults: t("rsvp.noResults"),
-                }}
-              />
-            </Section>
+            {/* Section 6: Guests & RSVPs */}
+            {activeSection === "rsvp" && (
+              <Section id="section-rsvp" title={t("rsvp.title", { count: guests.length || rsvps.length })} delay={0}>
+                <RsvpManager
+                  guests={guests}
+                  rsvps={rsvps}
+                  slug={invitation.slug}
+                  onAddGuest={handleAddGuest}
+                  onUpdateGuest={handleUpdateGuest}
+                  onDeleteGuest={handleDeleteGuest}
+                  onToggleInvited={handleToggleInvited}
+                  onBatchImportGuests={handleBatchImportGuests}
+                />
+              </Section>
+            )}
           </div>
         </div>
       </div>

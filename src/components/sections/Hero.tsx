@@ -41,10 +41,12 @@ const kmNameStyle: CSSProperties = {
 
 export function Hero({
   invitation,
+  guestName: propGuestName,
   onOpen,
   onStartMusic,
 }: {
   invitation: Invitation;
+  guestName?: string;
   onOpen: () => void;
   onStartMusic: () => void;
 }) {
@@ -52,7 +54,9 @@ export function Hero({
   const locale = useLocale();
   const shouldReduceMotion = useReducedMotion();
   const [bursting, setBursting] = useState(false);
-  const guestName = useSearchParams().get("to")?.trim();
+  const paramGuestName = useSearchParams().get("to")?.trim();
+  const guestName = propGuestName || paramGuestName;
+
 
   const groomName = pickBilingual(invitation.content.groomName, locale);
   const brideName = pickBilingual(invitation.content.brideName, locale);

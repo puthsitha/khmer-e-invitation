@@ -35,10 +35,17 @@ const DURATION_MS: Record<Phase, number> = {
   zoom: 650,
 };
 
-export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
+export function EnvelopeOpening({
+  onOpen,
+  guestName: propGuestName,
+}: {
+  onOpen: () => void;
+  guestName?: string;
+}) {
   const t = useTranslations("viewer");
   const locale = useLocale();
-  const guestName = useSearchParams().get("to")?.trim();
+  const paramGuestName = useSearchParams().get("to")?.trim();
+  const guestName = propGuestName || paramGuestName;
   const reduceMotion = useReducedMotion();
   const [phase, setPhase] = useState<Phase>("closed");
 

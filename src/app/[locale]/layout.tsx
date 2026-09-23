@@ -12,6 +12,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { EnvTag } from "@/components/ui/EnvTag";
+import { InteractiveMouseGlow } from "@/components/ui/InteractiveMouseGlow";
 import "./globals.css";
 
 const moul = Moul({
@@ -53,6 +54,18 @@ export const metadata: Metadata = {
   title: "Khmer E-Invitation",
   description:
     "Beautiful animated Khmer-style digital invitations for weddings, birthdays, and special events.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon.png", sizes: "192x192", type: "image/png" },
+      { url: "/images/Frame_1.png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+      { url: "/images/Frame_1.png" },
+    ],
+  },
 };
 
 export function generateStaticParams() {
@@ -81,7 +94,9 @@ export default async function RootLayout({
         <NextIntlClientProvider>
           <AuthProvider>{children}</AuthProvider>
         </NextIntlClientProvider>
+        <InteractiveMouseGlow />
         <EnvTag />
+        <div id="portal-root" />
       </body>
     </html>
   );

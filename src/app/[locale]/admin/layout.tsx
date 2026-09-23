@@ -8,6 +8,7 @@ import { Link, useRouter, usePathname } from "@/i18n/navigation";
 import { logout } from "@/lib/firebase/auth";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import Image from "next/image";
 import {
   LayoutDashboard,
   Menu,
@@ -100,8 +101,18 @@ export default function AdminLayout({
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-gold/30 bg-cream/80 py-6 backdrop-blur-md lg:flex">
-        <div className="mb-8 px-6 font-[family-name:var(--font-heading-km)] text-xl text-maroon transition-opacity">
-          {t("title")}
+        <div className="mb-8 flex items-center gap-2.5 px-6 font-[family-name:var(--font-heading-km)] text-xl text-maroon transition-opacity">
+          <div className="relative h-7 w-7 shrink-0">
+            <Image
+              src="/images/Frame_1.png"
+              alt="Logo"
+              fill
+              sizes="28px"
+              className="object-contain drop-shadow-xs"
+              priority
+            />
+          </div>
+          <span>{t("title")}</span>
         </div>
         {navLinks()}
         <div className="mt-6 px-6">
@@ -160,8 +171,17 @@ export default function AdminLayout({
                 transition={{ duration: 0.35, ease: "easeOut" }}
                 className="fixed inset-y-0 left-0 z-50 flex w-72 max-w-[80vw] flex-col bg-cream py-6 shadow-xl lg:hidden">
                 <div className="mb-8 flex items-center justify-between px-6">
-                  <span className="font-[family-name:var(--font-heading-km)] text-xl text-maroon">
-                    {t("title")}
+                  <span className="flex items-center gap-2.5 font-[family-name:var(--font-heading-km)] text-xl text-maroon">
+                    <div className="relative h-7 w-7 shrink-0">
+                      <Image
+                        src="/images/Frame_1.png"
+                        alt="Logo"
+                        fill
+                        sizes="28px"
+                        className="object-contain drop-shadow-xs"
+                      />
+                    </div>
+                    <span>{t("title")}</span>
                   </span>
                   <button
                     type="button"
