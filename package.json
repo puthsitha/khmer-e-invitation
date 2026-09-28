@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "prepare": "git config core.hooksPath .githooks",
+    "seed:wedding": "node scripts/seed-mock-wedding.mjs",
     "firebase:rules:dev": "firebase deploy --only firestore:rules,storage -P dev",
     "firebase:rules:uat": "firebase deploy --only firestore:rules,storage -P uat",
     "firebase:rules:prod": "firebase deploy --only firestore:rules,storage -P production"
@@ -20,7 +21,8 @@
     "next-intl": "^4.13.1",
     "qrcode": "^1.5.4",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@netlify/plugin-nextjs": "^5.15.12",

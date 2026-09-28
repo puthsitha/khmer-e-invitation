@@ -29,7 +29,7 @@ export function OrnamentDivider({
   const objectPosition = CENTERED_MOTIF.includes(variant) ? "object-center" : "object-top";
 
   return (
-    <div className="image-glow relative h-14 w-60 sm:h-16 sm:w-72">
+    <div className="image-glow relative h-14 w-60 max-w-full sm:h-16 sm:w-72">
       <Image
         src={DIVIDER_SRC[variant]}
         alt=""

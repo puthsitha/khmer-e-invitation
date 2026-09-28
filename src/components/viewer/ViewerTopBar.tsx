@@ -17,12 +17,12 @@ export function ViewerTopBar({
   onToggleMute: () => void;
 }) {
   return (
-    <div className="fixed inset-x-0 top-4 z-50 grid grid-cols-3 items-center px-4">
-      <div />
-      <div className="justify-self-center">
+    <div className="fixed inset-x-0 top-3 sm:top-4 z-50 flex items-center justify-between px-3 sm:px-4 pt-[env(safe-area-inset-top,0px)] pointer-events-none max-w-full w-full">
+      <div className="w-16 shrink-0 sm:w-24" />
+      <div className="pointer-events-auto">
         <ViewerLocaleSwitcher locale={locale} onChange={onChangeLocale} />
       </div>
-      <div className="justify-self-end">
+      <div className="flex w-16 shrink-0 justify-end sm:w-24 pointer-events-auto">
         {hasMusic && (
           <button
             type="button"
@@ -30,14 +30,14 @@ export function ViewerTopBar({
             aria-label={
               muted ? "Unmute background music" : "Mute background music"
             }
-            className="flex items-center gap-2 rounded-full border border-gold/40 bg-bg/85 px-3 py-1.5 text-xs uppercase tracking-widest text-maroon shadow-md backdrop-blur-md"
+            className="flex items-center gap-1.5 sm:gap-2 rounded-full border border-gold/40 bg-cream/90 px-2.5 sm:px-3 py-1.5 text-xs uppercase tracking-widest text-maroon shadow-md backdrop-blur-md transition-transform hover:scale-105"
           >
             {muted ? (
-              <VolumeX className="h-4 w-4" aria-hidden />
+              <VolumeX className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden />
             ) : (
-              <Volume2 className="h-4 w-4" aria-hidden />
+              <Volume2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden />
             )}
-            {muted ? "Off" : "On"}
+            <span className="text-[11px] sm:text-xs">{muted ? "Off" : "On"}</span>
           </button>
         )}
       </div>

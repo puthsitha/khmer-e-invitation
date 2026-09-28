@@ -89,10 +89,33 @@ export interface Palette {
   background: string;
 }
 
+export type RsvpDecision = "attending" | "declined" | "not_sure" | "pending";
+
+export interface WeddingGuest {
+  guestId: string;
+  invitationId: string;
+  no?: number;
+  name: string;
+  from?: string;
+  by?: string;
+  note?: string;
+  token: string;
+  isInvited: boolean;
+  invitedAt?: number;
+  rsvpStatus: RsvpDecision;
+  rsvpMessage?: string;
+  rsvpUpdatedAt?: number;
+  createdAt: number;
+  updatedAt: number;
+}
+
 export interface RsvpResponse {
   responseId: string;
+  guestId?: string;
   guestName: string;
   attending: boolean;
+  status?: RsvpDecision;
   message?: string;
   createdAt: number;
 }
+

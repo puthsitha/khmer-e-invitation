@@ -30,7 +30,7 @@ export function Closing({ invitation }: { invitation: Invitation }) {
   return (
     <SectionShell className="text-maroon">
       <OrnamentDivider />
-      <h2 className="text-glow text-3xl text-maroon" style={scriptFontStyle(locale)}>
+      <h2 className="text-glow text-2xl sm:text-3xl text-maroon break-words max-w-full" style={scriptFontStyle(locale)}>
         {names}
       </h2>
       <p className="text-glow" style={bodyFontStyle(locale)}>

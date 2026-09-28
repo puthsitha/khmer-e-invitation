@@ -64,17 +64,34 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // rsvps/{invitationId}/responses/{responseId} — guests can submit a
-    // response to a published invitation; only the invitation owner/admin
-    // can read the guest list.
-    match /rsvps/{invitationId}/responses/{responseId} {
-      allow create: if get(/databases/$(database)/documents/invitations/$(invitationId)).data.status == 'published' &&
-        request.resource.data.guestName is string &&
-        request.resource.data.attending is bool;
+    // invitations/{invitationId}/guests/{guestId} — wedding guest management
+    match /invitations/{invitationId}/guests/{guestId} {
       allow read: if isOwner(
         get(/databases/$(database)/documents/invitations/$(invitationId)).data.ownerUid
+      ) || isAdmin() || get(/databases/$(database)/documents/invitations/$(invitationId)).data.status == 'published';
+      allow write: if isOwner(
+        get(/databases/$(database)/documents/invitations/$(invitationId)).data.ownerUid
       ) || isAdmin();
+      allow update: if isOwner(
+        get(/databases/$(database)/documents/invitations/$(invitationId)).data.ownerUid
+      ) || isAdmin() || (
+        get(/databases/$(database)/documents/invitations/$(invitationId)).data.status == 'published' &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rsvpStatus', 'rsvpMessage', 'rsvpUpdatedAt', 'updatedAt'])
+      );
+    }
+
+    // rsvps/{invitationId}/responses/{responseId} — guests can submit a
+    // response to a published invitation; read is allowed when the invitation
+    // is published, or for the invitation owner or admin.
+    match /rsvps/{invitationId}/responses/{responseId} {
+      allow create: if get(/databases/$(database)/documents/invitations/$(invitationId)).data.status == 'published' &&
+        request.resource.data.guestName is string;
+      allow read: if isOwner(
+        get(/databases/$(database)/documents/invitations/$(invitationId)).data.ownerUid
+      ) || isAdmin() ||
+        get(/databases/$(database)/documents/invitations/$(invitationId)).data.status == 'published';
       allow update, delete: if false;
     }
   }
 }
+

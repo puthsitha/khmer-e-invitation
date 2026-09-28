@@ -35,10 +35,17 @@ const DURATION_MS: Record<Phase, number> = {
   zoom: 650,
 };
 
-export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
+export function EnvelopeOpening({
+  onOpen,
+  guestName: propGuestName,
+}: {
+  onOpen: () => void;
+  guestName?: string;
+}) {
   const t = useTranslations("viewer");
   const locale = useLocale();
-  const guestName = useSearchParams().get("to")?.trim();
+  const paramGuestName = useSearchParams().get("to")?.trim();
+  const guestName = propGuestName || paramGuestName;
   const reduceMotion = useReducedMotion();
   const [phase, setPhase] = useState<Phase>("closed");
 
@@ -75,7 +82,7 @@ export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
       animate={{ opacity: zooming ? 0 : 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5, delay: zooming ? 0.2 : 0 }}
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-8 bg-cream px-6 text-center"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 sm:gap-8 bg-cream px-4 sm:px-6 text-center w-full max-w-full overflow-hidden"
     >
       <Image
         src="/images/bg.png"
@@ -96,7 +103,7 @@ export function EnvelopeOpening({ onOpen }: { onOpen: () => void }) {
             ? { duration: 2.2, repeat: Infinity, ease: "easeInOut" }
             : { duration: 0.3, ease: "easeOut" }
         }
-        className="relative h-56 w-80 sm:h-64 sm:w-96"
+        className="relative h-56 w-80 sm:h-64 sm:w-96 scale-[0.82] min-[375px]:scale-90 min-[410px]:scale-100 origin-center transition-transform"
         style={{ perspective: 1400 }}
       >
         {/* envelope card — flips 180° to reveal its back */}
