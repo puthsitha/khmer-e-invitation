@@ -25,9 +25,9 @@ function FamilyBlock({
   return (
     <div>
       <p className="mb-2 text-xs uppercase tracking-widest text-gold">{heading}</p>
-      <div className="flex flex-col gap-1" style={bodyFontStyle(locale)}>
-        {father && <p>{father}</p>}
-        {mother && <p>{mother}</p>}
+      <div className="flex flex-col gap-1 text-base font-bold text-maroon" style={{ ...bodyFontStyle(locale), fontWeight: 700 }}>
+        {father && <p className="font-bold">{father}</p>}
+        {mother && <p className="font-bold">{mother}</p>}
       </div>
     </div>
   );

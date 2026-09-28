@@ -102,7 +102,7 @@ function GuestFormContent({
   }
 
   return (
-    <div className="relative w-full max-w-md rounded-3xl border border-gold/40 bg-cream p-6 shadow-2xl z-10 animate-in fade-in zoom-in-95 duration-150">
+    <div className="relative w-full max-w-md max-h-[92vh] overflow-y-auto rounded-3xl border border-gold/40 bg-cream p-5 sm:p-6 shadow-2xl z-10 animate-in fade-in zoom-in-95 duration-150">
       <div className="flex items-center justify-between border-b border-gold/20 pb-3">
         <h3 className="font-[family-name:var(--font-heading-km)] text-lg font-bold text-maroon">
           {initialGuest ? t("editGuest") : t("addGuest")}

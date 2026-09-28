@@ -10,7 +10,7 @@ import { SectionHeading } from "@/components/viewer/SectionHeading";
 import { ImageLightbox } from "@/components/viewer/ImageLightbox";
 import type { Invitation } from "@/types";
 
-const ORBIT_RADIUS_PERCENT = 40;
+const ORBIT_RADIUS_PERCENT = 35;
 const ORBIT_DURATION_SECONDS = 50;
 
 function OrbitGallery({
@@ -23,11 +23,11 @@ function OrbitGallery({
   const reduceMotion = useReducedMotion();
   const thumbSizeClass =
     photos.length > 8
-      ? "h-16 w-16 sm:h-20 sm:w-20"
-      : "h-28 w-28 sm:h-36 sm:w-36";
+      ? "h-12 w-12 sm:h-18 sm:w-18"
+      : "h-16 w-16 min-[380px]:h-20 min-[380px]:w-20 sm:h-28 sm:w-28 md:h-32 md:w-32";
 
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-md sm:max-w-lg">
+    <div className="relative mx-auto aspect-square w-full max-w-[260px] min-[380px]:max-w-[280px] sm:max-w-md md:max-w-lg">
       <motion.div
         className="absolute inset-0"
         animate={reduceMotion ? undefined : { rotate: 360 }}

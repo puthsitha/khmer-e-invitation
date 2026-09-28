@@ -39,14 +39,14 @@ export function TypewriterText({
 
   if (reduceMotion) {
     return (
-      <p ref={ref} className={className} style={style}>
+      <p ref={ref} className={`break-words [overflow-wrap:anywhere] ${className ?? ""}`} style={style}>
         {text}
       </p>
     );
   }
 
   return (
-    <p ref={ref} className={className} style={style}>
+    <p ref={ref} className={`break-words [overflow-wrap:anywhere] ${className ?? ""}`} style={style}>
       {inView &&
         graphemes(text).map((unit, index) => (
           <motion.span

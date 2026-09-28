@@ -142,7 +142,7 @@ export function ViewerExperience({ slug }: { slug: string }) {
   return (
     <NextIntlClientProvider locale={displayLocale} messages={viewerMessages[displayLocale]}>
       <PaletteProvider palette={invitation.colorPalette}>
-        <div className="relative min-h-screen">
+        <div className="relative min-h-screen w-full max-w-full overflow-x-hidden">
           <BackgroundBackdrop embedUrl={embedUrl} imageUrl={backdropImage} />
 
           {stage !== "closed" && (

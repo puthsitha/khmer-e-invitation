@@ -112,7 +112,7 @@ export function GuestTable({
   }
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-gold/25 bg-white shadow-xs">
+    <div className="overflow-x-auto rounded-2xl border border-gold/25 bg-white shadow-xs [-webkit-overflow-scrolling:touch]">
       <table className="w-full min-w-[760px] border-collapse text-left text-xs">
         {/* Table Header with subtle luxury warm styling */}
         <thead>

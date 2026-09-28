@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -13,12 +13,14 @@ import {
   Loader2,
   Sparkles,
   Heart,
+  Clock,
 } from "lucide-react";
 import { SectionShell } from "@/components/viewer/SectionShell";
 import { SectionHeading } from "@/components/viewer/SectionHeading";
 import { bodyFontStyle, headingFontStyle } from "@/lib/fonts";
-import { submitGuestRsvp } from "@/lib/firebase/firestore";
-import type { Invitation, RsvpDecision } from "@/types";
+import { submitGuestRsvp, listRsvpResponses } from "@/lib/firebase/firestore";
+import { formatRelativeTime } from "@/lib/khmerDate";
+import type { Invitation, RsvpDecision, RsvpResponse } from "@/types";
 
 interface RsvpSectionProps {
   invitation: Invitation;
@@ -41,12 +43,40 @@ export function RsvpSection({
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // RSVP List state
+  const [rsvps, setRsvps] = useState<RsvpResponse[]>([]);
+  const [loadingRsvps, setLoadingRsvps] = useState(true);
+  const [showAllWishes, setShowAllWishes] = useState(false);
+
   const activeName = initialGuestName || enteredName.trim();
+
+  // Load RSVP responses list
+  useEffect(() => {
+    let cancelled = false;
+
+    listRsvpResponses(invitation.invitationId)
+      .then((data) => {
+        if (!cancelled) {
+          setRsvps(data);
+          setLoadingRsvps(false);
+        }
+      })
+      .catch((err) => {
+        console.warn("Could not load RSVPs for viewer:", err);
+        if (!cancelled) setLoadingRsvps(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [invitation.invitationId]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!activeName) {
-      setError(locale === "km" ? "សូមបញ្ចូលឈ្មោះរបស់អ្នក" : "Please enter your name");
+      setError(
+        locale === "km" ? "សូមបញ្ចូលឈ្មោះរបស់អ្នក" : "Please enter your name",
+      );
       return;
     }
 
@@ -61,6 +91,23 @@ export function RsvpSection({
         message: wishes.trim(),
       });
       setSubmitted(true);
+
+      // Instantly prepend new response to local list
+      const newResponse: RsvpResponse = {
+        responseId: `temp-${Date.now()}`,
+        guestId: guestId || undefined,
+        guestName: activeName,
+        attending: decision === "attending",
+        status: decision,
+        message: wishes.trim() || undefined,
+        createdAt: Date.now(),
+      };
+      setRsvps((prev) => [
+        newResponse,
+        ...prev.filter(
+          (r) => r.guestName.toLowerCase() !== activeName.toLowerCase(),
+        ),
+      ]);
     } catch {
       setError(
         locale === "km"
@@ -72,9 +119,15 @@ export function RsvpSection({
     }
   }
 
+  // Display first 5 responses unless expanded
+  const displayedRsvps = showAllWishes ? rsvps : rsvps.slice(0, 5);
+
   return (
     <SectionShell className="text-maroon">
-      <SectionHeading icon={<MailCheck className="h-4 w-4" />} dividerVariant={2}>
+      <SectionHeading
+        icon={<MailCheck className="h-4 w-4" />}
+        dividerVariant={2}
+      >
         {t("rsvpTitle")}
       </SectionHeading>
 
@@ -85,8 +138,8 @@ export function RsvpSection({
         {t("rsvpSubtitle")}
       </p>
 
-      {/* Main RSVP Card */}
-      <div className="relative mt-6 w-full max-w-md overflow-hidden rounded-3xl border border-gold/40 bg-gradient-to-b from-white/95 via-cream/95 to-white/95 p-6 shadow-xl backdrop-blur-md sm:p-8">
+      {/* Main RSVP Form Card */}
+      <div className="relative mt-6 w-full max-w-lg overflow-hidden rounded-2xl border border-gold/40 bg-gradient-to-b from-white/95 via-cream/95 to-white/95 p-5 shadow-xl backdrop-blur-md sm:rounded-3xl sm:p-8">
         {/* Subtle decorative background glow */}
         <div
           aria-hidden
@@ -206,7 +259,8 @@ export function RsvpSection({
                   className="text-xs font-semibold text-maroon"
                   style={bodyFontStyle(locale)}
                 >
-                  {locale === "km" ? "ការសម្រេចចិត្តរបស់អ្នក" : "Your Decision"} *
+                  {locale === "km" ? "ការសម្រេចចិត្តរបស់អ្នក" : "Your Decision"}{" "}
+                  *
                 </span>
 
                 <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
@@ -278,7 +332,9 @@ export function RsvpSection({
                   >
                     <XCircle
                       className={`h-5 w-5 ${
-                        decision === "declined" ? "text-rose-600" : "text-maroon/40"
+                        decision === "declined"
+                          ? "text-rose-600"
+                          : "text-maroon/40"
                       }`}
                     />
                     <span
@@ -335,6 +391,150 @@ export function RsvpSection({
             </motion.form>
           )}
         </AnimatePresence>
+      </div>
+
+      {/* RSVP Responses & Wishes Guestbook List under RsvpSection */}
+      <div className="relative mt-10 w-full max-w-lg flex flex-col gap-4">
+        {/* Section Sub-heading */}
+        <div className="flex items-center justify-between border-b border-gold/30 pb-3">
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gold/15 text-maroon">
+              <Heart className="h-4 w-4 fill-gold/30 text-gold" />
+            </span>
+            <h3
+              className="text-glow text-base font-bold text-maroon sm:text-lg"
+              style={headingFontStyle(locale)}
+            >
+              {t("guestListTitle")}
+            </h3>
+          </div>
+
+          {rsvps.length > 0 && (
+            <span className="rounded-full border border-gold/30 bg-white/80 px-2.5 py-0.5 text-xs font-semibold text-maroon shadow-2xs">
+              {rsvps.length}
+            </span>
+          )}
+        </div>
+
+        <p
+          className="text-glow text-xs text-maroon/70 -mt-1"
+          style={bodyFontStyle(locale)}
+        >
+          {t("guestListSubtitle")}
+        </p>
+
+        {loadingRsvps ? (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin text-gold" />
+          </div>
+        ) : rsvps.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-gold/40 bg-white/70 p-6 text-center shadow-xs backdrop-blur-xs">
+            <span className="text-2xl" aria-hidden>
+              🌸
+            </span>
+            <p
+              className="mt-2 text-xs text-maroon/70 sm:text-sm"
+              style={bodyFontStyle(locale)}
+            >
+              {t("noRsvpYet")}
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3">
+            <AnimatePresence initial={false}>
+              {displayedRsvps.map((rsvp) => {
+                const isAttending =
+                  rsvp.status === "attending" || rsvp.attending;
+                const isDeclined = rsvp.status === "declined";
+                const isNotSure = rsvp.status === "not_sure";
+
+                return (
+                  <motion.div
+                    key={rsvp.responseId}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.25 }}
+                    className="flex flex-col gap-2 rounded-2xl border border-gold/30 bg-white/90 p-4 shadow-xs backdrop-blur-sm transition-all hover:border-gold/50 hover:shadow-sm"
+                  >
+                    {/* Header Row: Guest Name + Attendance Badge */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex flex-col min-w-0">
+                        <span
+                          className="font-bold text-sm text-maroon sm:text-base truncate"
+                          style={headingFontStyle(locale)}
+                        >
+                          {rsvp.guestName}
+                        </span>
+                        {rsvp.createdAt && (
+                          <div className="flex items-center gap-1 text-[10px] text-maroon/50 mt-0.5">
+                            <Clock className="h-2.5 w-2.5 text-maroon/40" />
+                            <span>
+                              {formatRelativeTime(rsvp.createdAt, locale)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Status Badge */}
+                      <span
+                        className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${
+                          isAttending
+                            ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                            : isDeclined
+                              ? "border-rose-200 bg-rose-50 text-rose-700"
+                              : isNotSure
+                                ? "border-amber-200 bg-amber-50 text-amber-700"
+                                : "border-gray-200 bg-gray-50 text-gray-500"
+                        }`}
+                      >
+                        {isAttending ? (
+                          <CheckCircle2 className="h-3 w-3" />
+                        ) : isDeclined ? (
+                          <XCircle className="h-3 w-3" />
+                        ) : (
+                          <HelpCircle className="h-3 w-3" />
+                        )}
+                        <span>
+                          {isAttending
+                            ? t("attendingOption")
+                            : isDeclined
+                              ? t("declinedOption")
+                              : t("notSureOption")}
+                        </span>
+                      </span>
+                    </div>
+
+                    {/* Wishes / Message quote */}
+                    {rsvp.message && (
+                      <div className="mt-1 rounded-xl border border-gold/20 bg-cream/50 p-3 text-xs leading-relaxed text-maroon/85">
+                        <p className="italic break-words">
+                          &ldquo;{rsvp.message}&rdquo;
+                        </p>
+                      </div>
+                    )}
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+
+            {/* Pagination / Expand Toggle */}
+            {rsvps.length > 5 && (
+              <button
+                type="button"
+                onClick={() => setShowAllWishes(!showAllWishes)}
+                className="mt-2 flex items-center justify-center gap-1.5 rounded-full border border-gold/40 bg-white/80 py-2 px-5 text-xs font-semibold text-maroon hover:bg-gold/15 transition-all cursor-pointer shadow-2xs self-center"
+                style={bodyFontStyle(locale)}
+              >
+                <span>
+                  {showAllWishes
+                    ? t("showLessWishes")
+                    : t("showMoreWishes", { count: rsvps.length - 5 })}
+                </span>
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </SectionShell>
   );

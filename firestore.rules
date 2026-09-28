@@ -81,14 +81,15 @@ service cloud.firestore {
     }
 
     // rsvps/{invitationId}/responses/{responseId} — guests can submit a
-    // response to a published invitation; only the invitation owner/admin
-    // can read the guest list.
+    // response to a published invitation; read is allowed when the invitation
+    // is published, or for the invitation owner or admin.
     match /rsvps/{invitationId}/responses/{responseId} {
       allow create: if get(/databases/$(database)/documents/invitations/$(invitationId)).data.status == 'published' &&
         request.resource.data.guestName is string;
       allow read: if isOwner(
         get(/databases/$(database)/documents/invitations/$(invitationId)).data.ownerUid
-      ) || isAdmin();
+      ) || isAdmin() ||
+        get(/databases/$(database)/documents/invitations/$(invitationId)).data.status == 'published';
       allow update, delete: if false;
     }
   }

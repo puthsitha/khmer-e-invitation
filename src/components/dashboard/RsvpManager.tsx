@@ -139,20 +139,20 @@ export function RsvpManager({
   return (
     <div className="flex flex-col gap-6">
       {/* Summary Metrics Cards — equal height, consistent borders & spacing */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-4">
         {/* Total Guests */}
-        <div className="flex flex-col justify-between gap-3 rounded-2xl border border-gold/25 bg-white p-4 shadow-xs hover:border-gold/50 transition-colors">
+        <div className="flex flex-col justify-between gap-3 rounded-2xl border border-gold/25 bg-white p-3 sm:p-4 shadow-xs hover:border-gold/50 transition-colors">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-maroon/70">{t("total")}</span>
             <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gold/15 text-maroon">
               <Users className="h-4 w-4" />
             </span>
           </div>
-          <span className="text-2xl font-bold leading-none text-maroon">{stats.total}</span>
+          <span className="text-xl font-bold leading-none text-maroon sm:text-2xl">{stats.total}</span>
         </div>
 
         {/* Outreach (Invited vs Remaining) */}
-        <div className="flex flex-col justify-between gap-3 rounded-2xl border border-gold/25 bg-white p-4 shadow-xs hover:border-gold/50 transition-colors">
+        <div className="flex flex-col justify-between gap-3 rounded-2xl border border-gold/25 bg-white p-3 sm:p-4 shadow-xs hover:border-gold/50 transition-colors">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-maroon/70">
               {t("invitedCount")} / {t("remainingCount")}
@@ -161,30 +161,30 @@ export function RsvpManager({
               <Send className="h-4 w-4" />
             </span>
           </div>
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-2xl font-bold leading-none text-maroon">{stats.invited}</span>
-            <span className="text-xs font-medium text-maroon/50">/ {stats.remaining} {t("remainingCount")}</span>
+          <div className="flex flex-wrap items-baseline gap-1 sm:gap-1.5">
+            <span className="text-xl font-bold leading-none text-maroon sm:text-2xl">{stats.invited}</span>
+            <span className="text-[11px] font-medium text-maroon/50 sm:text-xs">/ {stats.remaining} {t("remainingCount")}</span>
           </div>
         </div>
 
         {/* Attending & Rate */}
-        <div className="flex flex-col justify-between gap-3 rounded-2xl border border-gold/25 bg-white p-4 shadow-xs hover:border-gold/50 transition-colors">
+        <div className="flex flex-col justify-between gap-3 rounded-2xl border border-gold/25 bg-white p-3 sm:p-4 shadow-xs hover:border-gold/50 transition-colors">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-maroon/70">{t("attendingCount")}</span>
             <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
               <UserCheck className="h-4 w-4" />
             </span>
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold leading-none text-emerald-700">{stats.attending}</span>
-            <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
+          <div className="flex flex-wrap items-baseline gap-1.5 sm:gap-2">
+            <span className="text-xl font-bold leading-none text-emerald-700 sm:text-2xl">{stats.attending}</span>
+            <span className="rounded-full bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 text-[10px] sm:text-[11px] font-semibold text-emerald-700">
               {stats.rate}%
             </span>
           </div>
         </div>
 
         {/* Declined & Not Sure */}
-        <div className="flex flex-col justify-between gap-3 rounded-2xl border border-gold/25 bg-white p-4 shadow-xs hover:border-gold/50 transition-colors">
+        <div className="flex flex-col justify-between gap-3 rounded-2xl border border-gold/25 bg-white p-3 sm:p-4 shadow-xs hover:border-gold/50 transition-colors">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-maroon/70">
               {t("declinedCount")} / {t("notSureCount")}
@@ -193,9 +193,9 @@ export function RsvpManager({
               <UserX className="h-4 w-4" />
             </span>
           </div>
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-2xl font-bold leading-none text-rose-700">{stats.declined}</span>
-            <span className="text-xs font-medium text-amber-700">
+          <div className="flex flex-wrap items-baseline gap-1 sm:gap-1.5">
+            <span className="text-xl font-bold leading-none text-rose-700 sm:text-2xl">{stats.declined}</span>
+            <span className="text-[11px] font-medium text-amber-700 sm:text-xs">
               (+{stats.notSure} {t("notSureCount")})
             </span>
           </div>
@@ -203,7 +203,7 @@ export function RsvpManager({
       </div>
 
       {/* Tabs + Actions Row */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gold/20 pb-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-gold/20 pb-4">
         {/* Tab Buttons */}
         <div className="flex items-center gap-2">
           <button

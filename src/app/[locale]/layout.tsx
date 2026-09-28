@@ -88,9 +88,9 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={`${moul.variable} ${kantumruy.variable} ${playfair.variable} ${inter.variable} ${greatVibes.variable} ${cormorant.variable} h-full antialiased`}
+      className={`${moul.variable} ${kantumruy.variable} ${playfair.variable} ${inter.variable} ${greatVibes.variable} ${cormorant.variable} h-full antialiased overflow-x-hidden`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col overflow-x-hidden w-full max-w-full">
         <NextIntlClientProvider>
           <AuthProvider>{children}</AuthProvider>
         </NextIntlClientProvider>

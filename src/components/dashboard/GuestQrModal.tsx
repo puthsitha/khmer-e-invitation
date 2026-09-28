@@ -272,7 +272,7 @@ export function GuestQrModal({
       />
 
       {/* Modal Dialog with generous, refined spacing */}
-      <div className="relative z-10 w-full max-w-[430px] rounded-3xl border border-gold/40 bg-cream p-7 shadow-2xl animate-in fade-in zoom-in-95 duration-150 sm:p-8">
+      <div className="relative z-10 w-full max-w-[430px] max-h-[92vh] overflow-y-auto rounded-3xl border border-gold/40 bg-cream p-5 shadow-2xl animate-in fade-in zoom-in-95 duration-150 sm:p-8">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gold/25 pb-4">
           <div className="flex items-center gap-2.5">

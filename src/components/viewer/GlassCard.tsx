@@ -7,7 +7,7 @@ export function GlassCard({
 }) {
   return (
     <div
-      className={`w-full max-w-2xl rounded-3xl bg-cream/75 p-6 shadow-xl backdrop-blur-md sm:p-10 ${className}`}
+      className={`w-full max-w-2xl rounded-2xl sm:rounded-3xl bg-cream/75 p-5 shadow-xl backdrop-blur-md sm:p-8 md:p-10 ${className}`}
     >
       {children}
     </div>

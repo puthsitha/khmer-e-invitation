@@ -53,7 +53,7 @@ export function TimelineItem({
           />
         )}
       </div>
-      <div className="flex-1 pb-8 text-left">{children}</div>
+      <div className="flex-1 min-w-0 pb-8 text-left">{children}</div>
     </motion.li>
   );
 }

@@ -16,14 +16,14 @@ import type { Invitation } from "@/types";
  * adapted to the app's Khmer maroon palette instead of the source's green. */
 const enNameStyle: CSSProperties = {
   color: "var(--color-maroon)",
-  lineHeight: 1.05,
+  lineHeight: 1.15,
   textShadow:
     "rgba(255, 255, 255, 0.28) 0px 1px 2px, rgba(255, 255, 255, 0.2) 0px 2px 6px, rgba(255, 255, 255, 0.14) 0px 4px 16px",
   letterSpacing: "0.005em",
   fontWeight: 400,
-  whiteSpace: "nowrap",
-  overflow: "visible",
-  fontSize: "clamp(1.75rem, 8vw, 2.625rem)",
+  wordBreak: "break-word",
+  overflowWrap: "break-word",
+  fontSize: "clamp(1.5rem, 6.5vw, 2.625rem)",
 };
 
 /** Same reference treatment for the Khmer couple names, keeping the app's
@@ -34,9 +34,9 @@ const kmNameStyle: CSSProperties = {
     "rgba(255, 255, 255, 0.28) 0px 1px 2px, rgba(255, 255, 255, 0.2) 0px 2px 6px, rgba(255, 255, 255, 0.14) 0px 4px 16px",
   letterSpacing: "0px",
   fontWeight: 400,
-  whiteSpace: "nowrap",
-  overflow: "visible",
-  fontSize: "clamp(1.0625rem, 6vw, 1.625rem)",
+  wordBreak: "break-word",
+  overflowWrap: "break-word",
+  fontSize: "clamp(1rem, 5.5vw, 1.625rem)",
 };
 
 export function Hero({
@@ -122,10 +122,11 @@ export function Hero({
   }
 
   return (
-    <div className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-5 overflow-y-auto px-6 py-10 text-center text-maroon">
-      <p className="text-maroon" style={onOccasionStyle}>
-        {t("onOccasion")}
-      </p>
+    <div className="fixed inset-0 z-40 flex flex-col items-center overflow-y-auto overflow-x-hidden px-4 py-8 sm:px-6 sm:py-12 text-center text-maroon min-h-screen w-full max-w-full">
+      <div className="m-auto flex w-full max-w-lg flex-col items-center gap-4 sm:gap-5 py-4">
+        <p className="text-maroon" style={onOccasionStyle}>
+          {t("onOccasion")}
+        </p>
 
       <div className="flex flex-col items-center gap-3 sm:gap-4">
         <motion.h1
@@ -198,6 +199,7 @@ export function Hero({
           )}
           <span className="relative z-10">{t("openInvitation")}</span>
         </motion.button>
+      </div>
       </div>
     </div>
   );

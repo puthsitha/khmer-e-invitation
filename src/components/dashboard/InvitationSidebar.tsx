@@ -156,7 +156,7 @@ export function InvitationSidebar({
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col bg-cream py-4 shadow-2xl lg:hidden"
+              className="fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col bg-cream py-4 pt-[max(1rem,env(safe-area-inset-top,0px))] pb-[max(1rem,env(safe-area-inset-bottom,0px))] shadow-2xl lg:hidden"
             >
               <div className="mb-2 flex items-center justify-between px-4">
                 <span className="flex items-center gap-2 font-[family-name:var(--font-heading-km)] text-base text-maroon">

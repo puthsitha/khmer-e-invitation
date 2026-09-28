@@ -43,6 +43,7 @@ import {
 import { InvitationTopNav } from "@/components/dashboard/InvitationTopNav";
 import { usePalettes } from "@/hooks/usePalettes";
 import { asBilingual, EMPTY_BILINGUAL } from "@/lib/bilingual";
+import { parseGoogleMapsDetails } from "@/lib/mapUrl";
 import {
   MapPin,
   Video,
@@ -86,7 +87,7 @@ function Section({
       animate="show"
       variants={sectionVariants}
       transition={{ duration: 0.5, ease: "easeOut", delay }}
-      className="mb-8 scroll-mt-20 flex flex-col gap-5 rounded-3xl border border-gold/30 bg-white p-6 shadow-sm sm:p-8"
+      className="mb-8 scroll-mt-20 flex flex-col gap-5 rounded-2xl border border-gold/30 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-8"
     >
       <h2 className="font-[family-name:var(--font-heading-km)] text-xl text-maroon">
         {title}
@@ -373,7 +374,7 @@ export default function EditInvitationPage() {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="sticky top-14 z-20 border-b border-gold/25 bg-cream/95 px-6 py-4 shadow-xs backdrop-blur-md sm:px-8"
+            className="sticky top-14 z-20 border-b border-gold/25 bg-cream/95 px-4 py-3.5 shadow-xs backdrop-blur-md sm:px-8 sm:py-4"
           >
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex flex-col justify-center">
@@ -402,7 +403,7 @@ export default function EditInvitationPage() {
             </div>
           </motion.div>
 
-          <div className="w-full px-6 py-6 sm:px-8 sm:py-8">
+          <div className="w-full px-4 py-5 sm:px-8 sm:py-8">
 
             {/* Section 1: Content */}
             {activeSection === "content" && (
@@ -478,19 +479,64 @@ export default function EditInvitationPage() {
               />
 
               {/* Map URL */}
-              <label className="flex flex-col gap-1.5 text-sm font-semibold text-maroon">
-                <div className="flex items-center gap-1.5">
-                  <MapPin className="h-4 w-4 text-gold" />
-                  <span>{t("content.mapUrl")}</span>
-                </div>
-                <input
-                  type="url"
-                  defaultValue={invitation.content.mapUrl ?? ""}
-                  placeholder="https://maps.google.com/?q=..."
-                  onBlur={(e) => saveContent({ mapUrl: e.target.value })}
-                  className={inputClassName}
-                />
-              </label>
+              <div className="flex flex-col gap-2">
+                <label className="flex flex-col gap-1.5 text-sm font-semibold text-maroon">
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="h-4 w-4 text-gold" />
+                    <span>{t("content.mapUrl")}</span>
+                  </div>
+                  <input
+                    type="url"
+                    defaultValue={invitation.content.mapUrl ?? ""}
+                    placeholder="https://maps.google.com/?q=... or latitude, longitude"
+                    onBlur={(e) => saveContent({ mapUrl: e.target.value })}
+                    className={inputClassName}
+                  />
+                </label>
+
+                {(() => {
+                  const addr = asBilingual(invitation.content.address);
+                  const mapPreview = parseGoogleMapsDetails(
+                    invitation.content.mapUrl,
+                    addr.en || addr.km,
+                  );
+                  if (!mapPreview?.embedSrc) return null;
+                  return (
+                    <div className="overflow-hidden rounded-2xl border border-gold/30 bg-cream/30 shadow-2xs">
+                      <div className="flex items-center justify-between border-b border-gold/20 px-3.5 py-2 text-[11px] text-maroon/70 bg-cream/60">
+                        <span className="flex items-center gap-1.5 font-medium">
+                          <MapPin className="h-3.5 w-3.5 text-gold" />
+                          <span>
+                            {mapPreview.lat && mapPreview.lng
+                              ? `Coordinates: ${mapPreview.lat.toFixed(5)}, ${mapPreview.lng.toFixed(5)}`
+                              : mapPreview.query
+                                ? `Location: ${mapPreview.query}`
+                                : "Map Preview"}
+                          </span>
+                        </span>
+                        {invitation.content.mapUrl && (
+                          <a
+                            href={invitation.content.mapUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-semibold text-gold hover:underline"
+                          >
+                            Open Link ↗
+                          </a>
+                        )}
+                      </div>
+                      <div className="relative h-44 w-full">
+                        <iframe
+                          src={mapPreview.embedSrc}
+                          title="Venue Map Preview"
+                          className="h-full w-full border-0"
+                          loading="lazy"
+                        />
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
 
               {/* Cover Video Input & Live Preview */}
               <div className="flex flex-col gap-3">

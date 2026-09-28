@@ -59,7 +59,7 @@ function EventDayCell({ day, locale }: { day: number; locale: string }) {
 
   return (
     <motion.span
-      className="relative flex h-10 w-10 items-center justify-center"
+      className="relative flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center text-xs sm:text-base"
       animate={reduceMotion ? undefined : { scale: [1, 1, 1.25, 0.92, 1, 1] }}
       transition={
         reduceMotion
@@ -120,7 +120,7 @@ export function CalendarSection({ invitation }: { invitation: Invitation }) {
           {weekdays.map((label, index) => (
             <span
               key={index}
-              className="text-sm uppercase tracking-widest text-maroon/50"
+              className="text-xs uppercase tracking-wider text-maroon/50 sm:text-sm sm:tracking-widest"
             >
               {label}
             </span>
@@ -128,7 +128,7 @@ export function CalendarSection({ invitation }: { invitation: Invitation }) {
           {cells.map((day, index) => (
             <span
               key={index}
-              className="relative flex h-10 items-center justify-center text-maroon"
+              className="relative flex h-8 sm:h-10 items-center justify-center text-xs sm:text-base text-maroon"
             >
               {day !== null &&
                 (day === eventDay ? (

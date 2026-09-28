@@ -92,7 +92,12 @@
     "submittingRsvp": "Sending…",
     "rsvpSuccessTitle": "Thank you for your response!",
     "rsvpSuccessMessage": "Your response and heartfelt blessings have been received with love.",
-    "rsvpUpdateNotice": "You can update your response at any time."
+    "rsvpUpdateNotice": "You can update your response at any time.",
+    "guestListTitle": "Wishes & RSVPs",
+    "guestListSubtitle": "Heartfelt blessings and attendance from family and friends",
+    "noRsvpYet": "No wishes yet. Be the first to share your blessings!",
+    "showMoreWishes": "View more wishes ({count})",
+    "showLessWishes": "Show less"
   },
   "dashboard": {
     "loading": "Loading…",

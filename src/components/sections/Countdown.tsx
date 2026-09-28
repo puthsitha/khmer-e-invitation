@@ -49,20 +49,20 @@ export function Countdown({ invitation }: { invitation: Invitation }) {
       <p className="text-glow text-lg text-maroon/90" style={bodyFontStyle(locale)}>
         {t("countdownTitle")}
       </p>
-      <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
+      <div className="grid w-full max-w-xs grid-cols-4 gap-2 sm:max-w-md sm:gap-4">
         {units.map(([value, label], index) => (
           <motion.div
             key={label}
             initial={{ opacity: 0, y: reduceMotion ? 0 : 16 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.4 }}
-            transition={{ duration: 0.6, delay: index * 0.2, ease: "easeOut" }}
-            className="flex min-w-20 flex-col items-center gap-1 rounded-2xl bg-cream/75 px-3 py-4 shadow-lg backdrop-blur-md sm:min-w-24"
+            viewport={{ once: true, amount: 0.1 }}
+            transition={{ duration: 0.6, delay: index * 0.12, ease: "easeOut" }}
+            className="flex flex-col items-center gap-1 rounded-2xl bg-cream/75 px-1.5 py-3 shadow-lg backdrop-blur-md sm:px-3 sm:py-4"
           >
-            <span className="font-[family-name:var(--font-heading-en)] text-3xl text-gold sm:text-4xl">
+            <span className="font-[family-name:var(--font-heading-en)] text-2xl text-gold sm:text-4xl">
               <AnimatedNumber value={String(value).padStart(2, "0")} />
             </span>
-            <span className="text-[10px] uppercase tracking-widest text-maroon/70">
+            <span className="text-[9px] uppercase tracking-wider text-maroon/70 sm:text-[10px] sm:tracking-widest">
               {label}
             </span>
           </motion.div>
