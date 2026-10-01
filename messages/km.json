@@ -211,12 +211,12 @@
         "changeAudio": "ផ្លាស់ប្តូរបទចម្រៀង",
         "uploadAudio": "ផ្ទុកឡើងបទចម្រៀង",
         "envelopeTitle": "ស្រោមសំបុត្រឌីជីថល (QR កាដូ)",
-        "supportsNote": "គាំទ្រ JPEG, PNG, WebP (រហូតដល់ 500KB ក្នុងមួយរូប)",
+        "supportsNote": "គាំទ្រ JPEG, PNG, WebP (រហូតដល់ 100MB ក្នុងមួយរូប)",
         "imagesCount": "{count} រូបភាព",
         "addMore": "បន្ថែមទៀត",
-        "galleryNote": "វិចិត្រសាល — រហូតដល់ ២០ រូបភាព, ៥០០KB ក្នុងមួយ (JPEG/PNG/WebP)។",
-        "musicNote": "តន្ត្រីផ្ទៃខាងក្រោយ — រហូតដល់ ៣MB (MP3/M4A/WAV)។",
-        "envelopeNote": "QR ស្រោមអំណោយឌីជីថល (អំណោយ/ប្រាក់) — រហូតដល់ ៥០០KB (JPEG/PNG/WebP)។",
+        "galleryNote": "វិចិត្រសាល — រហូតដល់ ២០ រូបភាព, 100MB ក្នុងមួយ (JPEG/PNG/WebP)។",
+        "musicNote": "តន្ត្រីផ្ទៃខាងក្រោយ — រហូតដល់ 100MB (MP3/M4A/WAV)។",
+        "envelopeNote": "QR ស្រោមអំណោយឌីជីថល (អំណោយ/ប្រាក់) — រហូតដល់ 100MB (JPEG/PNG/WebP)។",
         "dropzoneTitle": "ទាញ និងទម្លាក់រូបភាពនៅទីនេះ ឬ",
         "browseFiles": "ជ្រើសរើសឯកសារ",
         "uploading": "កំពុងផ្ទុកឡើង…",
@@ -376,7 +376,7 @@
       "uploadImage": "ផ្ទុករូបភាព",
       "changeImage": "ប្តូររូបភាព",
       "uploading": "កំពុងផ្ទុក…",
-      "uploadError": "មិនអាចផ្ទុករូបភាពបានទេ។ សូមសាកល្បង JPEG/PNG/WebP តូចជាង 500KB។"
+      "uploadError": "មិនអាចផ្ទុករូបភាពបានទេ។ សូមសាកល្បង JPEG/PNG/WebP តូចជាង 100MB។"
     },
     "palettes": {
       "title": "ពណ៌ស្បែក",

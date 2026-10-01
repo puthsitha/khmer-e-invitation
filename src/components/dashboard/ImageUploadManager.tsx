@@ -143,7 +143,7 @@ export function ImageUploadManager({
               )}
             </p>
             <p className="text-[11px] text-maroon/50">
-              {labels.supportsNote || "Supports JPEG, PNG, WebP (up to 500KB per image)"}
+              {labels.supportsNote || "Supports JPEG, PNG, WebP (up to 100MB per image)"}
             </p>
           </div>
         </div>

@@ -211,12 +211,12 @@
         "changeAudio": "Change Audio Track",
         "uploadAudio": "Upload Audio Track",
         "envelopeTitle": "Digital Envelope (Gift QR)",
-        "supportsNote": "Supports JPEG, PNG, WebP (up to 500KB per image)",
+        "supportsNote": "Supports JPEG, PNG, WebP (up to 100MB per image)",
         "imagesCount": "{count} Image(s)",
         "addMore": "Add more",
-        "galleryNote": "Gallery — up to 20 images, 500KB each (JPEG/PNG/WebP).",
-        "musicNote": "Background music — up to 3MB (MP3/M4A/WAV).",
-        "envelopeNote": "Digital envelope QR (gift/money) — up to 500KB (JPEG/PNG/WebP).",
+        "galleryNote": "Gallery — up to 20 images, 100MB each (JPEG/PNG/WebP).",
+        "musicNote": "Background music — up to 100MB (MP3/M4A/WAV).",
+        "envelopeNote": "Digital envelope QR (gift/money) — up to 100MB (JPEG/PNG/WebP).",
         "dropzoneTitle": "Drag & drop image(s) here, or",
         "browseFiles": "Browse files",
         "uploading": "Uploading…",
@@ -376,7 +376,7 @@
       "uploadImage": "Upload image",
       "changeImage": "Change image",
       "uploading": "Uploading…",
-      "uploadError": "Couldn't upload image. Try a JPEG/PNG/WebP under 500KB."
+      "uploadError": "Couldn't upload image. Try a JPEG/PNG/WebP under 100MB."
     },
     "palettes": {
       "title": "Palettes",

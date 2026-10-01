@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const ALLOWED_HOSTNAMES = new Set([
+  "files.catbox.moe",
+  "catbox.moe",
   "firebasestorage.googleapis.com",
   "assets.mixkit.co",
   "cdn.pixabay.com",
