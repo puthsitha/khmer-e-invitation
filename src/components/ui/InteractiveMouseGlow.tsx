@@ -23,6 +23,7 @@ export function InteractiveMouseGlow() {
 
   useEffect(() => {
     if (reduceMotion) return;
+    if (window.matchMedia("(pointer: coarse)").matches) return;
 
     const handleMouseMove = (e: MouseEvent) => {
       setMousePos({ x: e.clientX, y: e.clientY });

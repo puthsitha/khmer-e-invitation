@@ -65,9 +65,9 @@ export function InvitationSidebar({
   ];
 
   const content = (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col min-h-0">
       {/* Navigation Links to Sections */}
-      <nav className="flex flex-1 flex-col gap-1.5 px-3 pt-2">
+      <nav className="flex flex-1 flex-col gap-1.5 px-3 pt-2 overflow-y-auto">
         {sections.map((section) => {
           const Icon = section.icon;
           const isActive = activeSection === section.key;
@@ -117,7 +117,7 @@ export function InvitationSidebar({
 
       {/* Live Preview / External Link Card at Bottom */}
       {shareUrl && (
-        <div className="mt-auto border-t border-gold/20 p-4">
+        <div className="mt-auto shrink-0 border-t border-gold/20 p-4">
           <a
             href={shareUrl}
             target="_blank"
@@ -135,7 +135,7 @@ export function InvitationSidebar({
   return (
     <>
       {/* Desktop Sticky Left Sidebar */}
-      <aside className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-64 shrink-0 flex-col border-r border-gold/30 bg-cream/90 py-4 backdrop-blur-md lg:flex">
+      <aside className="hidden h-full w-64 shrink-0 flex-col border-r border-gold/30 bg-cream/90 py-4 backdrop-blur-md lg:flex">
         {content}
       </aside>
 
@@ -148,7 +148,7 @@ export function InvitationSidebar({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-50 bg-maroon/40 backdrop-blur-xs lg:hidden"
+              className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs lg:hidden"
               onClick={onCloseMobile}
             />
             <motion.aside

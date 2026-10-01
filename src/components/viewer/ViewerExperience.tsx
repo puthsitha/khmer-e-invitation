@@ -1,9 +1,8 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { NextIntlClientProvider, useLocale, useTranslations } from "next-intl";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Hourglass, Loader2, MailQuestion } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { getInvitationBySlug } from "@/lib/firebase/firestore";
@@ -18,46 +17,19 @@ import { Hero } from "@/components/sections/Hero";
 import { BackgroundBackdrop } from "@/components/viewer/BackgroundBackdrop";
 import { ViewerTopBar } from "@/components/viewer/ViewerTopBar";
 import { ViewerStatusScreen } from "@/components/viewer/ViewerStatusScreen";
+import { FamilyInvitation } from "@/components/sections/FamilyInvitation";
+import { Countdown } from "@/components/sections/Countdown";
+import { CalendarSection } from "@/components/sections/CalendarSection";
+import { Gallery } from "@/components/sections/Gallery";
+import { Direction } from "@/components/sections/Direction";
+import { OurStory } from "@/components/sections/OurStory";
+import { Agenda } from "@/components/sections/Agenda";
+import { DigitalEnvelope } from "@/components/sections/DigitalEnvelope";
+import { GratitudeApology } from "@/components/sections/GratitudeApology";
+import { RsvpSection } from "@/components/sections/RsvpSection";
+import { ColorPaletteAccent } from "@/components/sections/ColorPaletteAccent";
+import { Closing } from "@/components/sections/Closing";
 import type { Invitation } from "@/types";
-
-const FamilyInvitation = dynamic(() =>
-  import("@/components/sections/FamilyInvitation").then((m) => m.FamilyInvitation),
-);
-const Countdown = dynamic(() =>
-  import("@/components/sections/Countdown").then((m) => m.Countdown),
-);
-const CalendarSection = dynamic(() =>
-  import("@/components/sections/CalendarSection").then((m) => m.CalendarSection),
-);
-const Gallery = dynamic(() =>
-  import("@/components/sections/Gallery").then((m) => m.Gallery),
-);
-const Direction = dynamic(() =>
-  import("@/components/sections/Direction").then((m) => m.Direction),
-);
-const OurStory = dynamic(() =>
-  import("@/components/sections/OurStory").then((m) => m.OurStory),
-);
-const Agenda = dynamic(() =>
-  import("@/components/sections/Agenda").then((m) => m.Agenda),
-);
-const DigitalEnvelope = dynamic(() =>
-  import("@/components/sections/DigitalEnvelope").then((m) => m.DigitalEnvelope),
-);
-const GratitudeApology = dynamic(() =>
-  import("@/components/sections/GratitudeApology").then((m) => m.GratitudeApology),
-);
-const RsvpSection = dynamic(() =>
-  import("@/components/sections/RsvpSection").then((m) => m.RsvpSection),
-);
-const ColorPaletteAccent = dynamic(() =>
-  import("@/components/sections/ColorPaletteAccent").then(
-    (m) => m.ColorPaletteAccent,
-  ),
-);
-const Closing = dynamic(() =>
-  import("@/components/sections/Closing").then((m) => m.Closing),
-);
 
 type Stage = "closed" | "landing" | "opened";
 
@@ -142,7 +114,7 @@ export function ViewerExperience({ slug }: { slug: string }) {
   return (
     <NextIntlClientProvider locale={displayLocale} messages={viewerMessages[displayLocale]}>
       <PaletteProvider palette={invitation.colorPalette}>
-        <div className="relative min-h-screen w-full max-w-full overflow-x-hidden">
+        <div className="relative min-h-screen w-full max-w-full overflow-x-clip">
           <BackgroundBackdrop embedUrl={embedUrl} imageUrl={backdropImage} />
 
           {stage !== "closed" && (
@@ -155,49 +127,65 @@ export function ViewerExperience({ slug }: { slug: string }) {
             />
           )}
 
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
             {stage === "closed" && (
-              <Suspense fallback={null}>
+              <motion.div
+                key="envelope"
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+              >
                 <EnvelopeOpening
                   onOpen={handleOpenEnvelope}
                   guestName={guestInfo?.name}
                 />
-              </Suspense>
+              </motion.div>
+            )}
+
+            {stage === "landing" && (
+              <motion.div
+                key="landing"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+              >
+                <Hero
+                  invitation={invitation}
+                  guestName={guestInfo?.name}
+                  onOpen={handleOpenInvitation}
+                  onStartMusic={startMusic}
+                />
+              </motion.div>
+            )}
+
+            {stage === "opened" && (
+              <motion.div
+                key="opened"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
+                className="w-full max-w-full"
+              >
+                <div className="h-20 sm:h-24" aria-hidden />
+                <FamilyInvitation invitation={invitation} />
+                <Countdown invitation={invitation} />
+                <CalendarSection invitation={invitation} />
+                <Gallery invitation={invitation} />
+                <Direction invitation={invitation} />
+                <OurStory invitation={invitation} />
+                <Agenda invitation={invitation} />
+                <DigitalEnvelope invitation={invitation} />
+                <GratitudeApology />
+                <RsvpSection
+                  invitation={invitation}
+                  guestId={guestInfo?.guestId}
+                  guestName={guestInfo?.name}
+                />
+                <ColorPaletteAccent invitation={invitation} />
+                <Closing invitation={invitation} />
+              </motion.div>
             )}
           </AnimatePresence>
-
-          {stage === "landing" && (
-            <Suspense fallback={null}>
-              <Hero
-                invitation={invitation}
-                guestName={guestInfo?.name}
-                onOpen={handleOpenInvitation}
-                onStartMusic={startMusic}
-              />
-            </Suspense>
-          )}
-
-          {stage === "opened" && (
-            <>
-              <div className="h-20 sm:h-24" aria-hidden />
-              <FamilyInvitation invitation={invitation} />
-              <Countdown invitation={invitation} />
-              <CalendarSection invitation={invitation} />
-              <Gallery invitation={invitation} />
-              <Direction invitation={invitation} />
-              <OurStory invitation={invitation} />
-              <Agenda invitation={invitation} />
-              <DigitalEnvelope invitation={invitation} />
-              <GratitudeApology />
-              <RsvpSection
-                invitation={invitation}
-                guestId={guestInfo?.guestId}
-                guestName={guestInfo?.name}
-              />
-              <ColorPaletteAccent invitation={invitation} />
-              <Closing invitation={invitation} />
-            </>
-          )}
         </div>
       </PaletteProvider>
     </NextIntlClientProvider>

@@ -16,7 +16,7 @@ export function BackgroundBackdrop({
   imageUrl?: string;
 }) {
   return (
-    <div className="fixed inset-0 -z-10 overflow-hidden bg-cream w-full max-w-full">
+    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-cream w-full max-w-full select-none" aria-hidden>
       {embedUrl ? (
         <iframe
           src={embedUrl}

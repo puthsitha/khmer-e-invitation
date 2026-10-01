@@ -59,20 +59,20 @@ export default function DashboardLayout({
     pathname.startsWith("/dashboard/") && pathname !== "/dashboard/new";
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div className={isInvitationEditor ? "flex h-dvh flex-col overflow-hidden bg-cream" : "min-h-screen bg-cream"}>
       {/* Standard top header shown on /dashboard and /dashboard/new */}
       {!isInvitationEditor && (
         <motion.header
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="sticky top-0 z-40 flex items-center justify-between border-b border-gold/30 bg-cream/85 px-6 py-4 backdrop-blur-md"
+          className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-gold/30 bg-cream/85 px-4 sm:px-6 py-3 sm:py-4 backdrop-blur-md"
         >
           <Link
             href="/dashboard"
-            className="group flex items-center gap-2.5 font-[family-name:var(--font-heading-km)] text-xl text-maroon transition-opacity hover:opacity-80"
+            className="group flex min-w-0 shrink items-center gap-2.5 font-[family-name:var(--font-heading-km)] text-lg sm:text-xl text-maroon transition-opacity hover:opacity-80"
           >
-            <div className="relative h-7 w-7 transition-transform duration-300 group-hover:scale-110 sm:h-8 sm:w-8">
+            <div className="relative h-7 w-7 shrink-0 transition-transform duration-300 group-hover:scale-110 sm:h-8 sm:w-8">
               <Image
                 src="/images/Frame_1.png"
                 alt="Logo"
@@ -82,9 +82,9 @@ export default function DashboardLayout({
                 priority
               />
             </div>
-            <span>{appUser?.name ?? user.displayName ?? user.email?.split("@")[0]}</span>
+            <span className="truncate">{appUser?.name ?? user.displayName ?? user.email?.split("@")[0]}</span>
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <LocaleSwitcher />
             <motion.button
               type="button"
@@ -92,7 +92,7 @@ export default function DashboardLayout({
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
               transition={{ duration: 0.2 }}
-              className="cursor-pointer rounded-full border border-gold/60 px-4 py-1.5 text-xs font-semibold text-maroon transition-colors hover:bg-maroon hover:text-cream"
+              className="cursor-pointer rounded-full border border-gold/60 px-3 py-1 sm:px-4 sm:py-1.5 text-xs font-semibold text-maroon transition-colors hover:bg-maroon hover:text-cream whitespace-nowrap"
             >
               {t("signOut")}
             </motion.button>

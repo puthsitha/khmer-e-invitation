@@ -112,17 +112,20 @@ export function Hero({
         };
 
   function handleOpenClick() {
-    // Start audio synchronously, in the same click, so browsers that
-    // require a fresh user gesture to resume an AudioContext (notably
-    // Safari/iOS) don't block playback — the stage transition can still be
-    // delayed for the spark burst without affecting that gesture window.
     onStartMusic();
     setBursting(true);
-    setTimeout(onOpen, 900);
+    setTimeout(onOpen, 500);
   }
 
   return (
-    <div className="fixed inset-0 z-40 flex flex-col items-center overflow-y-auto overflow-x-hidden px-4 py-8 sm:px-6 sm:py-12 text-center text-maroon min-h-screen w-full max-w-full">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.4, ease: "easeInOut" }}
+      className="fixed inset-0 z-40 flex flex-col items-center overflow-y-auto overflow-x-clip px-4 py-8 sm:px-6 sm:py-12 text-center text-maroon min-h-screen w-full max-w-full"
+      style={{ WebkitOverflowScrolling: "touch", touchAction: "pan-y" }}
+    >
       <div className="m-auto flex w-full max-w-lg flex-col items-center gap-4 sm:gap-5 py-4">
         <p className="text-maroon" style={onOccasionStyle}>
           {t("onOccasion")}
@@ -201,6 +204,6 @@ export function Hero({
         </motion.button>
       </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
