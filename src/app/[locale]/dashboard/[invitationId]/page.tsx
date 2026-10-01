@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
@@ -106,6 +106,7 @@ export default function EditInvitationPage() {
   const [saving, setSaving] = useState(false);
   const [activeSection, setActiveSection] = useState<InvitationSectionKey>("content");
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const contentAreaRef = useRef<HTMLElement | null>(null);
 
   const t = useTranslations("dashboard.editor");
   const tStatus = useTranslations("dashboard.list.status");
@@ -206,6 +207,7 @@ export default function EditInvitationPage() {
 
   function handleSelectSection(sectionKey: InvitationSectionKey) {
     setActiveSection(sectionKey);
+    contentAreaRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   // --- Media Handlers ------------------------------------------------
@@ -342,7 +344,7 @@ export default function EditInvitationPage() {
       : "";
 
   return (
-    <div className="flex min-h-screen flex-col bg-cream">
+    <div className="flex h-full flex-col overflow-hidden bg-cream">
       {/* Sticky Top Navigation Bar */}
       <InvitationTopNav
         slug={invitation.slug}
@@ -351,7 +353,7 @@ export default function EditInvitationPage() {
       />
 
       {/* Main Page Layout: Left Nav Bar + Content Container */}
-      <div className="flex flex-1">
+      <div className="flex flex-1 min-h-0 overflow-hidden">
         {/* Left Navigation Bar (Sections navigation + Back button) */}
         <InvitationSidebar
           activeSection={activeSection}
@@ -367,27 +369,35 @@ export default function EditInvitationPage() {
           onCloseMobile={() => setMobileSidebarOpen(false)}
         />
 
-        {/* Content Area */}
-        <div className="flex-1 min-w-0 overflow-x-clip">
+        {/* Content Area - ONLY THIS SCROLLS */}
+        <main
+          ref={contentAreaRef}
+          className="flex-1 min-w-0 h-full overflow-y-auto overflow-x-hidden"
+          style={{
+            WebkitOverflowScrolling: "touch",
+            touchAction: "pan-y",
+            overscrollBehaviorY: "contain",
+          }}
+        >
           {/* Sticky Header: Slug, ID, Status */}
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="sticky top-14 z-20 border-b border-gold/25 bg-cream/95 px-4 py-3.5 shadow-xs backdrop-blur-md sm:px-8 sm:py-4"
+            className="sticky top-0 z-20 border-b border-gold/25 bg-cream/95 px-4 py-3 shadow-xs sm:backdrop-blur-md sm:px-8 sm:py-4"
           >
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex flex-col justify-center">
-                <h1 className="font-[family-name:var(--font-heading-km)] text-xl text-maroon sm:text-2xl">
+            <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
+              <div className="flex flex-col justify-center min-w-0 max-w-full">
+                <h1 className="font-[family-name:var(--font-heading-km)] text-lg sm:text-2xl text-maroon break-words min-w-0">
                   {invitation.slug}
                 </h1>
-                <p className="mt-0.5 text-xs text-maroon/60">
+                <p className="mt-0.5 text-xs text-maroon/60 truncate">
                   {t("invitationId")}: <span className="font-mono">{invitation.invitationId}</span>
                 </p>
               </div>
 
               <span
-                className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-semibold shadow-xs ${
+                className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold shadow-xs ${
                   invitation.status === "published"
                     ? "bg-emerald-100 text-emerald-800"
                     : "bg-gold/15 text-maroon"
@@ -914,7 +924,7 @@ export default function EditInvitationPage() {
               </Section>
             )}
           </div>
-        </div>
+        </main>
       </div>
 
       {/* Auto-dismissing Floating Save Status Toast */}

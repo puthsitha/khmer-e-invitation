@@ -1,8 +1,6 @@
 import {
   deleteObject,
-  getDownloadURL,
   ref,
-  uploadBytes,
 } from "firebase/storage";
 import { storage } from "./client";
 import {
@@ -13,24 +11,65 @@ import {
 
 export class UploadValidationError extends Error {}
 
+function formatBytes(bytes: number): string {
+  if (bytes >= 1024 * 1024) {
+    return `${Math.round(bytes / (1024 * 1024))}MB`;
+  }
+  return `${Math.round(bytes / 1024)}KB`;
+}
+
 function assertUpload(
   file: File,
-  { maxBytes, allowedTypes }: { maxBytes: number; allowedTypes: string[] },
+  {
+    maxBytes,
+    allowedTypes,
+    allowedExtensions,
+  }: {
+    maxBytes: number;
+    allowedTypes: readonly string[];
+    allowedExtensions?: readonly string[];
+  },
 ) {
-  if (!allowedTypes.includes(file.type)) {
+  const extension = file.name.split(".").pop()?.toLowerCase();
+  const matchesType = file.type && allowedTypes.includes(file.type);
+  const matchesExt =
+    extension && allowedExtensions && allowedExtensions.includes(`.${extension}`);
+
+  if (!matchesType && !matchesExt) {
     throw new UploadValidationError(
-      `Unsupported file type "${file.type}". Allowed: ${allowedTypes.join(", ")}.`,
+      `Unsupported file type "${file.type || extension}". Allowed: ${allowedTypes.join(", ")}.`,
     );
   }
   if (file.size > maxBytes) {
     throw new UploadValidationError(
-      `File is too large (${Math.ceil(file.size / 1024)}KB). Max allowed is ${Math.ceil(maxBytes / 1024)}KB.`,
+      `File is too large (${formatBytes(file.size)}). Max allowed is ${formatBytes(maxBytes)}.`,
     );
   }
 }
 
+async function uploadToCatbox(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch("/api/catbox/upload", {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.error || `Upload failed with status ${res.status}`);
+  }
+
+  const data = await res.json();
+  if (!data.url) {
+    throw new Error("No URL returned from upload");
+  }
+  return data.url;
+}
+
 export async function uploadGalleryImage(
-  invitationId: string,
+  _invitationId: string,
   file: File,
   existingCount: number,
 ) {
@@ -42,63 +81,69 @@ export async function uploadGalleryImage(
   assertUpload(file, {
     maxBytes: UPLOAD_LIMITS.galleryImageMaxBytes,
     allowedTypes: ALLOWED_IMAGE_TYPES,
+    allowedExtensions: [".jpg", ".jpeg", ".png", ".webp", ".gif"],
   });
 
-  const path = `invitations/${invitationId}/gallery/${Date.now()}-${file.name}`;
-  const storageRef = ref(storage, path);
-  await uploadBytes(storageRef, file, { contentType: file.type });
-  return getDownloadURL(storageRef);
+  return uploadToCatbox(file);
 }
 
-export async function uploadBgMusic(invitationId: string, file: File) {
+export async function uploadBgMusic(_invitationId: string, file: File) {
   assertUpload(file, {
     maxBytes: UPLOAD_LIMITS.bgMusicMaxBytes,
     allowedTypes: ALLOWED_AUDIO_TYPES,
+    allowedExtensions: [".mp3", ".wav", ".m4a", ".aac", ".ogg", ".mp4"],
   });
 
-  const path = `invitations/${invitationId}/music/${Date.now()}-${file.name}`;
-  const storageRef = ref(storage, path);
-  await uploadBytes(storageRef, file, { contentType: file.type });
-  return getDownloadURL(storageRef);
+  return uploadToCatbox(file);
 }
 
-export async function uploadDigitalEnvelopeQr(invitationId: string, file: File) {
+export async function uploadDigitalEnvelopeQr(_invitationId: string, file: File) {
   assertUpload(file, {
     maxBytes: UPLOAD_LIMITS.galleryImageMaxBytes,
     allowedTypes: ALLOWED_IMAGE_TYPES,
+    allowedExtensions: [".jpg", ".jpeg", ".png", ".webp", ".gif"],
   });
 
-  const path = `invitations/${invitationId}/envelope/${Date.now()}-${file.name}`;
-  const storageRef = ref(storage, path);
-  await uploadBytes(storageRef, file, { contentType: file.type });
-  return getDownloadURL(storageRef);
+  return uploadToCatbox(file);
 }
 
-export async function uploadStoryImage(invitationId: string, file: File) {
+export async function uploadStoryImage(_invitationId: string, file: File) {
   assertUpload(file, {
     maxBytes: UPLOAD_LIMITS.galleryImageMaxBytes,
     allowedTypes: ALLOWED_IMAGE_TYPES,
+    allowedExtensions: [".jpg", ".jpeg", ".png", ".webp", ".gif"],
   });
 
-  const path = `invitations/${invitationId}/story/${Date.now()}-${file.name}`;
-  const storageRef = ref(storage, path);
-  await uploadBytes(storageRef, file, { contentType: file.type });
-  return getDownloadURL(storageRef);
+  return uploadToCatbox(file);
 }
 
-export async function uploadTemplatePreviewImage(templateId: string, file: File) {
+export async function uploadTemplatePreviewImage(_templateId: string, file: File) {
   assertUpload(file, {
     maxBytes: UPLOAD_LIMITS.galleryImageMaxBytes,
     allowedTypes: ALLOWED_IMAGE_TYPES,
+    allowedExtensions: [".jpg", ".jpeg", ".png", ".webp", ".gif"],
   });
 
-  const path = `templates/${templateId}/${Date.now()}-${file.name}`;
-  const storageRef = ref(storage, path);
-  await uploadBytes(storageRef, file, { contentType: file.type });
-  return getDownloadURL(storageRef);
+  return uploadToCatbox(file);
 }
 
 export async function deleteMediaByUrl(url: string) {
-  const storageRef = ref(storage, url);
-  await deleteObject(storageRef);
+  if (!url) return;
+
+  if (url.includes("catbox.moe")) {
+    await fetch("/api/catbox/delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url }),
+    }).catch(() => {});
+    return;
+  }
+
+  // Fallback for legacy Firebase Storage URLs
+  try {
+    const storageRef = ref(storage, url);
+    await deleteObject(storageRef);
+  } catch (err) {
+    console.warn("Failed to delete legacy storage object", err);
+  }
 }

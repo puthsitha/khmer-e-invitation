@@ -136,16 +136,16 @@ export default function AdminLayout({
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="sticky top-0 z-40 flex items-center justify-between gap-4 border-b border-gold/30 bg-cream/80 px-6 py-4 backdrop-blur-md">
-          <span className="flex items-center gap-3">
+          className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-gold/30 bg-cream/80 px-4 sm:px-6 py-3 sm:py-4 backdrop-blur-md">
+          <span className="flex min-w-0 items-center gap-2 sm:gap-3">
             <button
               type="button"
               onClick={() => setMobileNavOpen(true)}
               aria-label={t("nav.overview")}
-              className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-maroon transition-colors hover:bg-gold/10 lg:hidden">
-              <Menu size={22} strokeWidth={1.75} />
+              className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-maroon transition-colors hover:bg-gold/10 lg:hidden">
+              <Menu size={20} strokeWidth={1.75} />
             </button>
-            <span className="font-[family-name:var(--font-heading-km)] text-xl text-maroon">
+            <span className="truncate font-[family-name:var(--font-heading-km)] text-lg sm:text-xl text-maroon">
               {currentTitle}
             </span>
           </span>
@@ -161,7 +161,7 @@ export default function AdminLayout({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.25 }}
-                className="fixed inset-0 z-50 bg-maroon/40 backdrop-blur-sm lg:hidden"
+                className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm lg:hidden"
                 onClick={() => setMobileNavOpen(false)}
               />
               <motion.aside
