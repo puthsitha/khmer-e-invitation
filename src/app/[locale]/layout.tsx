@@ -24,13 +24,11 @@ const moul = Moul({
 const kantumruy = Kantumruy_Pro({
   variable: "--font-kantumruy",
   subsets: ["khmer", "latin"],
-  weight: ["300", "400", "500", "600", "700"],
 });
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin"],
-  weight: ["400", "600", "700"],
 });
 
 const inter = Inter({
@@ -47,7 +45,6 @@ const greatVibes = Great_Vibes({
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
