@@ -11,6 +11,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { EnvTag } from "@/components/ui/EnvTag";
 import { InteractiveMouseGlow } from "@/components/ui/InteractiveMouseGlow";
 import "./globals.css";
@@ -89,7 +90,9 @@ export default async function RootLayout({
     >
       <body className="min-h-screen flex flex-col w-full max-w-full">
         <NextIntlClientProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <ThemeProvider>{children}</ThemeProvider>
+          </AuthProvider>
         </NextIntlClientProvider>
         <InteractiveMouseGlow />
         <EnvTag />

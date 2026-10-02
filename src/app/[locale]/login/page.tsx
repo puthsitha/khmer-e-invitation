@@ -10,6 +10,7 @@ import { MuiInput } from "@/components/ui/MuiInput";
 import { OrnamentDivider } from "@/components/ui/OrnamentDivider";
 import { InteractiveAuthHero } from "@/components/auth/InteractiveAuthHero";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { ContactAccountModal } from "@/components/auth/ContactAccountModal";
 import { ForgotPasswordModal } from "@/components/auth/ForgotPasswordModal";
 import { AlertCircle } from "lucide-react";
@@ -121,23 +122,24 @@ export default function LoginPage() {
         : 0;
 
   return (
-    <main className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-cream px-4 py-12 sm:px-6">
-      {/* Top right Language Switcher */}
-      <div className="absolute right-4 top-4 z-30">
+    <main className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-cream dark:bg-[#140f13] text-foreground px-4 py-12 sm:px-6">
+      {/* Top right Language Switcher & Theme Toggle */}
+      <div className="absolute right-4 top-4 z-30 flex items-center gap-2 sm:gap-3">
         <LocaleSwitcher />
+        <ThemeToggle />
       </div>
 
       {/* Ambient animated backdrop: soft drifting gold/maroon orbs */}
       <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
         <div
-          className="login-orb absolute -left-24 -top-24 h-72 w-72 rounded-full bg-gold/30 blur-3xl"
+          className="login-orb absolute -left-24 -top-24 h-72 w-72 rounded-full bg-gold/30 dark:bg-gold/15 blur-3xl"
           style={{
             ["--orb-drift-x" as string]: "6%",
             ["--orb-drift-y" as string]: "8%",
           }}
         />
         <div
-          className="login-orb absolute -right-20 top-1/3 h-80 w-80 rounded-full bg-maroon/20 blur-3xl"
+          className="login-orb absolute -right-20 top-1/3 h-80 w-80 rounded-full bg-maroon/20 dark:bg-maroon/10 blur-3xl"
           style={{
             ["--orb-drift-x" as string]: "-5%",
             ["--orb-drift-y" as string]: "-7%",
@@ -145,7 +147,7 @@ export default function LoginPage() {
           }}
         />
         <div
-          className="login-orb absolute bottom-[-6rem] left-1/3 h-72 w-72 rounded-full bg-gold-light/30 blur-3xl"
+          className="login-orb absolute bottom-[-6rem] left-1/3 h-72 w-72 rounded-full bg-gold-light/30 dark:bg-gold/10 blur-3xl"
           style={{
             ["--orb-drift-x" as string]: "4%",
             ["--orb-drift-y" as string]: "-6%",
@@ -159,7 +161,7 @@ export default function LoginPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
-        className="relative z-10 grid w-full max-w-4xl grid-cols-1 items-stretch gap-6 overflow-hidden rounded-3xl border border-gold/30 bg-white/75 p-4 shadow-2xl backdrop-blur-xl sm:p-8 lg:grid-cols-2 lg:gap-8">
+        className="relative z-10 grid w-full max-w-4xl grid-cols-1 items-stretch gap-6 overflow-hidden rounded-3xl border border-gold/30 dark:border-gold/20 bg-white/75 dark:bg-[#1a1318]/90 p-4 shadow-2xl backdrop-blur-xl sm:p-8 lg:grid-cols-2 lg:gap-8">
         {/* Left Column: Interactive Animated Characters Hero */}
         <div className="flex items-center justify-center bg-transparent p-2 sm:p-4">
           <InteractiveAuthHero
@@ -176,10 +178,10 @@ export default function LoginPage() {
         {/* Right Column: Material UI Outlined Form Card */}
         <div className="flex flex-col justify-center px-2 py-4 sm:px-6">
           <div className="mb-6 flex flex-col items-center text-center">
-            <h1 className="font-[family-name:var(--font-heading-km)] text-2xl text-maroon sm:text-3xl">
+            <h1 className="font-[family-name:var(--font-heading-km)] text-2xl text-maroon dark:text-cream sm:text-3xl">
               {t("loginTitle")}
             </h1>
-            <p className="mt-1 text-sm text-maroon/70">{t("subtitle")}</p>
+            <p className="mt-1 text-sm text-maroon/70 dark:text-cream/70">{t("subtitle")}</p>
             <div className="mt-2 flex w-full justify-center">
               <OrnamentDivider variant={2} />
             </div>
@@ -240,7 +242,7 @@ export default function LoginPage() {
               whileHover={submitting ? undefined : { scale: 1.015 }}
               whileTap={submitting ? undefined : { scale: 0.985 }}
               transition={{ duration: 0.15 }}
-              className="group relative mt-1 flex h-12 w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-maroon text-sm font-semibold text-cream shadow-md transition-all duration-200 hover:bg-maroon/95 disabled:cursor-not-allowed disabled:opacity-75">
+              className="group relative mt-1 flex h-12 w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-maroon dark:bg-gold text-sm font-semibold text-cream dark:text-black shadow-md transition-all duration-200 hover:bg-maroon/95 dark:hover:bg-gold-light disabled:cursor-not-allowed disabled:opacity-75">
               <AnimatePresence mode="wait">
                 {submitting ? (
                   <motion.div
@@ -251,7 +253,7 @@ export default function LoginPage() {
                     transition={{ duration: 0.15 }}
                     className="flex items-center gap-2.5">
                     <svg
-                      className="h-4 w-4 animate-spin text-cream"
+                      className="h-4 w-4 animate-spin text-cream dark:text-black"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24">
@@ -291,26 +293,26 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => setShowForgotPasswordModal(true)}
-              className="font-medium text-maroon/80 underline-offset-4 transition-colors hover:text-maroon hover:underline cursor-pointer">
+              className="font-medium text-maroon/80 dark:text-cream/80 underline-offset-4 transition-colors hover:text-maroon dark:hover:text-gold hover:underline cursor-pointer">
               {t("forgotPassword")}
             </button>
 
             {/* Subtle Divider */}
             <div className="flex w-full items-center gap-3 my-0.5">
-              <div className="h-px flex-1 bg-gold/25" />
-              <span className="text-[10px] uppercase tracking-wider text-maroon/40 font-semibold">
+              <div className="h-px flex-1 bg-gold/25 dark:bg-gold/15" />
+              <span className="text-[10px] uppercase tracking-wider text-maroon/40 dark:text-cream/40 font-semibold">
                 {t("or")}
               </span>
-              <div className="h-px flex-1 bg-gold/25" />
+              <div className="h-px flex-1 bg-gold/25 dark:bg-gold/15" />
             </div>
 
             {/* Create Account Contact Trigger */}
-            <p className="text-maroon/80">
+            <p className="text-maroon/80 dark:text-cream/80">
               {t("noAccountQuestion")}{" "}
               <button
                 type="button"
                 onClick={() => setShowContactModal(true)}
-                className="font-semibold text-gold-light underline underline-offset-2 transition-colors hover:text-maroon cursor-pointer">
+                className="font-semibold text-gold dark:text-gold-light underline underline-offset-2 transition-colors hover:text-maroon dark:hover:text-gold cursor-pointer">
                 {t("contactHere")}
               </button>
             </p>

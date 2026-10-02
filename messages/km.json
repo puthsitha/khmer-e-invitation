@@ -356,7 +356,10 @@
     "signOut": "ចាកចេញ",
     "signOutTitle": "ចាកចេញ?",
     "signOutBody": "អ្នកនឹងត្រូវចូលគណនីម្តងទៀត ដើម្បីចូលប្រើគណនីរបស់អ្នក។",
-    "clearFilters": "សម្អាត"
+    "clearFilters": "សម្អាត",
+    "themeLight": "ពន្លឺ",
+    "themeDark": "ងងឹត",
+    "themeToggle": "ប្តូរពន្លឺ/ងងឹត"
   },
   "admin": {
     "loading": "កំពុងផ្ទុក…",

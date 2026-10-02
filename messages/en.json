@@ -356,7 +356,10 @@
     "signOut": "Sign out",
     "signOutTitle": "Sign out?",
     "signOutBody": "You'll need to log in again to access your account.",
-    "clearFilters": "Clear"
+    "clearFilters": "Clear",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeToggle": "Toggle light or dark theme"
   },
   "admin": {
     "loading": "Loading…",

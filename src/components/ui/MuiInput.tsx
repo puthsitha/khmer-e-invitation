@@ -59,25 +59,25 @@ export function MuiInput({
       <div
         className={`group relative rounded-xl transition-all duration-200 ${
           hasError
-            ? "border-2 border-red-500 bg-white/95 shadow-[0_0_0_3px_rgba(239,68,68,0.12)]"
+            ? "border-2 border-red-500 bg-white/95 dark:bg-[#20181e] shadow-[0_0_0_3px_rgba(239,68,68,0.12)]"
             : focused
-              ? "border-2 border-maroon bg-white shadow-[0_0_0_3px_rgba(122,31,43,0.12)]"
-              : "border border-gold/40 bg-white/80 hover:border-gold/70"
+              ? "border-2 border-maroon dark:border-gold bg-white dark:bg-[#20181e] shadow-[0_0_0_3px_rgba(122,31,43,0.12)] dark:shadow-[0_0_0_3px_rgba(201,162,75,0.2)]"
+              : "border border-gold/40 dark:border-gold/30 bg-white/80 dark:bg-[#20181e]/80 hover:border-gold/70 dark:hover:border-gold/60"
         } ${disabled ? "opacity-60 cursor-not-allowed" : ""}`}>
         {/* Floating Label */}
         <label
           htmlFor={inputId}
           className={`pointer-events-none absolute transition-all duration-200 ease-out select-none ${
             isFloating
-              ? `-top-2.5 left-3 px-1.5 text-xs font-semibold rounded bg-white ${
+              ? `-top-2.5 left-3 px-1.5 text-xs font-semibold rounded bg-white dark:bg-[#20181e] ${
                   hasError
-                    ? "text-red-600"
+                    ? "text-red-600 dark:text-red-400"
                     : focused
-                      ? "text-maroon"
-                      : "text-maroon/70"
+                      ? "text-maroon dark:text-gold"
+                      : "text-maroon/70 dark:text-cream/80"
                 }`
               : `left-4 top-3 text-sm ${
-                  hasError ? "text-red-500" : "text-maroon/60"
+                  hasError ? "text-red-500 dark:text-red-400" : "text-maroon/60 dark:text-cream/60"
                 }`
           }`}>
           {label}
@@ -101,7 +101,7 @@ export function MuiInput({
           required={required}
           autoComplete={autoComplete}
           disabled={disabled}
-          className={`w-full rounded-xl bg-transparent px-4 py-3 text-sm text-maroon caret-maroon outline-none transition-colors ${
+          className={`w-full rounded-xl bg-transparent px-4 py-3 text-sm text-maroon dark:text-cream caret-maroon dark:caret-gold outline-none transition-colors ${
             isPassword ? "pr-11" : ""
           }`}
         />
@@ -113,7 +113,7 @@ export function MuiInput({
             onClick={handleTogglePassword}
             tabIndex={-1}
             aria-label={showPassword ? "Hide password" : "Show password"}
-            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-maroon/60 transition-colors hover:bg-gold/10 hover:text-maroon cursor-pointer">
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-maroon/60 dark:text-cream/60 transition-colors hover:bg-gold/10 hover:text-maroon dark:hover:text-gold cursor-pointer">
             {showPassword ? (
               <EyeOff className="h-4 w-4" />
             ) : (

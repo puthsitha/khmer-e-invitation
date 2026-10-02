@@ -55,7 +55,7 @@ export default function DashboardPage() {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="mb-8 flex flex-wrap items-center justify-between gap-4"
       >
-        <h1 className="font-[family-name:var(--font-heading-km)] text-2xl text-maroon sm:text-3xl">
+        <h1 className="font-[family-name:var(--font-heading-km)] text-2xl text-maroon dark:text-cream sm:text-3xl">
           {t("title")}
         </h1>
         <div className="flex flex-wrap items-center gap-2.5">
@@ -64,7 +64,7 @@ export default function DashboardPage() {
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
               transition={{ duration: 0.2 }}
-              className="flex items-center gap-2 rounded-full bg-maroon px-5 py-2.5 text-sm font-semibold text-cream shadow-md shadow-maroon/20 transition-colors hover:bg-maroon/90 cursor-pointer"
+              className="flex items-center gap-2 rounded-full bg-maroon dark:bg-gold px-5 py-2.5 text-sm font-semibold text-cream dark:text-black shadow-md shadow-maroon/20 transition-colors hover:bg-maroon/90 dark:hover:bg-gold-light cursor-pointer"
             >
               <span aria-hidden className="text-base leading-none">+</span>
               {t("newInvitation")}
@@ -80,13 +80,13 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-gold/40 bg-white/60 px-6 py-16 text-center"
+          className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-gold/40 dark:border-gold/30 bg-white/60 dark:bg-[#1a1418]/60 px-6 py-16 text-center"
         >
           <span aria-hidden className="text-4xl">✉️</span>
-          <p className="font-[family-name:var(--font-heading-km)] text-lg text-maroon">
+          <p className="font-[family-name:var(--font-heading-km)] text-lg text-maroon dark:text-cream">
             {t("emptyTitle")}
           </p>
-          <p className="text-sm text-maroon/60">{t("emptyBody")}</p>
+          <p className="text-sm text-maroon/60 dark:text-cream/60">{t("emptyBody")}</p>
         </motion.div>
       )}
 
@@ -103,25 +103,25 @@ export default function DashboardPage() {
               variants={itemVariants}
               layout
             >
-              <div className="group flex items-center justify-between rounded-2xl border border-gold/30 bg-white p-4 shadow-xs transition-all duration-300 hover:border-gold/60 hover:shadow-md sm:px-5 sm:py-4">
+              <div className="group flex items-center justify-between rounded-2xl border border-gold/30 dark:border-gold/20 bg-white dark:bg-[#1c161b] p-4 shadow-xs transition-all duration-300 hover:border-gold/60 dark:hover:border-gold/40 hover:shadow-md sm:px-5 sm:py-4">
                 {/* Left Info (Link to Editor) */}
                 <Link
                   href={`/dashboard/${invitation.invitationId}`}
                   className="flex-1 min-w-0"
                 >
                   <span className="flex flex-col gap-1 min-w-0">
-                    <span className="font-semibold text-maroon text-base transition-colors group-hover:text-gold truncate">
+                    <span className="font-semibold text-maroon dark:text-cream text-base transition-colors group-hover:text-gold truncate">
                       {invitation.slug}
                     </span>
-                    <span className="flex items-center gap-2 text-xs text-maroon/50">
-                      <span className="rounded-full bg-cream border border-gold/20 px-2.5 py-0.5 font-medium">
+                    <span className="flex items-center gap-2 text-xs text-maroon/50 dark:text-cream/50">
+                      <span className="rounded-full bg-cream dark:bg-[#251c23] border border-gold/20 px-2.5 py-0.5 font-medium text-maroon/80 dark:text-cream/80">
                         {t(`category.${invitation.category}`)}
                       </span>
                       <span
                         className={
                           invitation.status === "published"
-                            ? "rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-emerald-700 font-semibold"
-                            : "rounded-full bg-gold/10 border border-gold/25 px-2.5 py-0.5 text-maroon/60 font-medium"
+                            ? "rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 px-2.5 py-0.5 text-emerald-700 dark:text-emerald-300 font-semibold"
+                            : "rounded-full bg-gold/10 border border-gold/25 px-2.5 py-0.5 text-maroon/60 dark:text-cream/60 font-medium"
                         }
                       >
                         {t(`status.${invitation.status}`)}
@@ -134,7 +134,7 @@ export default function DashboardPage() {
                 <div className="flex items-center gap-2 shrink-0 ml-4">
                   <Link
                     href={`/dashboard/${invitation.invitationId}`}
-                    className="flex items-center gap-1.5 rounded-xl border border-gold/30 bg-cream/40 px-3.5 py-2 text-xs font-semibold text-maroon/80 hover:bg-gold/15 hover:text-maroon transition-all cursor-pointer"
+                    className="flex items-center gap-1.5 rounded-xl border border-gold/30 dark:border-gold/25 bg-cream/40 dark:bg-[#251c23] px-3.5 py-2 text-xs font-semibold text-maroon/80 dark:text-cream/80 hover:bg-gold/15 dark:hover:bg-gold/20 hover:text-maroon dark:hover:text-gold transition-all cursor-pointer"
                   >
                     <span>{t("edit")}</span>
                     <span aria-hidden>→</span>
@@ -144,7 +144,7 @@ export default function DashboardPage() {
                     type="button"
                     onClick={() => setDeletingInvitation(invitation)}
                     title={t("delete")}
-                    className="flex h-8 w-8 items-center justify-center rounded-xl text-maroon/40 hover:bg-rose-50 hover:text-rose-600 transition-colors cursor-pointer"
+                    className="flex h-8 w-8 items-center justify-center rounded-xl text-maroon/40 dark:text-cream/40 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:text-rose-600 transition-colors cursor-pointer"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>

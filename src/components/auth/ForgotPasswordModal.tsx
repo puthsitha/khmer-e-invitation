@@ -265,7 +265,7 @@ export function ForgotPasswordModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.94, y: 14 }}
             transition={{ type: "spring", duration: 0.4, bounce: 0.15 }}
-            className="relative z-10 w-full max-w-md overflow-hidden rounded-3xl border border-gold/40 bg-[#fffdfa] p-6 shadow-2xl sm:p-8"
+            className="relative z-10 w-full max-w-md overflow-hidden rounded-3xl border border-gold/40 dark:border-gold/30 bg-[#fffdfa] dark:bg-[#1c151a] p-6 shadow-2xl sm:p-8"
             role="dialog"
             aria-modal="true"
           >
@@ -273,7 +273,7 @@ export function ForgotPasswordModal({
             <button
               type="button"
               onClick={handleClose}
-              className="absolute right-4 top-4 rounded-full p-2 text-maroon/60 transition-colors hover:bg-gold/15 hover:text-maroon focus:outline-hidden cursor-pointer"
+              className="absolute right-4 top-4 rounded-full p-2 text-maroon/60 dark:text-cream/60 transition-colors hover:bg-gold/15 hover:text-maroon dark:hover:text-gold focus:outline-hidden cursor-pointer"
               aria-label={t("close")}
             >
               <X className="h-5 w-5" />
@@ -284,7 +284,7 @@ export function ForgotPasswordModal({
               <button
                 type="button"
                 onClick={() => setStep("email")}
-                className="absolute left-4 top-4 flex items-center gap-1 rounded-full p-2 text-xs font-medium text-maroon/70 transition-colors hover:bg-gold/15 hover:text-maroon cursor-pointer"
+                className="absolute left-4 top-4 flex items-center gap-1 rounded-full p-2 text-xs font-medium text-maroon/70 dark:text-cream/70 transition-colors hover:bg-gold/15 hover:text-maroon dark:hover:text-gold cursor-pointer"
               >
                 <ArrowLeft className="h-4 w-4" />
               </button>
@@ -292,19 +292,19 @@ export function ForgotPasswordModal({
 
             {/* Header */}
             <div className="text-center">
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-gold/30 bg-gold/10 text-gold-light shadow-2xs">
+              <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-gold/30 dark:border-gold/20 bg-gold/10 dark:bg-gold/15 text-gold-light shadow-2xs">
                 {step === "success" ? (
-                  <CheckCircle2 className="h-6 w-6 text-emerald-600" />
+                  <CheckCircle2 className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
                 ) : (
-                  <KeyRound className="h-6 w-6 text-maroon" />
+                  <KeyRound className="h-6 w-6 text-maroon dark:text-gold" />
                 )}
               </div>
-              <h2 className="mt-3 font-[family-name:var(--font-heading-km)] text-2xl text-maroon">
+              <h2 className="mt-3 font-[family-name:var(--font-heading-km)] text-2xl text-maroon dark:text-cream">
                 {step === "success"
                   ? t("resetSuccessTitle")
                   : t("forgotPasswordTitle")}
               </h2>
-              <p className="mt-1 text-xs text-maroon/75">
+              <p className="mt-1 text-xs text-maroon/75 dark:text-cream/75">
                 {step === "email" && t("forgotPasswordSubtitle")}
                 {step === "otp" && t("enterCodeSubtitle", { email })}
                 {step === "new_password" &&
@@ -351,7 +351,7 @@ export function ForgotPasswordModal({
                 <div>
                   <label
                     htmlFor="reset-email"
-                    className="block text-xs font-medium text-maroon/80 mb-1.5"
+                    className="block text-xs font-medium text-maroon/80 dark:text-cream/80 mb-1.5"
                   >
                     {t("email")}
                   </label>
@@ -363,16 +363,16 @@ export function ForgotPasswordModal({
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="yourname@gmail.com"
-                      className="w-full rounded-xl border border-gold/30 bg-cream/50 px-4 py-3 text-sm text-maroon placeholder:text-maroon/40 focus:border-gold focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-gold/20"
+                      className="w-full rounded-xl border border-gold/30 dark:border-gold/25 bg-cream/50 dark:bg-[#251c23] px-4 py-3 text-sm text-maroon dark:text-cream placeholder:text-maroon/40 dark:placeholder:text-cream/40 focus:border-gold focus:bg-white dark:focus:bg-[#2a2027] focus:outline-hidden focus:ring-2 focus:ring-gold/20"
                     />
-                    <Mail className="absolute right-3.5 top-3.5 h-4 w-4 text-maroon/40 pointer-events-none" />
+                    <Mail className="absolute right-3.5 top-3.5 h-4 w-4 text-maroon/40 dark:text-cream/40 pointer-events-none" />
                   </div>
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full rounded-xl bg-maroon py-3 text-sm font-semibold text-cream shadow-md transition-all hover:bg-maroon/95 disabled:opacity-75 cursor-pointer"
+                  className="w-full rounded-xl bg-maroon dark:bg-gold py-3 text-sm font-semibold text-cream dark:text-black shadow-md transition-all hover:bg-maroon/95 dark:hover:bg-gold-light disabled:opacity-75 cursor-pointer"
                 >
                   {loading ? t("sendingCode") : t("sendVerificationCode")}
                 </button>
@@ -384,7 +384,7 @@ export function ForgotPasswordModal({
               <form onSubmit={handleVerifyOtp} className="mt-4 space-y-5">
                 {/* Dev Mode Code Assist Box (Strictly local development only, NEVER in production) */}
                 {process.env.NODE_ENV === "development" && devCode && (
-                  <div className="rounded-xl border border-gold/40 bg-gold/10 p-2.5 text-center text-xs text-maroon">
+                  <div className="rounded-xl border border-gold/40 dark:border-gold/25 bg-gold/10 dark:bg-gold/15 p-2.5 text-center text-xs text-maroon dark:text-cream">
                     <span className="font-semibold text-gold-light">
                       🧪 Dev/Demo Code:{" "}
                     </span>
@@ -394,7 +394,7 @@ export function ForgotPasswordModal({
                         const digits = devCode.split("");
                         setOtp(digits);
                       }}
-                      className="ml-1 font-mono font-bold tracking-widest text-maroon underline cursor-pointer"
+                      className="ml-1 font-mono font-bold tracking-widest text-maroon dark:text-gold underline cursor-pointer"
                     >
                       {devCode} (Click to auto-fill)
                     </button>
@@ -418,13 +418,13 @@ export function ForgotPasswordModal({
                         value={digit}
                         onChange={(e) => handleOtpChange(idx, e.target.value)}
                         onKeyDown={(e) => handleOtpKeyDown(idx, e)}
-                        className="h-12 w-12 rounded-xl border border-gold/35 bg-cream/50 text-center font-mono text-xl font-bold text-maroon transition-all focus:border-gold focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-gold/30 sm:h-13 sm:w-13"
+                        className="h-12 w-12 rounded-xl border border-gold/35 dark:border-gold/25 bg-cream/50 dark:bg-[#251c23] text-center font-mono text-xl font-bold text-maroon dark:text-cream transition-all focus:border-gold focus:bg-white dark:focus:bg-[#2a2027] focus:outline-hidden focus:ring-2 focus:ring-gold/30 sm:h-13 sm:w-13"
                       />
                     ))}
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-xs text-maroon/70">
+                <div className="flex items-center justify-between text-xs text-maroon/70 dark:text-cream/70">
                   <span>
                     {resendCountdown > 0
                       ? t("resendIn", { seconds: resendCountdown })
@@ -435,7 +435,7 @@ export function ForgotPasswordModal({
                       type="button"
                       onClick={() => handleSendCode()}
                       disabled={loading}
-                      className="inline-flex items-center gap-1 font-semibold text-gold-light hover:text-maroon underline cursor-pointer"
+                      className="inline-flex items-center gap-1 font-semibold text-gold dark:text-gold-light hover:text-maroon dark:hover:text-gold underline cursor-pointer"
                     >
                       <RefreshCw className="h-3 w-3" />
                       <span>{t("resendCode")}</span>
@@ -446,7 +446,7 @@ export function ForgotPasswordModal({
                 <button
                   type="submit"
                   disabled={loading || otp.join("").length !== 6}
-                  className="w-full rounded-xl bg-maroon py-3 text-sm font-semibold text-cream shadow-md transition-all hover:bg-maroon/95 disabled:opacity-50 cursor-pointer"
+                  className="w-full rounded-xl bg-maroon dark:bg-gold py-3 text-sm font-semibold text-cream dark:text-black shadow-md transition-all hover:bg-maroon/95 dark:hover:bg-gold-light disabled:opacity-50 cursor-pointer"
                 >
                   {loading ? t("verifyingCode") : t("verifyCode")}
                 </button>
@@ -459,7 +459,7 @@ export function ForgotPasswordModal({
                 <div>
                   <label
                     htmlFor="new-password"
-                    className="block text-xs font-medium text-maroon/80 mb-1.5"
+                    className="block text-xs font-medium text-maroon/80 dark:text-cream/80 mb-1.5"
                   >
                     {t("newPassword")}
                   </label>
@@ -471,12 +471,12 @@ export function ForgotPasswordModal({
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full rounded-xl border border-gold/30 bg-cream/50 px-4 py-3 pr-10 text-sm text-maroon placeholder:text-maroon/40 focus:border-gold focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-gold/20"
+                      className="w-full rounded-xl border border-gold/30 dark:border-gold/25 bg-cream/50 dark:bg-[#251c23] px-4 py-3 pr-10 text-sm text-maroon dark:text-cream placeholder:text-maroon/40 dark:placeholder:text-cream/40 focus:border-gold focus:bg-white dark:focus:bg-[#2a2027] focus:outline-hidden focus:ring-2 focus:ring-gold/20"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-3.5 text-maroon/50 hover:text-maroon cursor-pointer"
+                      className="absolute right-3 top-3.5 text-maroon/50 dark:text-cream/50 hover:text-maroon dark:hover:text-gold cursor-pointer"
                     >
                       {showPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -490,7 +490,7 @@ export function ForgotPasswordModal({
                 <div>
                   <label
                     htmlFor="confirm-password"
-                    className="block text-xs font-medium text-maroon/80 mb-1.5"
+                    className="block text-xs font-medium text-maroon/80 dark:text-cream/80 mb-1.5"
                   >
                     {t("confirmPassword")}
                   </label>
@@ -501,14 +501,14 @@ export function ForgotPasswordModal({
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full rounded-xl border border-gold/30 bg-cream/50 px-4 py-3 text-sm text-maroon placeholder:text-maroon/40 focus:border-gold focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-gold/20"
+                    className="w-full rounded-xl border border-gold/30 dark:border-gold/25 bg-cream/50 dark:bg-[#251c23] px-4 py-3 text-sm text-maroon dark:text-cream placeholder:text-maroon/40 dark:placeholder:text-cream/40 focus:border-gold focus:bg-white dark:focus:bg-[#2a2027] focus:outline-hidden focus:ring-2 focus:ring-gold/20"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full rounded-xl bg-maroon py-3 text-sm font-semibold text-cream shadow-md transition-all hover:bg-maroon/95 disabled:opacity-75 cursor-pointer"
+                  className="w-full rounded-xl bg-maroon dark:bg-gold py-3 text-sm font-semibold text-cream dark:text-black shadow-md transition-all hover:bg-maroon/95 dark:hover:bg-gold-light disabled:opacity-75 cursor-pointer"
                 >
                   {loading ? t("resettingPassword") : t("resetPasswordButton")}
                 </button>
@@ -518,14 +518,14 @@ export function ForgotPasswordModal({
             {/* STEP 4: SUCCESS */}
             {step === "success" && (
               <div className="mt-5 space-y-4 text-center">
-                <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-xs text-emerald-800">
+                <div className="rounded-2xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/70 dark:bg-emerald-950/40 p-4 text-xs text-emerald-800 dark:text-emerald-300">
                   {t("resetSuccessMessage")}
                 </div>
 
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="w-full rounded-xl bg-maroon py-3 text-sm font-semibold text-cream shadow-md transition-all hover:bg-maroon/95 cursor-pointer"
+                  className="w-full rounded-xl bg-maroon dark:bg-gold py-3 text-sm font-semibold text-cream dark:text-black shadow-md transition-all hover:bg-maroon/95 dark:hover:bg-gold-light cursor-pointer"
                 >
                   {t("backToLogin")}
                 </button>

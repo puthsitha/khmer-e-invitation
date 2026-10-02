@@ -55,10 +55,10 @@ function StatCard({ label, value }: { label: string; value: number | null }) {
       variants={itemVariants}
       whileHover={{ y: -4 }}
       transition={{ duration: 0.25 }}
-      className="rounded-2xl border border-gold/30 bg-white p-6 text-center shadow-sm"
+      className="rounded-2xl border border-gold/30 dark:border-gold/20 bg-white dark:bg-[#1c161b] p-6 text-center shadow-xs"
     >
-      <p className="text-3xl font-semibold text-maroon">{value ?? "…"}</p>
-      <p className="text-sm text-maroon/60">{label}</p>
+      <p className="text-3xl font-semibold text-maroon dark:text-gold">{value ?? "…"}</p>
+      <p className="text-sm text-maroon/60 dark:text-cream/60">{label}</p>
     </motion.div>
   );
 }

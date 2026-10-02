@@ -98,14 +98,13 @@ export function ConfirmDialog({
             style={{
               position: "relative",
               zIndex: 100000,
-              backgroundColor: "#fdfaf5",
             }}
-            className="w-full max-w-sm overflow-hidden rounded-3xl border border-gold/50 p-6 text-center shadow-[0_25px_60px_-15px_rgba(122,31,43,0.4)] sm:p-7"
+            className="w-full max-w-sm overflow-hidden rounded-3xl border border-gold/50 dark:border-gold/30 bg-[#fdfaf5] dark:bg-[#1c151a] p-6 text-center shadow-[0_25px_60px_-15px_rgba(122,31,43,0.4)] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.6)] sm:p-7"
           >
             {/* Top Icon Badge */}
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-gold/40 bg-gradient-to-br from-gold/20 via-gold-light/25 to-gold/10 text-maroon shadow-xs">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-gold/40 dark:border-gold/30 bg-gradient-to-br from-gold/20 via-gold-light/25 to-gold/10 text-maroon dark:text-gold shadow-xs">
               {destructive ? (
-                <LogOut className="h-6 w-6 text-maroon" />
+                <LogOut className="h-6 w-6 text-maroon dark:text-gold" />
               ) : (
                 <AlertCircle className="h-6 w-6 text-gold" />
               )}
@@ -114,12 +113,12 @@ export function ConfirmDialog({
             {/* Title & Body */}
             <h2
               id="confirm-dialog-title"
-              className="font-[family-name:var(--font-heading-km)] text-xl text-maroon"
+              className="font-[family-name:var(--font-heading-km)] text-xl text-maroon dark:text-cream"
             >
               {title}
             </h2>
             {body && (
-              <p className="font-[family-name:var(--font-body-km)] mt-2 text-sm leading-relaxed text-maroon/75">
+              <p className="font-[family-name:var(--font-body-km)] mt-2 text-sm leading-relaxed text-maroon/75 dark:text-cream/75">
                 {body}
               </p>
             )}
@@ -131,7 +130,7 @@ export function ConfirmDialog({
                 onClick={onCancel}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full cursor-pointer rounded-full border border-gold/50 bg-cream px-5 py-2.5 font-[family-name:var(--font-body-km)] text-sm font-semibold text-maroon transition-colors hover:bg-gold/15 sm:w-auto"
+                className="w-full cursor-pointer rounded-full border border-gold/50 dark:border-gold/30 bg-cream dark:bg-[#251c23] px-5 py-2.5 font-[family-name:var(--font-body-km)] text-sm font-semibold text-maroon dark:text-cream transition-colors hover:bg-gold/15 dark:hover:bg-gold/20 sm:w-auto"
               >
                 {cancelLabel}
               </motion.button>
@@ -143,7 +142,7 @@ export function ConfirmDialog({
                 className={
                   destructive
                     ? "w-full cursor-pointer rounded-full border border-red-700 bg-red-700 px-6 py-2.5 font-[family-name:var(--font-heading-km)] text-sm font-semibold text-cream shadow-md transition-colors hover:bg-red-800 sm:w-auto"
-                    : "w-full cursor-pointer rounded-full border border-maroon bg-maroon px-6 py-2.5 font-[family-name:var(--font-heading-km)] text-sm font-semibold text-cream shadow-md transition-colors hover:bg-maroon/90 sm:w-auto"
+                    : "w-full cursor-pointer rounded-full border border-maroon dark:border-gold bg-maroon dark:bg-gold px-6 py-2.5 font-[family-name:var(--font-heading-km)] text-sm font-semibold text-cream dark:text-black shadow-md transition-colors hover:bg-maroon/90 dark:hover:bg-gold-light sm:w-auto"
                 }
               >
                 {confirmLabel}

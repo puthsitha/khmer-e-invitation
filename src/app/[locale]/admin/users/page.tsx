@@ -89,10 +89,10 @@ export default function AdminUsersPage() {
 
   return (
     <main className="max-w-4xl px-6 py-10 sm:py-14">
-      <div className="overflow-x-auto rounded-2xl border border-gold/30 bg-white shadow-sm">
+      <div className="overflow-x-auto rounded-2xl border border-gold/30 dark:border-gold/20 bg-white dark:bg-[#1c161b] shadow-xs">
         <table className="w-full min-w-[640px] text-left text-sm">
           <thead>
-            <tr className="border-b border-gold/20 text-xs uppercase tracking-wide text-maroon/50">
+            <tr className="border-b border-gold/20 dark:border-gold/15 text-xs uppercase tracking-wide text-maroon/50 dark:text-cream/50">
               <th className="px-5 py-3 font-medium">{t("name")}</th>
               <th className="px-2 py-3 font-medium">{t("email")}</th>
               <th className="px-2 py-3 font-medium">{t("role")}</th>
@@ -105,30 +105,30 @@ export default function AdminUsersPage() {
               <motion.tr
                 key={u.uid}
                 variants={rowVariants}
-                className="border-b border-gold/10 last:border-0 transition-colors hover:bg-cream/60"
+                className="border-b border-gold/10 dark:border-gold/10 last:border-0 transition-colors hover:bg-cream/60 dark:hover:bg-[#251c23]/60"
               >
                 <td className="px-5 py-3">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gold/20 text-xs font-semibold text-maroon">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gold/20 dark:bg-gold/15 text-xs font-semibold text-maroon dark:text-gold">
                       {u.name?.[0]?.toUpperCase() ?? "?"}
                     </span>
-                    <span className="font-medium text-maroon">{u.name}</span>
+                    <span className="font-medium text-maroon dark:text-cream">{u.name}</span>
                   </div>
                 </td>
-                <td className="px-2 py-3 text-maroon/70">{u.email}</td>
+                <td className="px-2 py-3 text-maroon/70 dark:text-cream/70">{u.email}</td>
                 <td className="px-2 py-3">
                   <span
                     className={
                       u.role === "admin"
-                        ? "rounded-full bg-maroon/10 px-2.5 py-1 text-xs font-medium text-maroon"
-                        : "rounded-full bg-cream px-2.5 py-1 text-xs text-maroon/60"
+                        ? "rounded-full bg-maroon/10 dark:bg-gold/15 px-2.5 py-1 text-xs font-medium text-maroon dark:text-gold"
+                        : "rounded-full bg-cream dark:bg-[#251c23] px-2.5 py-1 text-xs text-maroon/60 dark:text-cream/60"
                     }
                   >
                     {u.role}
                   </span>
                 </td>
                 <td className="px-2 py-3">
-                  <span className="inline-flex items-center gap-1.5 text-xs">
+                  <span className="inline-flex items-center gap-1.5 text-xs text-maroon dark:text-cream">
                     <span
                       aria-hidden
                       className={
@@ -148,7 +148,7 @@ export default function AdminUsersPage() {
                       disabled={u.uid === currentUser?.uid}
                       whileHover={{ scale: u.uid === currentUser?.uid ? 1 : 1.04 }}
                       whileTap={{ scale: u.uid === currentUser?.uid ? 1 : 0.96 }}
-                      className="cursor-pointer rounded-full border border-gold/60 px-3 py-1 text-xs text-maroon transition-colors hover:bg-gold/10 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="cursor-pointer rounded-full border border-gold/60 dark:border-gold/40 px-3 py-1 text-xs text-maroon dark:text-cream transition-colors hover:bg-gold/10 dark:hover:bg-gold/15 disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       {u.suspended ? t("reinstate") : t("suspend")}
                     </motion.button>
@@ -158,7 +158,7 @@ export default function AdminUsersPage() {
                       disabled={u.uid === currentUser?.uid}
                       whileHover={{ scale: u.uid === currentUser?.uid ? 1 : 1.04 }}
                       whileTap={{ scale: u.uid === currentUser?.uid ? 1 : 0.96 }}
-                      className="cursor-pointer rounded-full border border-gold/60 px-3 py-1 text-xs text-maroon transition-colors hover:bg-gold/10 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="cursor-pointer rounded-full border border-gold/60 dark:border-gold/40 px-3 py-1 text-xs text-maroon dark:text-cream transition-colors hover:bg-gold/10 dark:hover:bg-gold/15 disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       {u.role === "admin" ? t("demote") : t("makeAdmin")}
                     </motion.button>

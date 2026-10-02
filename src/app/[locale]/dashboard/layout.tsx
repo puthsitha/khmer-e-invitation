@@ -8,6 +8,7 @@ import { Link, useRouter, usePathname } from "@/i18n/navigation";
 import { logout } from "@/lib/firebase/auth";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import Image from "next/image";
 
 export default function DashboardLayout({
@@ -33,10 +34,10 @@ export default function DashboardLayout({
 
   if (loading || !user || appUser?.role === "admin") {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-cream text-maroon">
+      <main className="flex min-h-screen items-center justify-center bg-cream dark:bg-[#140f13] text-maroon dark:text-cream">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-10 w-10 animate-spin rounded-full border-3 border-gold/30 border-t-maroon" />
-          <p className="font-[family-name:var(--font-heading-km)] text-sm text-maroon/70">
+          <div className="h-10 w-10 animate-spin rounded-full border-3 border-gold/30 border-t-maroon dark:border-t-gold" />
+          <p className="font-[family-name:var(--font-heading-km)] text-sm text-maroon/70 dark:text-cream/70">
             {t("loading")}
           </p>
         </div>
@@ -46,7 +47,7 @@ export default function DashboardLayout({
 
   if (appUser?.suspended) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-cream px-6 text-center text-maroon">
+      <main className="flex min-h-screen items-center justify-center bg-cream dark:bg-[#140f13] px-6 text-center text-maroon dark:text-cream">
         <p className="font-[family-name:var(--font-body-km)] max-w-md">
           {t("suspended")}
         </p>
@@ -59,18 +60,18 @@ export default function DashboardLayout({
     pathname.startsWith("/dashboard/") && pathname !== "/dashboard/new";
 
   return (
-    <div className={isInvitationEditor ? "flex h-dvh flex-col overflow-hidden bg-cream" : "min-h-screen bg-cream"}>
+    <div className={isInvitationEditor ? "flex h-dvh flex-col overflow-hidden bg-cream dark:bg-[#140f13] text-foreground" : "min-h-screen bg-cream dark:bg-[#140f13] text-foreground"}>
       {/* Standard top header shown on /dashboard and /dashboard/new */}
       {!isInvitationEditor && (
         <motion.header
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-gold/30 bg-cream/85 px-4 sm:px-6 py-3 sm:py-4 backdrop-blur-md"
+          className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-gold/30 dark:border-gold/20 bg-cream/85 dark:bg-[#181216]/90 px-4 sm:px-6 py-3 sm:py-4 backdrop-blur-md"
         >
           <Link
             href="/dashboard"
-            className="group flex min-w-0 shrink items-center gap-2.5 font-[family-name:var(--font-heading-km)] text-lg sm:text-xl text-maroon transition-opacity hover:opacity-80"
+            className="group flex min-w-0 shrink items-center gap-2.5 font-[family-name:var(--font-heading-km)] text-lg sm:text-xl text-maroon dark:text-cream transition-opacity hover:opacity-80"
           >
             <div className="relative h-7 w-7 shrink-0 transition-transform duration-300 group-hover:scale-110 sm:h-8 sm:w-8">
               <Image
@@ -86,13 +87,14 @@ export default function DashboardLayout({
           </Link>
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <LocaleSwitcher />
+            <ThemeToggle />
             <motion.button
               type="button"
               onClick={() => setConfirmingSignOut(true)}
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
               transition={{ duration: 0.2 }}
-              className="cursor-pointer rounded-full border border-gold/60 px-3 py-1 sm:px-4 sm:py-1.5 text-xs font-semibold text-maroon transition-colors hover:bg-maroon hover:text-cream whitespace-nowrap"
+              className="cursor-pointer rounded-full border border-gold/60 dark:border-gold/40 px-3 py-1 sm:px-4 sm:py-1.5 text-xs font-semibold text-maroon dark:text-cream transition-colors hover:bg-maroon hover:text-cream dark:hover:bg-gold dark:hover:text-black whitespace-nowrap"
             >
               {t("signOut")}
             </motion.button>
