@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { motion, useMotionValue, useSpring, useTransform, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import { useLocale } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { WaxSeal } from "@/components/ui/WaxSeal";
 import { headingFontStyle, scriptFontStyle } from "@/lib/fonts";
 
@@ -198,9 +199,13 @@ export function InteractiveInvitationCard() {
             </div>
 
             {/* Bottom Layer: Floating Wax Seal with Dynamic Hover Reaction */}
-            <div
-              className="flex flex-col items-center gap-2.5 pb-4"
+            <Link
+              href="/i/chenda-monyroth-wedding"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group/cta flex flex-col items-center gap-2.5 pb-4 transition-transform active:scale-95 cursor-pointer"
               style={{ transform: "translateZ(75px)" }}
+              aria-label={locale === "km" ? "ចុចដើម្បីបើកទស្សនា" : "Tap to open invitation"}
             >
               <motion.div
                 animate={{
@@ -208,14 +213,14 @@ export function InteractiveInvitationCard() {
                   rotate: isHovered ? [0, -4, 4, 0] : 0,
                 }}
                 transition={{ duration: 0.5, ease: "easeInOut" }}
-                className="filter drop-shadow-[0_8px_16px_rgba(201,162,75,0.4)] cursor-pointer"
+                className="filter drop-shadow-[0_8px_16px_rgba(201,162,75,0.4)] transition-transform duration-300 group-hover/cta:scale-105"
               >
                 <WaxSeal size={74} />
               </motion.div>
-              <span className="rounded-full bg-cream/95 px-3.5 py-1 text-[10px] font-medium tracking-wider text-gold-light border border-gold/40 shadow-xs backdrop-blur-sm transition-colors hover:border-gold hover:text-maroon">
+              <span className="rounded-full bg-cream/95 px-3.5 py-1 text-[10px] font-medium tracking-wider text-gold-light border border-gold/40 shadow-xs backdrop-blur-sm transition-all duration-200 group-hover/cta:border-gold group-hover/cta:bg-gold/15 group-hover/cta:text-maroon group-hover/cta:shadow-sm">
                 {locale === "km" ? "ចុចដើម្បីបើកទស្សនា" : "Tap to open invitation"}
               </span>
-            </div>
+            </Link>
           </div>
         </motion.div>
       </motion.div>

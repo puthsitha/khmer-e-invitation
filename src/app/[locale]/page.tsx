@@ -133,16 +133,14 @@ export default function HomePage() {
                   <span>{t("cta")}</span>
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const cardElement = document.getElementById("interactive-card");
-                    cardElement?.scrollIntoView({ behavior: "smooth", block: "center" });
-                  }}
+                <Link
+                  href="/i/chenda-monyroth-wedding"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-cream/80 px-6 py-3.5 font-[family-name:var(--font-body-km)] text-sm font-medium text-maroon shadow-sm backdrop-blur-sm transition-all hover:bg-gold/15 hover:border-gold active:scale-95"
                 >
                   <span>{t("exploreDemo")}</span>
-                </button>
+                </Link>
               </>
             )}
           </motion.div>
