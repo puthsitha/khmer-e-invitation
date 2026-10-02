@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
@@ -10,6 +10,8 @@ import { MuiInput } from "@/components/ui/MuiInput";
 import { OrnamentDivider } from "@/components/ui/OrnamentDivider";
 import { InteractiveAuthHero } from "@/components/auth/InteractiveAuthHero";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
+import { ContactAccountModal } from "@/components/auth/ContactAccountModal";
+import { ForgotPasswordModal } from "@/components/auth/ForgotPasswordModal";
 import { AlertCircle } from "lucide-react";
 
 const GMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@gmail\.com$/i;
@@ -30,6 +32,22 @@ export default function LoginPage() {
     null,
   );
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const typingTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Modals for Account Contact & Forgot Password flow
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+
+  function triggerTyping() {
+    setIsTyping(true);
+    if (typingTimerRef.current) {
+      clearTimeout(typingTimerRef.current);
+    }
+    typingTimerRef.current = setTimeout(() => {
+      setIsTyping(false);
+    }, 450);
+  }
 
   function validateGmail(value: string): string | null {
     const trimmed = value.trim();
@@ -45,6 +63,7 @@ export default function LoginPage() {
   function handleEmailChange(value: string) {
     setEmail(value);
     setFormError(null);
+    triggerTyping();
     if (emailError) {
       // Clear or update error in real-time once user starts fixing it
       setEmailError(validateGmail(value));
@@ -61,6 +80,7 @@ export default function LoginPage() {
   function handlePasswordChange(value: string) {
     setPassword(value);
     setFormError(null);
+    triggerTyping();
     if (passwordError && value.length > 0) {
       setPasswordError(null);
     }
@@ -92,6 +112,13 @@ export default function LoginPage() {
       setSubmitting(false);
     }
   }
+
+  const typedLength =
+    activeField === "email"
+      ? email.length
+      : activeField === "password"
+        ? password.length
+        : 0;
 
   return (
     <main className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-cream px-4 py-12 sm:px-6">
@@ -133,13 +160,15 @@ export default function LoginPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
         className="relative z-10 grid w-full max-w-4xl grid-cols-1 items-stretch gap-6 overflow-hidden rounded-3xl border border-gold/30 bg-white/75 p-4 shadow-2xl backdrop-blur-xl sm:p-8 lg:grid-cols-2 lg:gap-8">
-        {/* Left Column: Interactive Animated Characters Hero (inspired by reference video) */}
+        {/* Left Column: Interactive Animated Characters Hero */}
         <div className="flex items-center justify-center bg-transparent p-2 sm:p-4">
           <InteractiveAuthHero
             activeField={activeField}
+            typedLength={typedLength}
+            isTyping={isTyping}
             passwordVisible={passwordVisible}
             isSubmitting={submitting}
-            hasError={Boolean(formError || emailError)}
+            hasError={Boolean(formError || emailError || passwordError)}
             className="w-full max-w-sm"
           />
         </div>
@@ -211,7 +240,7 @@ export default function LoginPage() {
               whileHover={submitting ? undefined : { scale: 1.015 }}
               whileTap={submitting ? undefined : { scale: 0.985 }}
               transition={{ duration: 0.15 }}
-              className="group relative mt-2 flex h-12 w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-maroon text-sm font-semibold text-cream shadow-md transition-all duration-200 hover:bg-maroon/95 disabled:cursor-not-allowed disabled:opacity-75">
+              className="group relative mt-1 flex h-12 w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-maroon text-sm font-semibold text-cream shadow-md transition-all duration-200 hover:bg-maroon/95 disabled:cursor-not-allowed disabled:opacity-75">
               <AnimatePresence mode="wait">
                 {submitting ? (
                   <motion.div
@@ -255,8 +284,56 @@ export default function LoginPage() {
               </AnimatePresence>
             </motion.button>
           </form>
+
+          {/* Additional Auth Navigation & Contact Links */}
+          <div className="mt-4 flex flex-col items-center gap-3 text-center text-xs">
+            {/* Forgot Password Trigger */}
+            <button
+              type="button"
+              onClick={() => setShowForgotPasswordModal(true)}
+              className="font-medium text-maroon/80 underline-offset-4 transition-colors hover:text-maroon hover:underline cursor-pointer">
+              {t("forgotPassword")}
+            </button>
+
+            {/* Subtle Divider */}
+            <div className="flex w-full items-center gap-3 my-0.5">
+              <div className="h-px flex-1 bg-gold/25" />
+              <span className="text-[10px] uppercase tracking-wider text-maroon/40 font-semibold">
+                {t("or")}
+              </span>
+              <div className="h-px flex-1 bg-gold/25" />
+            </div>
+
+            {/* Create Account Contact Trigger */}
+            <p className="text-maroon/80">
+              {t("noAccountQuestion")}{" "}
+              <button
+                type="button"
+                onClick={() => setShowContactModal(true)}
+                className="font-semibold text-gold-light underline underline-offset-2 transition-colors hover:text-maroon cursor-pointer">
+                {t("contactHere")}
+              </button>
+            </p>
+          </div>
         </div>
       </motion.div>
+
+      {/* Contact Channel Modal for Account Creation */}
+      <ContactAccountModal
+        isOpen={showContactModal}
+        onClose={() => setShowContactModal(false)}
+      />
+
+      {/* Forgot Password Flow Modal */}
+      <ForgotPasswordModal
+        isOpen={showForgotPasswordModal}
+        initialEmail={email}
+        onClose={() => setShowForgotPasswordModal(false)}
+        onSuccess={(resetEmail) => {
+          setEmail(resetEmail);
+          setPassword("");
+        }}
+      />
     </main>
   );
 }
