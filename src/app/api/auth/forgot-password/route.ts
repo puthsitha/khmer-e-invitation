@@ -32,7 +32,7 @@ function cleanExpiredCodes() {
  */
 async function sendVerificationEmail(email: string, code: string): Promise<boolean> {
   const resendApiKey = process.env.RESEND_API_KEY;
-  const fromEmail = process.env.MAIL_FROM || "Khmer E-Invite <no-reply@khmereinvite.com>";
+  const fromEmail = process.env.MAIL_FROM || "Khmer E-Invite <no-reply@e-invitation.puthsithamoeurn.site>";
 
   if (!resendApiKey) {
     console.log(`\n======================================================`);
@@ -85,6 +85,7 @@ async function sendVerificationEmail(email: string, code: string): Promise<boole
         to: email,
         subject: `Your Verification Code: ${code} - Khmer E-Invitation`,
         html: htmlBody,
+        text: `Your password reset verification code is: ${code}\n\nThis code will expire in 10 minutes.\nIf you did not request this code, please ignore this email.`,
       }),
     });
 
