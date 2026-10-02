@@ -73,7 +73,9 @@
     "resetSuccessTitle": "Password Reset Successful!",
     "resetSuccessMessage": "Your password has been reset. You can now log in with your new password.",
     "backToLogin": "Back to Log In",
-    "invalidCode": "Invalid or expired verification code"
+    "invalidCode": "Invalid or expired verification code",
+    "emailNotFound": "No account found with this email address. Please check your email or contact us to create an account.",
+    "checkingEmail": "Checking email…"
   },
   "viewer": {
     "tapToOpen": "Tap to open",

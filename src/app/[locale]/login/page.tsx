@@ -329,6 +329,7 @@ export default function LoginPage() {
         isOpen={showForgotPasswordModal}
         initialEmail={email}
         onClose={() => setShowForgotPasswordModal(false)}
+        onRequestAccount={() => setShowContactModal(true)}
         onSuccess={(resetEmail) => {
           setEmail(resetEmail);
           setPassword("");

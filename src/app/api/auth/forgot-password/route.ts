@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { collection, query, where, getDocs, limit } from "firebase/firestore";
+import { db } from "@/lib/firebase/client";
 
 // In-memory verification code store with 10-minute expiry
 // Key: normalized email, Value: { code: string; expiresAt: number }
@@ -30,9 +32,14 @@ function cleanExpiredCodes() {
 /**
  * Sends the 6-digit verification code using Resend REST API or logs to console.
  */
-async function sendVerificationEmail(email: string, code: string): Promise<boolean> {
+async function sendVerificationEmail(
+  email: string,
+  code: string,
+): Promise<boolean> {
   const resendApiKey = process.env.RESEND_API_KEY;
-  const fromEmail = process.env.MAIL_FROM || "Khmer E-Invite <no-reply@e-invitation.puthsithamoeurn.site>";
+  const fromEmail =
+    process.env.MAIL_FROM ||
+    "Khmer E-Invite <no-reply@e-invitation.puthsithamoeurn.site>";
 
   if (!resendApiKey) {
     console.log(`\n======================================================`);
@@ -102,11 +109,88 @@ async function sendVerificationEmail(email: string, code: string): Promise<boole
   }
 }
 
+/**
+ * Verifies whether the email address exists in the system.
+ * Checks Cloud Firestore 'users' collection first, with fallback to Firebase Authentication.
+ */
+async function checkEmailExists(email: string): Promise<boolean> {
+  const normalized = email.trim().toLowerCase();
+
+  // 1. PRIMARY CHECK: Cloud Firestore 'users' collection (where user accounts are stored)
+  try {
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("email", "==", normalized), limit(1));
+    const snap = await getDocs(q);
+    console.log("snap : ", snap);
+    if (!snap.empty) {
+      console.log(
+        `[CheckEmail] Found user in Firestore for email: ${normalized}`,
+      );
+      return true;
+    }
+
+    // Try case-sensitive fallback if needed
+    if (email.trim() !== normalized) {
+      const qExact = query(
+        usersRef,
+        where("email", "==", email.trim()),
+        limit(1),
+      );
+      const snapExact = await getDocs(qExact);
+      if (!snapExact.empty) {
+        console.log(
+          `[CheckEmail] Found user in Firestore for exact email: ${email.trim()}`,
+        );
+        return true;
+      }
+    }
+
+    console.log(
+      `[CheckEmail] No user found in Firestore 'users' collection for: ${normalized}`,
+    );
+  } catch (firestoreErr: unknown) {
+    console.error("[CheckEmail] Firestore query error:", firestoreErr);
+  }
+
+  // 2. SECONDARY CHECK: Firebase Authentication (Identity Toolkit API)
+  // try {
+  //   const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+  //   if (apiKey) {
+  //     const res = await fetch(
+  //       `https://identitytoolkit.googleapis.com/v1/accounts:createAuthUri?key=${apiKey}`,
+  //       {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({
+  //           continueUri: "http://localhost",
+  //           identifier: email.trim(),
+  //         }),
+  //       }
+  //     );
+
+  //     if (res.ok) {
+  //       const data = await res.json();
+  //       if (
+  //         data.registered === true ||
+  //         (Array.isArray(data.allProviders) && data.allProviders.length > 0)
+  //       ) {
+  //         console.log(`[CheckEmail] Found user in Firebase Auth for: ${normalized}`);
+  //         return true;
+  //       }
+  //     }
+  //   }
+  // } catch (authErr) {
+  //   console.error("[CheckEmail] Firebase Auth check exception:", authErr);
+  // }
+
+  return false;
+}
+
 export async function POST(request: NextRequest) {
   try {
     cleanExpiredCodes();
     const body = await request.json();
-    const { action, email, code, newPassword } = body;
+    const { action, email, code, newPassword, clientVerified } = body;
 
     if (!email || typeof email !== "string") {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
@@ -116,6 +200,23 @@ export async function POST(request: NextRequest) {
 
     // ACTION 1: SEND CODE
     if (action === "send_code") {
+      // 1. Verify that the email actually exists (from checkEmailRegistered or server query)
+      let userExists = Boolean(clientVerified);
+      if (!userExists) {
+        userExists = await checkEmailExists(normalizedEmail);
+      }
+
+      if (!userExists) {
+        return NextResponse.json(
+          {
+            error:
+              "No account found with this email address. Please check your email or contact support to create an account.",
+            code: "EMAIL_NOT_FOUND",
+          },
+          { status: 404 }
+        );
+      }
+
       // Generate 6-digit random code
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
       const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
@@ -125,8 +226,10 @@ export async function POST(request: NextRequest) {
       const emailSent = await sendVerificationEmail(normalizedEmail, otp);
       if (!emailSent) {
         return NextResponse.json(
-          { error: "Failed to send verification email. Please try again later." },
-          { status: 500 }
+          {
+            error: "Failed to send verification email. Please try again later.",
+          },
+          { status: 500 },
         );
       }
 
@@ -143,24 +246,36 @@ export async function POST(request: NextRequest) {
     // ACTION 2: VERIFY CODE
     if (action === "verify_code") {
       if (!code || typeof code !== "string") {
-        return NextResponse.json({ error: "Verification code is required" }, { status: 400 });
+        return NextResponse.json(
+          { error: "Verification code is required" },
+          { status: 400 },
+        );
       }
 
       const stored = otpStore.get(normalizedEmail);
       if (!stored) {
         return NextResponse.json(
-          { error: "No verification code requested or code expired. Please request a new code." },
-          { status: 400 }
+          {
+            error:
+              "No verification code requested or code expired. Please request a new code.",
+          },
+          { status: 400 },
         );
       }
 
       if (stored.expiresAt < Date.now()) {
         otpStore.delete(normalizedEmail);
-        return NextResponse.json({ error: "Verification code has expired." }, { status: 400 });
+        return NextResponse.json(
+          { error: "Verification code has expired." },
+          { status: 400 },
+        );
       }
 
       if (stored.code !== code.trim()) {
-        return NextResponse.json({ error: "Invalid verification code." }, { status: 400 });
+        return NextResponse.json(
+          { error: "Invalid verification code." },
+          { status: 400 },
+        );
       }
 
       // Mark as verified
@@ -175,10 +290,14 @@ export async function POST(request: NextRequest) {
 
     // ACTION 3: RESET PASSWORD
     if (action === "reset_password") {
-      if (!newPassword || typeof newPassword !== "string" || newPassword.length < 6) {
+      if (
+        !newPassword ||
+        typeof newPassword !== "string" ||
+        newPassword.length < 6
+      ) {
         return NextResponse.json(
           { error: "New password must be at least 6 characters long." },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -186,7 +305,7 @@ export async function POST(request: NextRequest) {
       if (!stored || !stored.verified) {
         return NextResponse.json(
           { error: "Please verify your code first before resetting password." },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -202,6 +321,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   } catch (error) {
     console.error("[ForgotPassword API Error]", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

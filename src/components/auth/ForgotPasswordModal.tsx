@@ -15,12 +15,14 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { OrnamentDivider } from "@/components/ui/OrnamentDivider";
+import { checkEmailRegistered } from "@/lib/firebase/auth";
 
 interface ForgotPasswordModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialEmail?: string;
   onSuccess?: (email: string) => void;
+  onRequestAccount?: () => void;
 }
 
 type Step = "email" | "otp" | "new_password" | "success";
@@ -30,6 +32,7 @@ export function ForgotPasswordModal({
   onClose,
   initialEmail = "",
   onSuccess,
+  onRequestAccount,
 }: ForgotPasswordModalProps) {
   const t = useTranslations("auth");
 
@@ -91,14 +94,31 @@ export function ForgotPasswordModal({
 
     setLoading(true);
     try {
+      // 1. Call function checkEmailRegistered to verify if email exists in system!
+      const isRegistered = await checkEmailRegistered(trimmed);
+      if (!isRegistered) {
+        setError(t("emailNotFound"));
+        setLoading(false);
+        return;
+      }
+
+      // 2. Email exists! Send code via API route
       const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "send_code", email: trimmed }),
+        body: JSON.stringify({
+          action: "send_code",
+          email: trimmed,
+          clientVerified: true,
+        }),
       });
 
       const data = await res.json();
       if (!res.ok) {
+        if (data.code === "EMAIL_NOT_FOUND" || res.status === 404) {
+          setError(t("emailNotFound"));
+          return;
+        }
         throw new Error(data.error || "Failed to send code");
       }
 
@@ -303,10 +323,24 @@ export function ForgotPasswordModal({
                   initial={{ opacity: 0, y: -6 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -6 }}
-                  className="mb-4 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50/90 px-3.5 py-2.5 text-xs font-medium text-red-700"
+                  className="mb-4 flex flex-col gap-2 rounded-xl border border-red-200 bg-red-50/95 p-3.5 text-xs text-red-700"
                 >
-                  <AlertCircle className="h-4 w-4 shrink-0 text-red-500" />
-                  <span>{error}</span>
+                  <div className="flex items-start gap-2">
+                    <AlertCircle className="h-4 w-4 shrink-0 text-red-500 mt-0.5" />
+                    <span className="font-medium leading-relaxed">{error}</span>
+                  </div>
+                  {error === t("emailNotFound") && onRequestAccount && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleClose();
+                        onRequestAccount();
+                      }}
+                      className="self-start font-semibold text-gold-light hover:text-maroon underline underline-offset-2 cursor-pointer transition-colors"
+                    >
+                      {t("contactHere")}
+                    </button>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
