@@ -62,7 +62,7 @@ import type {
 } from "@/types";
 
 const inputClassName =
-  "w-full rounded-xl border border-gold/40 bg-white/90 px-4 py-2.5 text-sm text-maroon shadow-xs transition-all duration-200 placeholder:text-maroon/30 hover:border-gold/70 focus:border-maroon focus:bg-white focus:outline-none focus:ring-2 focus:ring-maroon/15";
+  "w-full rounded-xl border border-gold/40 dark:border-gold/30 bg-white/90 dark:bg-[#20181e] px-4 py-2.5 text-sm text-maroon dark:text-[#f6eee8] shadow-xs transition-all duration-200 placeholder:text-maroon/30 dark:placeholder:text-[#f6eee8]/30 hover:border-gold/70 dark:hover:border-gold/50 focus:border-maroon dark:focus:border-gold focus:bg-white dark:focus:bg-[#20181e] focus:outline-none focus:ring-2 focus:ring-maroon/15 dark:focus:ring-gold/15";
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -87,9 +87,9 @@ function Section({
       animate="show"
       variants={sectionVariants}
       transition={{ duration: 0.5, ease: "easeOut", delay }}
-      className="mb-8 scroll-mt-20 flex flex-col gap-5 rounded-2xl border border-gold/30 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-8"
+      className="mb-8 scroll-mt-20 flex flex-col gap-5 rounded-2xl border border-gold/30 dark:border-gold/20 bg-white dark:bg-[#1c161b] p-4 shadow-sm sm:rounded-3xl sm:p-8"
     >
-      <h2 className="font-[family-name:var(--font-heading-km)] text-xl text-maroon">
+      <h2 className="font-[family-name:var(--font-heading-km)] text-xl text-maroon dark:text-[#f6eee8]">
         {title}
       </h2>
       {children}
@@ -113,9 +113,35 @@ export default function EditInvitationPage() {
   const palettes = usePalettes();
 
   useEffect(() => {
-    getInvitation(invitationId).then(setInvitation);
-    listRsvpResponses(invitationId).then(setRsvps);
-    listWeddingGuests(invitationId).then(setGuests);
+    let cancelled = false;
+
+    getInvitation(invitationId)
+      .then((inv) => {
+        if (!cancelled) setInvitation(inv);
+      })
+      .catch((err) => {
+        console.warn("Could not load invitation:", err);
+      });
+
+    listRsvpResponses(invitationId)
+      .then((r) => {
+        if (!cancelled) setRsvps(r);
+      })
+      .catch((err) => {
+        console.warn("Could not load RSVP responses:", err);
+      });
+
+    listWeddingGuests(invitationId)
+      .then((g) => {
+        if (!cancelled) setGuests(g);
+      })
+      .catch((err) => {
+        console.warn("Could not load wedding guests:", err);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [invitationId]);
 
   async function handleAddGuest(guestData: {
@@ -176,11 +202,40 @@ export default function EditInvitationPage() {
     }
   }
 
-  async function handleBatchImportGuests(importedRows: ParsedGuestRow[]) {
+  async function handleBatchImportGuests(
+    importedRows: ParsedGuestRow[],
+    replaces?: Array<{
+      guestId: string;
+      data: {
+        name: string;
+        from?: string;
+        by?: string;
+        note?: string;
+      };
+    }>,
+  ) {
     try {
-      const created = await batchImportWeddingGuests(invitationId, importedRows);
-      setGuests((prev) => [...prev, ...created]);
-      setStatus(t("rsvp.importSuccess", { count: created.length }));
+      const { created, updated } = await batchImportWeddingGuests(
+        invitationId,
+        importedRows,
+        replaces,
+      );
+      setGuests((prev) => {
+        let next = [...prev];
+        if (updated && updated.length > 0) {
+          const updatedMap = new Map(updated.map((u) => [u.guestId, u]));
+          next = next.map((g) => {
+            const up = updatedMap.get(g.guestId);
+            return up ? { ...g, ...up } : g;
+          });
+        }
+        if (created && created.length > 0) {
+          next = [...next, ...created];
+        }
+        return next;
+      });
+      const totalCount = (created?.length || 0) + (updated?.length || 0);
+      setStatus(t("rsvp.importSuccess", { count: totalCount }));
     } catch (err) {
       setStatus(t("saveError"));
       throw err;
@@ -349,7 +404,7 @@ export default function EditInvitationPage() {
       : "";
 
   return (
-    <div className="flex h-full flex-col overflow-hidden bg-cream">
+    <div className="flex h-full flex-col overflow-hidden bg-cream dark:bg-[#140f13]">
       {/* Sticky Top Navigation Bar */}
       <InvitationTopNav
         slug={invitation.slug}
@@ -389,14 +444,14 @@ export default function EditInvitationPage() {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="sticky top-0 z-20 border-b border-gold/25 bg-cream/95 px-4 py-3 shadow-xs sm:backdrop-blur-md sm:px-8 sm:py-4"
+            className="sticky top-0 z-20 border-b border-gold/25 dark:border-gold/20 bg-cream/95 dark:bg-[#140f13]/95 px-4 py-3 shadow-xs sm:backdrop-blur-md sm:px-8 sm:py-4"
           >
             <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
               <div className="flex flex-col justify-center min-w-0 max-w-full">
-                <h1 className="font-[family-name:var(--font-heading-km)] text-lg sm:text-2xl text-maroon break-words min-w-0">
+                <h1 className="font-[family-name:var(--font-heading-km)] text-lg sm:text-2xl text-maroon dark:text-[#f6eee8] break-words min-w-0">
                   {invitation.slug}
                 </h1>
-                <p className="mt-0.5 text-xs text-maroon/60 truncate">
+                <p className="mt-0.5 text-xs text-maroon/60 dark:text-[#f6eee8]/60 truncate">
                   {t("invitationId")}: <span className="font-mono">{invitation.invitationId}</span>
                 </p>
               </div>
@@ -404,13 +459,13 @@ export default function EditInvitationPage() {
               <span
                 className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold shadow-xs ${
                   invitation.status === "published"
-                    ? "bg-emerald-100 text-emerald-800"
-                    : "bg-gold/15 text-maroon"
+                    ? "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300"
+                    : "bg-gold/15 dark:bg-gold/20 text-maroon dark:text-[#f6eee8]"
                 }`}
               >
                 <span
                   className={`h-2 w-2 rounded-full ${
-                    invitation.status === "published" ? "bg-emerald-600" : "bg-gold"
+                    invitation.status === "published" ? "bg-emerald-600 dark:bg-emerald-400" : "bg-gold"
                   }`}
                 />
                 {tStatus(invitation.status)}
@@ -440,8 +495,8 @@ export default function EditInvitationPage() {
               />
 
               {/* Groom's Family */}
-              <div className="rounded-2xl border border-gold/30 bg-cream/40 p-4 sm:p-5">
-                <p className="mb-3 text-sm font-semibold text-maroon">
+              <div className="rounded-2xl border border-gold/30 dark:border-gold/20 bg-cream/40 dark:bg-white/5 p-4 sm:p-5">
+                <p className="mb-3 text-sm font-semibold text-maroon dark:text-[#f6eee8]">
                   {t("content.groomFamily")}
                 </p>
                 <div className="flex flex-col gap-4">
@@ -459,8 +514,8 @@ export default function EditInvitationPage() {
               </div>
 
               {/* Bride's Family */}
-              <div className="rounded-2xl border border-gold/30 bg-cream/40 p-4 sm:p-5">
-                <p className="mb-3 text-sm font-semibold text-maroon">
+              <div className="rounded-2xl border border-gold/30 dark:border-gold/20 bg-cream/40 dark:bg-white/5 p-4 sm:p-5">
+                <p className="mb-3 text-sm font-semibold text-maroon dark:text-[#f6eee8]">
                   {t("content.brideFamily")}
                 </p>
                 <div className="flex flex-col gap-4">
@@ -495,7 +550,7 @@ export default function EditInvitationPage() {
 
               {/* Map URL */}
               <div className="flex flex-col gap-2">
-                <label className="flex flex-col gap-1.5 text-sm font-semibold text-maroon">
+                <label className="flex flex-col gap-1.5 text-sm font-semibold text-maroon dark:text-[#f6eee8]">
                   <div className="flex items-center gap-1.5">
                     <MapPin className="h-4 w-4 text-gold" />
                     <span>{t("content.mapUrl")}</span>
@@ -517,8 +572,8 @@ export default function EditInvitationPage() {
                   );
                   if (!mapPreview?.embedSrc) return null;
                   return (
-                    <div className="overflow-hidden rounded-2xl border border-gold/30 bg-cream/30 shadow-2xs">
-                      <div className="flex items-center justify-between border-b border-gold/20 px-3.5 py-2 text-[11px] text-maroon/70 bg-cream/60">
+                    <div className="overflow-hidden rounded-2xl border border-gold/30 dark:border-gold/20 bg-cream/30 dark:bg-white/5 shadow-2xs">
+                      <div className="flex items-center justify-between border-b border-gold/20 dark:border-gold/15 px-3.5 py-2 text-[11px] text-maroon/70 dark:text-[#f6eee8]/70 bg-cream/60 dark:bg-white/5">
                         <span className="flex items-center gap-1.5 font-medium">
                           <MapPin className="h-3.5 w-3.5 text-gold" />
                           <span>
@@ -555,7 +610,7 @@ export default function EditInvitationPage() {
 
               {/* Cover Video Input & Live Preview */}
               <div className="flex flex-col gap-3">
-                <label className="flex flex-col gap-1.5 text-sm font-semibold text-maroon">
+                <label className="flex flex-col gap-1.5 text-sm font-semibold text-maroon dark:text-[#f6eee8]">
                   <div className="flex items-center gap-1.5">
                     <Video className="h-4 w-4 text-gold" />
                     <span>{t("content.coverVideo")}</span>
@@ -615,10 +670,10 @@ export default function EditInvitationPage() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.3 }}
-                      className="flex flex-col gap-4 rounded-2xl border border-gold/30 bg-cream/30 p-5"
+                      className="flex flex-col gap-4 rounded-2xl border border-gold/30 dark:border-gold/20 bg-cream/30 dark:bg-white/5 p-5"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-maroon">
+                        <span className="text-xs font-bold text-maroon dark:text-[#f6eee8]">
                           {t("story.milestone", { number: index + 1 })}
                         </span>
                         <motion.button
@@ -626,7 +681,7 @@ export default function EditInvitationPage() {
                           onClick={() => removeStoryItem(index)}
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 transition-colors hover:text-red-700"
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 dark:text-red-400 transition-colors hover:text-red-700 dark:hover:text-red-300"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                           <span>{t("story.remove")}</span>
@@ -675,7 +730,7 @@ export default function EditInvitationPage() {
                 onClick={addStoryItem}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="mt-2 inline-flex items-center gap-1.5 self-start rounded-full border border-gold/60 bg-gold/10 px-4 py-2 text-xs font-semibold text-maroon transition-colors hover:bg-gold/20"
+                className="mt-2 inline-flex items-center gap-1.5 self-start rounded-full border border-gold/60 dark:border-gold/40 bg-gold/10 dark:bg-gold/15 px-4 py-2 text-xs font-semibold text-maroon dark:text-[#f6eee8] transition-colors hover:bg-gold/20 dark:hover:bg-gold/25 cursor-pointer"
               >
                 <Plus className="h-3.5 w-3.5" />
                 <span>{t("story.add")}</span>
@@ -696,10 +751,10 @@ export default function EditInvitationPage() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.3 }}
-                      className="flex flex-col gap-3 rounded-2xl border border-gold/30 bg-cream/30 p-4 sm:p-5"
+                      className="flex flex-col gap-3 rounded-2xl border border-gold/30 dark:border-gold/20 bg-cream/30 dark:bg-white/5 p-4 sm:p-5"
                     >
                       <div className="flex flex-wrap items-center justify-between gap-2">
-                        <span className="text-xs font-bold text-maroon">
+                        <span className="text-xs font-bold text-maroon dark:text-[#f6eee8]">
                           {t("agenda.event", { number: index + 1 })}
                         </span>
                         <motion.button
@@ -707,7 +762,7 @@ export default function EditInvitationPage() {
                           onClick={() => removeAgendaItem(index)}
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 transition-colors hover:text-red-700"
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 dark:text-red-400 transition-colors hover:text-red-700 dark:hover:text-red-300"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                           <span>{t("agenda.remove")}</span>
@@ -715,7 +770,7 @@ export default function EditInvitationPage() {
                       </div>
 
                       <div>
-                        <p className="mb-1.5 text-xs font-semibold text-maroon/70">
+                        <p className="mb-1.5 text-xs font-semibold text-maroon/70 dark:text-[#f6eee8]/70">
                           {t("agenda.time")}
                         </p>
                         <TimeSelect12h
@@ -739,7 +794,7 @@ export default function EditInvitationPage() {
                 onClick={addAgendaItem}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="mt-2 inline-flex items-center gap-1.5 self-start rounded-full border border-gold/60 bg-gold/10 px-4 py-2 text-xs font-semibold text-maroon transition-colors hover:bg-gold/20"
+                className="mt-2 inline-flex items-center gap-1.5 self-start rounded-full border border-gold/60 dark:border-gold/40 bg-gold/10 dark:bg-gold/15 px-4 py-2 text-xs font-semibold text-maroon dark:text-[#f6eee8] transition-colors hover:bg-gold/20 dark:hover:bg-gold/25 cursor-pointer"
               >
                 <Plus className="h-3.5 w-3.5" />
                 <span>{t("agenda.add")}</span>
@@ -751,8 +806,8 @@ export default function EditInvitationPage() {
             {activeSection === "media" && (
               <Section id="section-media" title={t("media.title")} delay={0}>
               {/* Gallery */}
-              <div className="flex flex-col gap-2 rounded-2xl border border-gold/30 bg-cream/20 p-5">
-                <h3 className="text-sm font-semibold text-maroon">{t("media.galleryTitle")}</h3>
+              <div className="flex flex-col gap-2 rounded-2xl border border-gold/30 dark:border-gold/20 bg-cream/20 dark:bg-white/5 p-5">
+                <h3 className="text-sm font-semibold text-maroon dark:text-[#f6eee8]">{t("media.galleryTitle")}</h3>
                 <ImageUploadManager
                   images={invitation.mediaUrls.gallery}
                   onUpload={handleGalleryUpload}
@@ -773,15 +828,15 @@ export default function EditInvitationPage() {
               </div>
 
               {/* Background Music */}
-              <div className="flex flex-col gap-3 rounded-2xl border border-gold/30 bg-cream/20 p-5">
+              <div className="flex flex-col gap-3 rounded-2xl border border-gold/30 dark:border-gold/20 bg-cream/20 dark:bg-white/5 p-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gold/20 text-maroon">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gold/20 dark:bg-gold/25 text-maroon dark:text-[#f6eee8]">
                       <Music className="h-4 w-4" />
                     </span>
                     <div>
-                      <h4 className="text-sm font-semibold text-maroon">{t("media.musicTitle")}</h4>
-                      <p className="text-xs text-maroon/60">{t("media.musicNote")}</p>
+                      <h4 className="text-sm font-semibold text-maroon dark:text-[#f6eee8]">{t("media.musicTitle")}</h4>
+                      <p className="text-xs text-maroon/60 dark:text-[#f6eee8]/60">{t("media.musicNote")}</p>
                     </div>
                   </div>
 
@@ -793,7 +848,7 @@ export default function EditInvitationPage() {
                         await deleteMediaByUrl(invitation.mediaUrls.bgMusic).catch(() => {});
                         await save({ mediaUrls: { ...invitation.mediaUrls, bgMusic: undefined } });
                       }}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 hover:text-red-700"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                       <span>{t("media.removeImage")}</span>
@@ -811,7 +866,7 @@ export default function EditInvitationPage() {
                   />
                   <label
                     htmlFor="bg-music-input"
-                    className="inline-flex items-center gap-2 rounded-xl border border-gold/40 bg-white px-4 py-2.5 text-xs font-semibold text-maroon shadow-xs transition-colors hover:bg-gold/15 cursor-pointer"
+                    className="inline-flex items-center gap-2 rounded-xl border border-gold/40 dark:border-gold/30 bg-white dark:bg-[#20181e] px-4 py-2.5 text-xs font-semibold text-maroon dark:text-[#f6eee8] shadow-xs transition-colors hover:bg-gold/15 dark:hover:bg-gold/20 cursor-pointer"
                   >
                     <UploadCloud className="h-4 w-4 text-gold" />
                     <span>{invitation.mediaUrls.bgMusic ? t("media.changeAudio") : t("media.uploadAudio")}</span>
@@ -819,15 +874,15 @@ export default function EditInvitationPage() {
                 </div>
 
                 {invitation.mediaUrls.bgMusic && (
-                  <div className="rounded-xl border border-gold/30 bg-white p-3 shadow-xs">
+                  <div className="rounded-xl border border-gold/30 dark:border-gold/20 bg-white dark:bg-[#20181e] p-3 shadow-xs">
                     <audio className="w-full" controls src={invitation.mediaUrls.bgMusic} />
                   </div>
                 )}
               </div>
 
               {/* Digital Envelope QR */}
-              <div className="flex flex-col gap-2 rounded-2xl border border-gold/30 bg-cream/20 p-5">
-                <h3 className="text-sm font-semibold text-maroon">{t("media.envelopeTitle")}</h3>
+              <div className="flex flex-col gap-2 rounded-2xl border border-gold/30 dark:border-gold/20 bg-cream/20 dark:bg-white/5 p-5">
+                <h3 className="text-sm font-semibold text-maroon dark:text-[#f6eee8]">{t("media.envelopeTitle")}</h3>
                 <ImageUploadManager
                   images={invitation.mediaUrls.digitalEnvelopeQr ? [invitation.mediaUrls.digitalEnvelopeQr] : []}
                   multiple={false}
@@ -855,11 +910,11 @@ export default function EditInvitationPage() {
             {/* Section 5: Publish & Share */}
             {activeSection === "publish" && (
               <Section id="section-publish" title={t("publish.title")} delay={0}>
-              <div className="flex flex-col gap-4 rounded-2xl border border-gold/30 bg-cream/30 p-5">
+              <div className="flex flex-col gap-4 rounded-2xl border border-gold/30 dark:border-gold/20 bg-cream/30 dark:bg-white/5 p-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <p className="text-xs text-maroon/60">{t("publish.status")}</p>
-                    <p className="font-semibold text-maroon capitalize">
+                    <p className="text-xs text-maroon/60 dark:text-[#f6eee8]/60">{t("publish.status")}</p>
+                    <p className="font-semibold text-maroon dark:text-[#f6eee8] capitalize">
                       {tStatus(invitation.status)}
                     </p>
                   </div>
@@ -874,8 +929,8 @@ export default function EditInvitationPage() {
                     whileTap={{ scale: saving ? 1 : 0.97 }}
                     className={`rounded-full px-6 py-2 text-sm font-semibold shadow-md transition-all disabled:opacity-60 cursor-pointer ${
                       invitation.status === "published"
-                        ? "border border-gold/60 bg-white text-maroon hover:bg-gold/10"
-                        : "bg-maroon text-cream hover:bg-maroon/90 shadow-maroon/20"
+                        ? "border border-gold/60 dark:border-gold/40 bg-white dark:bg-[#20181e] text-maroon dark:text-[#f6eee8] hover:bg-gold/10 dark:hover:bg-gold/20"
+                        : "bg-maroon dark:bg-gold text-cream dark:text-maroon hover:bg-maroon/90 dark:hover:bg-gold/90 shadow-maroon/20"
                     }`}
                   >
                     {invitation.status === "published" ? t("publish.unpublish") : t("publish.publish")}
@@ -889,9 +944,9 @@ export default function EditInvitationPage() {
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.3 }}
-                      className="flex flex-col items-start gap-3 border-t border-gold/20 pt-4"
+                      className="flex flex-col items-start gap-3 border-t border-gold/20 dark:border-gold/15 pt-4"
                     >
-                      <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-maroon">
+                      <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-maroon dark:text-[#f6eee8]">
                         <Share2 className="h-3.5 w-3.5 text-gold" />
                         <span>{t("publish.shareableLink")}:</span>
                       </span>
@@ -899,11 +954,11 @@ export default function EditInvitationPage() {
                         href={shareUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="rounded-xl border border-gold/30 bg-white px-3.5 py-2 text-xs font-medium text-maroon underline hover:text-gold transition-colors break-all"
+                        className="rounded-xl border border-gold/30 dark:border-gold/20 bg-white dark:bg-[#20181e] px-3.5 py-2 text-xs font-medium text-maroon dark:text-[#f6eee8] underline hover:text-gold dark:hover:text-gold transition-colors break-all"
                       >
                         {shareUrl}
                       </a>
-                      <div className="mt-1 rounded-2xl border border-gold/30 bg-white p-4 shadow-xs">
+                      <div className="mt-1 rounded-2xl border border-gold/30 dark:border-gold/20 bg-white p-4 shadow-xs">
                         <QrCode value={shareUrl} size={160} />
                       </div>
                     </motion.div>

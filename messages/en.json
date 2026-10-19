@@ -341,7 +341,21 @@
         "addSuccess": "Guest added successfully.",
         "updateSuccess": "Guest updated successfully.",
         "deleteSuccess": "Guest removed.",
-        "importSuccess": "Successfully imported {count} guests."
+        "importSuccess": "Successfully imported {count} guests.",
+        "duplicateWarningTitle": "Duplicate Guest Detected",
+        "duplicateWarningDesc": "This guest already exists in the list. Please review before adding.",
+        "forceAdd": "Force Add",
+        "dontAdd": "Don't Add",
+        "replace": "Replace",
+        "replaceGuest": "Replace Existing",
+        "matchedExisting": "Existing in list",
+        "newCandidate": "New entry",
+        "duplicateExcelWarning": "{count} duplicate guest(s) detected in file.",
+        "skipDuplicatesOption": "Don't Add Duplicates (Skip {count})",
+        "replaceDuplicatesOption": "Replace Existing ({count})",
+        "forceAddAllOption": "Force Add All ({count})",
+        "badgeDuplicate": "Duplicate",
+        "badgeNew": "New"
       },
       "dateTimePicker": {
         "dateLabel": "Calendar Date",

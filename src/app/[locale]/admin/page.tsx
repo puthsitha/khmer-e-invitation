@@ -24,13 +24,32 @@ export default function AdminOverviewPage() {
   const t = useTranslations("admin.overview");
 
   useEffect(() => {
-    listAllUsers().then((users) => setUserCount(users.length));
-    listAllInvitations().then((invitations) =>
-      setInvitationCounts({
-        total: invitations.length,
-        published: invitations.filter((i) => i.status === "published").length,
-      }),
-    );
+    let cancelled = false;
+
+    listAllUsers()
+      .then((users) => {
+        if (!cancelled) setUserCount(users.length);
+      })
+      .catch((err) => {
+        console.warn("Could not load users count:", err);
+      });
+
+    listAllInvitations()
+      .then((invitations) => {
+        if (!cancelled) {
+          setInvitationCounts({
+            total: invitations.length,
+            published: invitations.filter((i) => i.status === "published").length,
+          });
+        }
+      })
+      .catch((err) => {
+        console.warn("Could not load invitations count:", err);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (

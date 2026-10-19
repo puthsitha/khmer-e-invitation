@@ -11,6 +11,7 @@ import { OrnamentDivider } from "@/components/ui/OrnamentDivider";
 import { AmbientSparks } from "@/components/ui/AmbientSparks";
 import { InteractiveInvitationCard } from "@/components/home/InteractiveInvitationCard";
 import { FeatureShowcase } from "@/components/home/FeatureShowcase";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { Link } from "@/i18n/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -30,7 +31,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-cream text-maroon">
+    <div className="relative min-h-screen bg-cream dark:bg-[#140f13] text-maroon dark:text-[#f6eee8]">
       {/* Ambient background sparks */}
       <AmbientSparks />
 
@@ -38,8 +39,8 @@ export default function HomePage() {
       <header
         className={`sticky top-0 z-50 w-full border-b transition-all duration-300 px-4 sm:px-8 ${
           isScrolled
-            ? "border-gold/40 bg-cream/95 shadow-md backdrop-blur-lg py-3"
-            : "border-gold/25 bg-cream/80 backdrop-blur-md py-4"
+            ? "border-gold/40 dark:border-gold/25 bg-cream/95 dark:bg-[#140f13]/95 shadow-md backdrop-blur-lg py-3"
+            : "border-gold/25 dark:border-gold/20 bg-cream/80 dark:bg-[#140f13]/80 backdrop-blur-md py-4"
         }`}
       >
         <div className="mx-auto flex max-w-6xl items-center justify-between">
@@ -54,14 +55,15 @@ export default function HomePage() {
                 priority
               />
             </div>
-            <span className="font-[family-name:var(--font-heading-km)] text-base tracking-wide text-maroon sm:text-lg">
+            <span className="font-[family-name:var(--font-heading-km)] text-base tracking-wide text-maroon dark:text-[#f6eee8] sm:text-lg">
               {locale === "km" ? "ការអញ្ជើញបែបខ្មែរ" : "Khmer E-Invite"}
             </span>
           </Link>
 
-          <div className="flex items-center gap-3 sm:gap-5">
+          <div className="flex items-center gap-2.5 sm:gap-4">
             <SiteNav />
-            <div className="h-4 w-px bg-gold/40" />
+            <div className="h-4 w-px bg-gold/40 dark:bg-gold/30" />
+            <ThemeToggle />
             <LocaleSwitcher />
           </div>
         </div>
@@ -76,7 +78,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
-            className="font-[family-name:var(--font-heading-km)] text-3xl leading-snug tracking-tight text-maroon sm:text-5xl md:text-6xl"
+            className="font-[family-name:var(--font-heading-km)] text-3xl leading-snug tracking-tight text-maroon dark:text-[#f6eee8] sm:text-5xl md:text-6xl"
           >
             {t("heading")}
           </motion.h1>
@@ -96,7 +98,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="font-[family-name:var(--font-body-km)] max-w-2xl text-base leading-relaxed text-maroon/85 sm:text-lg"
+            className="font-[family-name:var(--font-body-km)] max-w-2xl text-base leading-relaxed text-maroon/85 dark:text-[#f6eee8]/80 sm:text-lg"
           >
             {t("subheading")}
           </motion.p>
@@ -137,7 +139,7 @@ export default function HomePage() {
                   href="/i/chenda-monyroth-wedding"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-cream/80 px-6 py-3.5 font-[family-name:var(--font-body-km)] text-sm font-medium text-maroon shadow-sm backdrop-blur-sm transition-all hover:bg-gold/15 hover:border-gold active:scale-95"
+                  className="inline-flex items-center gap-2 rounded-full border border-gold/40 dark:border-gold/30 bg-cream/80 dark:bg-white/5 px-6 py-3.5 font-[family-name:var(--font-body-km)] text-sm font-medium text-maroon dark:text-[#f6eee8] shadow-sm backdrop-blur-sm transition-all hover:bg-gold/15 dark:hover:bg-white/10 hover:border-gold active:scale-95"
                 >
                   <span>{t("exploreDemo")}</span>
                 </Link>
@@ -163,7 +165,7 @@ export default function HomePage() {
         </div>
 
         {/* Decorative Traditional Footer */}
-        <footer className="relative z-20 mt-16 border-t border-gold/25 bg-cream/60 py-8 text-center backdrop-blur-xs">
+        <footer className="relative z-20 mt-16 border-t border-gold/25 dark:border-gold/20 bg-cream/60 dark:bg-[#140f13]/60 py-8 text-center backdrop-blur-xs">
           <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 px-4">
             <div className="relative h-6 w-32 opacity-70">
               <Image
@@ -175,7 +177,7 @@ export default function HomePage() {
                 aria-hidden
               />
             </div>
-            <p className="font-[family-name:var(--font-body-km)] text-xs text-maroon/70">
+            <p className="font-[family-name:var(--font-body-km)] text-xs text-maroon/70 dark:text-[#f6eee8]/70">
               © {new Date().getFullYear()}{" "}
               {locale === "km"
                 ? "ការអញ្ជើញអេឡិចត្រូនិកបែបខ្មែរ — រក្សាសិទ្ធិគ្រប់យ៉ាង"

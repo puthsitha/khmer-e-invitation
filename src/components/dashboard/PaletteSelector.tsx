@@ -24,13 +24,13 @@ export function PaletteSelector({
       {(title || description) && (
         <div>
           {title && (
-            <div className="flex items-center gap-1.5 text-sm font-semibold text-maroon">
+            <div className="flex items-center gap-1.5 text-sm font-semibold text-maroon dark:text-[#f6eee8]">
               <PaletteIcon className="h-4 w-4 text-gold" />
               <span>{title}</span>
             </div>
           )}
           {description && (
-            <p className="mt-0.5 text-xs text-maroon/60">{description}</p>
+            <p className="mt-0.5 text-xs text-maroon/60 dark:text-[#f6eee8]/60">{description}</p>
           )}
         </div>
       )}
@@ -48,15 +48,15 @@ export function PaletteSelector({
               whileTap={{ scale: 0.98 }}
               className={`group relative flex flex-col gap-2.5 rounded-2xl border p-3.5 text-left transition-all duration-200 cursor-pointer ${
                 isSelected
-                  ? "border-maroon bg-white shadow-md ring-2 ring-maroon/20 opacity-100 scale-[1.01]"
-                  : "border-gold/30 bg-white/70 opacity-50 hover:opacity-85 hover:border-gold hover:bg-white hover:shadow-xs"
+                  ? "border-maroon dark:border-gold bg-white dark:bg-[#20181e] shadow-md ring-2 ring-maroon/20 dark:ring-gold/30 opacity-100 scale-[1.01]"
+                  : "border-gold/30 dark:border-gold/20 bg-white/70 dark:bg-[#1c161b] opacity-60 hover:opacity-95 hover:border-gold hover:bg-white dark:hover:bg-[#20181e] hover:shadow-xs"
               }`}
             >
               {/* Card Header: Name + Active Check */}
               <div className="flex items-center justify-between">
                 <span
                   className={`text-sm font-semibold transition-colors ${
-                    isSelected ? "text-maroon" : "text-maroon/80 group-hover:text-maroon"
+                    isSelected ? "text-maroon dark:text-gold" : "text-maroon/80 dark:text-[#f6eee8]/80 group-hover:text-maroon dark:group-hover:text-[#f6eee8]"
                   }`}
                 >
                   {palette.name}
@@ -65,8 +65,8 @@ export function PaletteSelector({
                 <div
                   className={`flex h-5 w-5 items-center justify-center rounded-full transition-all ${
                     isSelected
-                      ? "bg-maroon text-cream scale-100 shadow-xs"
-                      : "border border-gold/40 text-transparent scale-90 group-hover:border-gold"
+                      ? "bg-maroon dark:bg-gold text-cream dark:text-maroon scale-100 shadow-xs"
+                      : "border border-gold/40 dark:border-gold/30 text-transparent scale-90 group-hover:border-gold"
                   }`}
                 >
                   <Check className="h-3 w-3" strokeWidth={3} />

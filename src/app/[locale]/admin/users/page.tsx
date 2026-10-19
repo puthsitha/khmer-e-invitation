@@ -28,7 +28,17 @@ export default function AdminUsersPage() {
   const tCommon = useTranslations("common");
 
   useEffect(() => {
-    listAllUsers().then(setUsers);
+    let cancelled = false;
+    listAllUsers()
+      .then((u) => {
+        if (!cancelled) setUsers(u);
+      })
+      .catch((err) => {
+        console.warn("Could not load users:", err);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function toggleSuspended(u: AppUser) {

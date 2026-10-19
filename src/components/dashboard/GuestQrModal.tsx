@@ -272,21 +272,21 @@ export function GuestQrModal({
       />
 
       {/* Modal Dialog with generous, refined spacing */}
-      <div className="relative z-10 w-full max-w-[430px] max-h-[92vh] overflow-y-auto rounded-3xl border border-gold/40 bg-cream p-5 shadow-2xl animate-in fade-in zoom-in-95 duration-150 sm:p-8">
+      <div className="relative z-10 w-full max-w-[430px] max-h-[92vh] overflow-y-auto rounded-3xl border border-gold/40 dark:border-gold/30 bg-cream dark:bg-[#1c161b] p-5 shadow-2xl animate-in fade-in zoom-in-95 duration-150 sm:p-8">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gold/25 pb-4">
+        <div className="flex items-center justify-between border-b border-gold/25 dark:border-gold/20 pb-4">
           <div className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gold/15 text-maroon">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gold/15 dark:bg-gold/20 text-maroon dark:text-[#f6eee8]">
               <QrCodeIcon className="h-4.5 w-4.5" />
             </span>
-            <h3 className="font-[family-name:var(--font-heading-km)] text-base font-bold text-maroon">
+            <h3 className="font-[family-name:var(--font-heading-km)] text-base font-bold text-maroon dark:text-[#f6eee8]">
               {t("qrModalTitle")}
             </h3>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-full text-maroon/60 hover:bg-gold/15 hover:text-maroon transition-colors cursor-pointer"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-maroon/60 dark:text-[#f6eee8]/60 hover:bg-gold/15 hover:text-maroon dark:hover:text-[#f6eee8] transition-colors cursor-pointer"
           >
             <X size={18} />
           </button>
@@ -295,7 +295,7 @@ export function GuestQrModal({
         {/* Content Body with comfortable vertical spacing */}
         <div className="mt-5 flex flex-col items-center text-center">
           {/* Guest Name */}
-          <span className="font-[family-name:var(--font-heading-km)] text-xl font-bold text-maroon sm:text-2xl">
+          <span className="font-[family-name:var(--font-heading-km)] text-xl font-bold text-maroon dark:text-[#f6eee8] sm:text-2xl">
             {guest.name}
           </span>
 
@@ -303,13 +303,13 @@ export function GuestQrModal({
           {(guest.from || guest.by) && (
             <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
               {guest.from && (
-                <span className="inline-flex items-center gap-1 text-xs font-medium text-maroon/70">
+                <span className="inline-flex items-center gap-1 text-xs font-medium text-maroon/70 dark:text-[#f6eee8]/70">
                   <MapPin className="h-3 w-3 text-gold" />
                   <span>{guest.from}</span>
                 </span>
               )}
               {guest.by && (
-                <span className="inline-flex items-center gap-1 rounded-md border border-gold/30 bg-gold/10 px-2.5 py-0.5 text-[11px] font-semibold text-maroon">
+                <span className="inline-flex items-center gap-1 rounded-md border border-gold/30 dark:border-gold/20 bg-gold/10 dark:bg-gold/15 px-2.5 py-0.5 text-[11px] font-semibold text-maroon dark:text-[#f6eee8]">
                   <Tag className="h-2.5 w-2.5 text-gold" />
                   <span>{guest.by}</span>
                 </span>
@@ -317,7 +317,7 @@ export function GuestQrModal({
             </div>
           )}
 
-          {/* QR Code Container with Centered Circle Logo */}
+          {/* QR Code Container with Centered Circle Logo (keep white for contrast/scannability) */}
           <div className="relative mt-5 mb-3 rounded-3xl border border-gold/30 bg-white p-3.5 shadow-sm">
             {dataUrl ? (
               <div className="relative flex items-center justify-center">
@@ -348,17 +348,17 @@ export function GuestQrModal({
           </div>
 
           {/* Scan instruction subtitle */}
-          <p className="mt-2 text-xs font-medium text-maroon/65 max-w-[280px] leading-relaxed">
+          <p className="mt-2 text-xs font-medium text-maroon/65 dark:text-[#f6eee8]/70 max-w-[280px] leading-relaxed">
             {t("qrModalSubtitle")}
           </p>
 
           {/* Link box with 1-click copy */}
-          <div className="mt-4 flex w-full items-center gap-2 rounded-2xl border border-gold/30 bg-white px-3.5 py-2.5 shadow-2xs">
+          <div className="mt-4 flex w-full items-center gap-2 rounded-2xl border border-gold/30 dark:border-gold/20 bg-white dark:bg-[#20181e] px-3.5 py-2.5 shadow-2xs">
             <input
               type="text"
               readOnly
               value={url}
-              className="w-full text-ellipsis overflow-hidden font-mono text-[11px] text-maroon/80 outline-none select-all bg-transparent"
+              className="w-full text-ellipsis overflow-hidden font-mono text-[11px] text-maroon/80 dark:text-[#f6eee8]/85 outline-none select-all bg-transparent"
             />
             <button
               type="button"
@@ -367,7 +367,7 @@ export function GuestQrModal({
               className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl transition-colors cursor-pointer ${
                 copied
                   ? "bg-emerald-600 text-white"
-                  : "bg-gold/15 text-maroon hover:bg-gold/30"
+                  : "bg-gold/15 dark:bg-gold/20 text-maroon dark:text-[#f6eee8] hover:bg-gold/30"
               }`}
             >
               {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
@@ -377,7 +377,7 @@ export function GuestQrModal({
               target="_blank"
               rel="noopener noreferrer"
               title="Open Link"
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gold/15 text-maroon hover:bg-gold/30 transition-colors"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gold/15 dark:bg-gold/20 text-maroon dark:text-[#f6eee8] hover:bg-gold/30 transition-colors"
             >
               <ExternalLink className="h-3.5 w-3.5" />
             </a>
@@ -389,7 +389,7 @@ export function GuestQrModal({
               type="button"
               onClick={handleDownload}
               disabled={downloading}
-              className="flex h-11 items-center justify-center gap-2 rounded-2xl bg-maroon px-4 text-xs font-bold text-cream shadow-xs hover:bg-maroon/90 disabled:opacity-50 transition-all cursor-pointer"
+              className="flex h-11 items-center justify-center gap-2 rounded-2xl bg-maroon dark:bg-gold px-4 text-xs font-bold text-cream dark:text-maroon shadow-xs hover:bg-maroon/90 dark:hover:bg-gold/90 disabled:opacity-50 transition-all cursor-pointer"
             >
               <Download className="h-4 w-4" />
               <span>{downloading ? "…" : t("downloadQr")}</span>
@@ -398,7 +398,7 @@ export function GuestQrModal({
             <button
               type="button"
               onClick={handleShare}
-              className="flex h-11 items-center justify-center gap-2 rounded-2xl border border-gold/40 bg-white px-4 text-xs font-bold text-maroon shadow-xs hover:bg-gold/15 transition-all cursor-pointer"
+              className="flex h-11 items-center justify-center gap-2 rounded-2xl border border-gold/40 dark:border-gold/30 bg-white dark:bg-[#20181e] px-4 text-xs font-bold text-maroon dark:text-[#f6eee8] shadow-xs hover:bg-gold/15 dark:hover:bg-gold/20 transition-all cursor-pointer"
             >
               <Share2 className="h-4 w-4 text-gold" />
               <span>{t("shareQr")}</span>

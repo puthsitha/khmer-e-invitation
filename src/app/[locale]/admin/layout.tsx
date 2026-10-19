@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useRouter, usePathname } from "@/i18n/navigation";
 import { logout } from "@/lib/firebase/auth";
@@ -29,17 +29,19 @@ export default function AdminLayout({
   const pathname = usePathname();
   const t = useTranslations("admin");
   const tCommon = useTranslations("common");
+  const locale = useLocale();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [confirmingSignOut, setConfirmingSignOut] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   useEffect(() => {
-    if (loading) return;
+    if (loading || isSigningOut) return;
     if (!user) {
-      router.replace("/login");
+      router.replace("/");
     } else if (appUser && appUser.role !== "admin") {
       router.replace("/dashboard");
     }
-  }, [loading, user, appUser, router]);
+  }, [loading, isSigningOut, user, appUser, router]);
 
   if (loading || !user || appUser?.role !== "admin") {
     return (
@@ -221,9 +223,15 @@ export default function AdminLayout({
         body={tCommon("signOutBody")}
         confirmLabel={tCommon("signOut")}
         cancelLabel={tCommon("cancel")}
-        onConfirm={() => {
+        onConfirm={async () => {
+          setIsSigningOut(true);
           setConfirmingSignOut(false);
-          logout();
+          try {
+            await logout();
+          } catch (err) {
+            console.warn("Logout error:", err);
+          }
+          window.location.href = `/${locale}`;
         }}
         onCancel={() => setConfirmingSignOut(false)}
       />

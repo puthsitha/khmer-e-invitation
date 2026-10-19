@@ -341,7 +341,21 @@
         "addSuccess": "បានបន្ថែមភ្ញៀវដោយជោគជ័យ។",
         "updateSuccess": "បានកែប្រែព័ត៌មានភ្ញៀវដោយជោគជ័យ។",
         "deleteSuccess": "បានលុបភ្ញៀវចេញពីបញ្ជី។",
-        "importSuccess": "បាននាំចូលភ្ញៀវចំនួន {count} នាក់ដោយជោគជ័យ។"
+        "importSuccess": "បាននាំចូលភ្ញៀវចំនួន {count} នាក់ដោយជោគជ័យ។",
+        "duplicateWarningTitle": "រកឃើញភ្ញៀវស្ទួន",
+        "duplicateWarningDesc": "ភ្ញៀវរូបនេះមាននៅក្នុងបញ្ជីរួចហើយ សូមពិនិត្យមើលឡើងវិញមុនពេលបន្ថែម។",
+        "forceAdd": "បង្ខំបន្ថែម",
+        "dontAdd": "កុំបន្ថែម",
+        "replace": "ជំនួស",
+        "replaceGuest": "ជំនួសភ្ញៀវចាស់",
+        "matchedExisting": "មានស្រាប់ក្នុងបញ្ជី",
+        "newCandidate": "ព័ត៌មានថ្មី",
+        "duplicateExcelWarning": "រកឃើញភ្ញៀវស្ទួនចំនួន {count} នាក់ក្នុងឯកសារ។",
+        "skipDuplicatesOption": "កុំបន្ថែមភ្ញៀវស្ទួន (រំលង {count} នាក់)",
+        "replaceDuplicatesOption": "ជំនួសភ្ញៀវចាស់ ({count} នាក់)",
+        "forceAddAllOption": "បង្ខំបន្ថែមទាំងអស់ ({count} នាក់)",
+        "badgeDuplicate": "ស្ទួន",
+        "badgeNew": "ថ្មី"
       },
       "dateTimePicker": {
         "dateLabel": "កាលបរិច្ឆេទប្រតិទិន",

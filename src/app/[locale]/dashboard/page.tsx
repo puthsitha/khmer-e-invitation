@@ -30,8 +30,23 @@ export default function DashboardPage() {
   const tCommon = useTranslations("common");
 
   useEffect(() => {
-    if (!user) return;
-    listInvitationsByOwner(user.uid).then(setInvitations);
+    if (!user) {
+      setInvitations([]);
+      return;
+    }
+    let cancelled = false;
+    listInvitationsByOwner(user.uid)
+      .then((invs) => {
+        if (!cancelled) setInvitations(invs);
+      })
+      .catch((err) => {
+        console.warn("Could not load invitations:", err);
+        if (!cancelled) setInvitations([]);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   async function handleConfirmDelete() {

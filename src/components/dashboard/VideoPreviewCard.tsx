@@ -30,20 +30,20 @@ export function VideoPreviewCard({
   const isVimeo = url.includes("vimeo.com");
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-gold/30 bg-cream/30 p-4 sm:p-5">
+    <div className="flex flex-col gap-3 rounded-2xl border border-gold/30 dark:border-gold/20 bg-cream/30 dark:bg-white/5 p-4 sm:p-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gold/20 text-maroon">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gold/20 dark:bg-gold/25 text-maroon dark:text-gold">
             <Film className="h-4 w-4" />
           </span>
-          <span className="text-sm font-semibold text-maroon">
+          <span className="text-sm font-semibold text-maroon dark:text-[#f6eee8]">
             {labels.previewTitle}
           </span>
         </div>
 
         {embedUrl && (
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 border border-emerald-200">
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
               <CheckCircle2 className="h-3 w-3" />
               {isYoutube ? labels.validYoutube : isVimeo ? labels.validVimeo : "Video Ready"}
             </span>
@@ -52,7 +52,7 @@ export function VideoPreviewCard({
               href={url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 rounded-lg border border-gold/40 bg-white px-2.5 py-1 text-xs font-medium text-maroon transition-colors hover:bg-gold/15"
+              className="inline-flex items-center gap-1 rounded-lg border border-gold/40 dark:border-gold/30 bg-white dark:bg-[#20181e] px-2.5 py-1 text-xs font-medium text-maroon dark:text-[#f6eee8] transition-colors hover:bg-gold/15"
               title={labels.openLink}
             >
               <ExternalLink className="h-3 w-3" />
@@ -63,7 +63,7 @@ export function VideoPreviewCard({
               <button
                 type="button"
                 onClick={onClear}
-                className="inline-flex items-center gap-1 rounded-lg border border-red-200 bg-white px-2 py-1 text-xs font-medium text-red-600 transition-colors hover:bg-red-50"
+                className="inline-flex items-center gap-1 rounded-lg border border-red-200 dark:border-red-800 bg-white dark:bg-[#20181e] px-2 py-1 text-xs font-medium text-red-600 dark:text-red-400 transition-colors hover:bg-red-50 dark:hover:bg-red-950/40"
                 title={labels.clear}
               >
                 <X className="h-3.5 w-3.5" />
@@ -100,15 +100,15 @@ export function VideoPreviewCard({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gold/40 bg-white/70 px-4 py-8 text-center"
+            className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gold/40 dark:border-gold/30 bg-white/70 dark:bg-[#20181e]/60 px-4 py-8 text-center"
           >
-            <span className="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-gold/15 text-gold">
+            <span className="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-gold/15 dark:bg-gold/25 text-gold">
               <Video className="h-6 w-6" />
             </span>
-            <p className="max-w-sm text-xs font-medium text-maroon/70">
+            <p className="max-w-sm text-xs font-medium text-maroon/70 dark:text-[#f6eee8]/70">
               {labels.previewEmpty}
             </p>
-            <p className="mt-1 text-[11px] text-maroon/50">
+            <p className="mt-1 text-[11px] text-maroon/50 dark:text-[#f6eee8]/50">
               {labels.previewHint}
             </p>
           </motion.div>

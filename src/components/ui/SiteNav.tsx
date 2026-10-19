@@ -1,20 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { logout } from "@/lib/firebase/auth";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
+import { useRouter } from "@/i18n/navigation";
+
 export function SiteNav() {
   const t = useTranslations("nav");
   const tCommon = useTranslations("common");
+  const locale = useLocale();
+  const router = useRouter();
   const { user, appUser, loading } = useAuth();
   const [confirmingSignOut, setConfirmingSignOut] = useState(false);
 
   return (
-    <nav className="flex items-center gap-4 text-sm text-maroon">
+    <nav className="flex items-center gap-4 text-sm text-maroon dark:text-[#f6eee8]">
       {loading ? null : user ? (
         <>
           {appUser?.role === "admin" ? (
@@ -29,7 +33,7 @@ export function SiteNav() {
           <button
             type="button"
             onClick={() => setConfirmingSignOut(true)}
-            className="hover:underline">
+            className="cursor-pointer hover:underline">
             {t("logout")}
           </button>
           <ConfirmDialog
@@ -38,9 +42,14 @@ export function SiteNav() {
             body={tCommon("signOutBody")}
             confirmLabel={tCommon("signOut")}
             cancelLabel={tCommon("cancel")}
-            onConfirm={() => {
+            onConfirm={async () => {
               setConfirmingSignOut(false);
-              logout();
+              try {
+                await logout();
+              } catch (err) {
+                console.warn("Logout error:", err);
+              }
+              window.location.href = `/${locale}`;
             }}
             onCancel={() => setConfirmingSignOut(false)}
           />

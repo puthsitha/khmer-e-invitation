@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { Menu, ChevronRight, ExternalLink } from "lucide-react";
 import Image from "next/image";
 
@@ -25,7 +26,7 @@ export function InvitationTopNav({
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className="sticky top-0 z-30 flex h-14 w-full shrink-0 items-center justify-between gap-2 border-b border-gold/30 bg-cream/90 px-3 sm:gap-4 sm:px-6 backdrop-blur-md"
+      className="sticky top-0 z-30 flex h-14 w-full shrink-0 items-center justify-between gap-2 border-b border-gold/30 dark:border-gold/25 bg-cream/90 dark:bg-[#140f13]/90 px-3 sm:gap-4 sm:px-6 backdrop-blur-md"
     >
       {/* Left: Mobile hamburger & breadcrumbs */}
       <div className="flex min-w-0 flex-1 items-center gap-1.5 sm:gap-3">
@@ -33,7 +34,7 @@ export function InvitationTopNav({
           type="button"
           onClick={onOpenMobileMenu}
           aria-label="Open navigation menu"
-          className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-xl text-maroon hover:bg-gold/15 lg:hidden"
+          className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-xl text-maroon dark:text-[#f6eee8] hover:bg-gold/15 lg:hidden"
         >
           <Menu size={20} strokeWidth={1.75} />
         </button>
@@ -41,7 +42,7 @@ export function InvitationTopNav({
         <div className="flex min-w-0 items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
           <Link
             href="/dashboard"
-            className="group flex shrink-0 items-center gap-1.5 font-semibold text-maroon/70 transition-colors hover:text-maroon"
+            className="group flex shrink-0 items-center gap-1.5 font-semibold text-maroon/70 dark:text-[#f6eee8]/70 transition-colors hover:text-maroon dark:hover:text-[#f6eee8]"
           >
             <div className="relative h-5 w-5 shrink-0 transition-transform group-hover:scale-110">
               <Image
@@ -56,22 +57,22 @@ export function InvitationTopNav({
             <span className="hidden min-[360px]:inline sm:hidden whitespace-nowrap">{t("back")}</span>
           </Link>
 
-          <ChevronRight size={14} className="shrink-0 text-maroon/30" />
+          <ChevronRight size={14} className="shrink-0 text-maroon/30 dark:text-[#f6eee8]/30" />
 
-          <span className="min-w-0 truncate font-bold text-maroon">
+          <span className="min-w-0 truncate font-bold text-maroon dark:text-[#f6eee8]">
             {slug}
           </span>
         </div>
       </div>
 
-      {/* Right: View Live Invitation + LocaleSwitcher */}
+      {/* Right: View Live Invitation + ThemeToggle + LocaleSwitcher */}
       <div className="flex shrink-0 items-center gap-1.5 sm:gap-2.5">
         {shareUrl && (
           <a
             href={shareUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-gold/15 p-2 sm:px-3 sm:py-1.5 text-xs font-bold text-maroon transition-colors hover:bg-gold/25"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-gold/15 dark:bg-gold/25 p-2 sm:px-3 sm:py-1.5 text-xs font-bold text-maroon dark:text-gold transition-colors hover:bg-gold/25"
             title={t("previewLiveTitle")}
             aria-label={t("previewLive")}
           >
@@ -80,6 +81,7 @@ export function InvitationTopNav({
           </a>
         )}
 
+        <ThemeToggle />
         <LocaleSwitcher />
       </div>
     </motion.header>
