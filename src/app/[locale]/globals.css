@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #fdf8f0;
   --foreground: #2a1a12;
@@ -9,6 +11,11 @@
   --color-gold-light: #e6cd8a;
   --color-maroon: #7a1f2b;
   --color-cream: #fdf8f0;
+}
+
+.dark {
+  --background: #140f13;
+  --foreground: #f6eee8;
 }
 
 @theme inline {

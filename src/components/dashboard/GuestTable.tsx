@@ -65,15 +65,15 @@ export function GuestTable({
 
   // Pill styling based on inviter name (By)
   function getByBadgeStyle(by?: string) {
-    if (!by) return "bg-gray-100 text-gray-700 border-gray-200";
+    if (!by) return "bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-[#f6eee8]/70 border-gray-200 dark:border-white/10";
     const lower = by.toLowerCase();
     if (lower.includes("sitha") || lower.includes("groom") || lower.includes("កូនកំលោះ")) {
-      return "bg-sky-50 text-sky-800 border-sky-200";
+      return "bg-sky-50 dark:bg-sky-950/50 text-sky-800 dark:text-sky-300 border-sky-200 dark:border-sky-800";
     }
     if (lower.includes("dalin") || lower.includes("bride") || lower.includes("កូនក្រមុំ")) {
-      return "bg-rose-50 text-rose-800 border-rose-200";
+      return "bg-rose-50 dark:bg-rose-950/50 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-800";
     }
-    return "bg-amber-50 text-amber-800 border-amber-200";
+    return "bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800";
   }
 
   // RSVP Status styling & icons
@@ -81,21 +81,21 @@ export function GuestTable({
     switch (status) {
       case "attending":
         return (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
             <CheckCircle2 className="h-3.5 w-3.5" />
             <span>{t("attending")}</span>
           </span>
         );
       case "declined":
         return (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/60 px-2.5 py-1 text-xs font-semibold text-rose-700 dark:text-rose-300">
             <XCircle className="h-3.5 w-3.5" />
             <span>{t("notAttending")}</span>
           </span>
         );
       case "not_sure":
         return (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/60 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:text-amber-300">
             <HelpCircle className="h-3.5 w-3.5" />
             <span>{t("notSure")}</span>
           </span>
@@ -103,7 +103,7 @@ export function GuestTable({
       case "pending":
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-400">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 px-2.5 py-1 text-xs font-medium text-gray-400 dark:text-[#f6eee8]/40">
             <Clock className="h-3.5 w-3.5" />
             <span>{t("pending")}</span>
           </span>
@@ -112,11 +112,11 @@ export function GuestTable({
   }
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-gold/25 bg-white shadow-xs [-webkit-overflow-scrolling:touch]">
+    <div className="overflow-x-auto rounded-2xl border border-gold/25 dark:border-gold/20 bg-white dark:bg-[#1c161b] shadow-xs [-webkit-overflow-scrolling:touch]">
       <table className="w-full min-w-[760px] border-collapse text-left text-xs">
         {/* Table Header with subtle luxury warm styling */}
         <thead>
-          <tr className="border-b border-gold/25 bg-[#fbf6ed] text-maroon/75">
+          <tr className="border-b border-gold/25 dark:border-gold/20 bg-[#fbf6ed] dark:bg-[#20181e] text-maroon/75 dark:text-[#f6eee8]/75">
             <th className="w-12 py-3 px-4 text-center font-bold">#</th>
             <th className="py-3 px-4 font-bold">{t("name")}</th>
             <th className="py-3 px-4 font-bold">{t("from")}</th>
@@ -127,24 +127,24 @@ export function GuestTable({
             <th className="w-32 py-3 px-4 text-right font-bold">{t("actions")}</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gold/15">
+        <tbody className="divide-y divide-gold/15 dark:divide-gold/20">
           {guests.map((guest, idx) => {
             const isCopied = copiedGuestId === guest.guestId;
 
             return (
               <tr
                 key={guest.guestId}
-                className="group hover:bg-cream/40 transition-colors"
+                className="group hover:bg-cream/40 dark:hover:bg-white/5 transition-colors"
               >
                 {/* Index / No. */}
-                <td className="py-3.5 px-4 text-center font-semibold text-maroon/40 align-middle">
+                <td className="py-3.5 px-4 text-center font-semibold text-maroon/40 dark:text-[#f6eee8]/40 align-middle">
                   {guest.no ?? idx + 1}
                 </td>
 
                 {/* Name & RSVP Message */}
                 <td className="py-3.5 px-4 align-middle">
                   <div className="flex flex-col gap-0.5 min-w-0">
-                    <span className="font-bold text-sm text-maroon">
+                    <span className="font-bold text-sm text-maroon dark:text-[#f6eee8]">
                       {guest.name}
                     </span>
                     {guest.rsvpMessage ? (
@@ -157,7 +157,7 @@ export function GuestTable({
                       </span>
                     ) : guest.note ? (
                       <span
-                        className="text-[11px] text-maroon/40 truncate max-w-xs"
+                        className="text-[11px] text-maroon/40 dark:text-[#f6eee8]/40 truncate max-w-xs"
                         title={guest.note}
                       >
                         {guest.note}
@@ -167,7 +167,7 @@ export function GuestTable({
                 </td>
 
                 {/* From (Location) */}
-                <td className="py-3.5 px-4 text-maroon/75 font-medium align-middle">
+                <td className="py-3.5 px-4 text-maroon/75 dark:text-[#f6eee8]/75 font-medium align-middle">
                   {guest.from || "—"}
                 </td>
 
@@ -182,7 +182,7 @@ export function GuestTable({
                       {guest.by}
                     </span>
                   ) : (
-                    <span className="text-maroon/25">—</span>
+                    <span className="text-maroon/25 dark:text-[#f6eee8]/25">—</span>
                   )}
                 </td>
 
@@ -194,13 +194,13 @@ export function GuestTable({
                     title={guest.isInvited ? t("markNotInvited") : t("markInvited")}
                     className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-all cursor-pointer shadow-2xs ${
                       guest.isInvited
-                        ? "border border-sky-200 bg-sky-50 text-sky-700 hover:bg-sky-100"
-                        : "border border-dashed border-gray-300 bg-gray-50 text-gray-400 hover:border-sky-300 hover:text-sky-600"
+                        ? "border border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 hover:bg-sky-100"
+                        : "border border-dashed border-gray-300 dark:border-white/20 bg-gray-50 dark:bg-white/5 text-gray-400 dark:text-[#f6eee8]/40 hover:border-sky-300 hover:text-sky-600"
                     }`}
                   >
                     {guest.isInvited ? (
                       <>
-                        <Send className="h-3 w-3 text-sky-600" />
+                        <Send className="h-3 w-3 text-sky-600 dark:text-sky-400" />
                         <span>{t("invited")}</span>
                       </>
                     ) : (
@@ -225,7 +225,7 @@ export function GuestTable({
                     className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
                       isCopied
                         ? "bg-emerald-600 text-white shadow-2xs"
-                        : "border border-gold/30 bg-white text-maroon hover:border-gold hover:bg-gold/10"
+                        : "border border-gold/30 dark:border-gold/20 bg-white dark:bg-[#20181e] text-maroon dark:text-[#f6eee8] hover:border-gold hover:bg-gold/10"
                     }`}
                   >
                     {isCopied ? (
@@ -235,7 +235,7 @@ export function GuestTable({
                       </>
                     ) : (
                       <>
-                        <Copy className="h-3.5 w-3.5 text-maroon/60" />
+                        <Copy className="h-3.5 w-3.5 text-maroon/60 dark:text-[#f6eee8]/60" />
                         <span>{t("copyLink")}</span>
                       </>
                     )}
@@ -249,7 +249,7 @@ export function GuestTable({
                       type="button"
                       onClick={() => setQrGuest(guest)}
                       title={t("showQrCode")}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-maroon/60 hover:bg-gold/15 hover:text-maroon transition-colors cursor-pointer"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg text-maroon/60 dark:text-[#f6eee8]/60 hover:bg-gold/15 hover:text-maroon dark:hover:text-[#f6eee8] transition-colors cursor-pointer"
                     >
                       <QrCode className="h-4 w-4" />
                     </button>
@@ -257,7 +257,7 @@ export function GuestTable({
                       type="button"
                       onClick={() => onEditGuest(guest)}
                       title={t("editGuest")}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-maroon/50 hover:bg-gold/15 hover:text-maroon transition-colors cursor-pointer"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg text-maroon/50 dark:text-[#f6eee8]/50 hover:bg-gold/15 hover:text-maroon dark:hover:text-[#f6eee8] transition-colors cursor-pointer"
                     >
                       <Pencil className="h-3.5 w-3.5" />
                     </button>
@@ -265,7 +265,7 @@ export function GuestTable({
                       type="button"
                       onClick={() => onDeleteGuest(guest)}
                       title={t("deleteGuest")}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-rose-400 hover:bg-rose-50 hover:text-rose-600 transition-colors cursor-pointer"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:text-rose-600 dark:hover:text-rose-400 transition-colors cursor-pointer"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>

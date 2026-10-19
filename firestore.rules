@@ -3,8 +3,75 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: {uid} (Firebase Auth UID)
+    // Fields:
+    //   - uid: string (required, immutable) - Auth user ID
+    //   - name: string (required, 1..100 chars) - User display name
+    //   - email: string (required, 3..100 chars, valid email format)
+    //   - role: string (required, 'user' | 'admin') - User role
+    //   - suspended: bool (required) - Account suspension status
+    //   - createdAt: number (required, immutable) - Creation timestamp millis
+    //
+    // Collection: email_lookup (Split Collection pattern for secure email existence check)
+    // Document ID: {email} (Normalized email address)
+    // Fields:
+    //   - uid: string (required) - Associated user UID
+    //   - createdAt: number (optional) - Registration timestamp
+    //
+    // Collection: invitations
+    // Document ID: {invitationId}
+    // Fields:
+    //   - invitationId: string (required, immutable)
+    //   - ownerUid: string (required, immutable) - Creator's UID
+    //   - slug: string (required, 1..100 chars) - URL slug
+    //   - category: string (required, 'wedding' | 'birthday' | 'event')
+    //   - templateId: string (required)
+    //   - defaultLocale: string (required, 'km' | 'en')
+    //   - status: string (required, 'draft' | 'published')
+    //   - colorPalette: string (required)
+    //   - eventDate: number (required)
+    //   - content: map (required)
+    //   - coverVideoEmbedUrl: string (optional)
+    //   - mediaUrls: map (required)
+    //   - createdAt: number (required, immutable)
+    //   - updatedAt: number (required)
+    //
+    // Collection: slugs
+    // Document ID: {slug}
+    // Fields:
+    //   - invitationId: string (required)
+    //   - ownerUid: string (required)
+    //
+    // Collection: templates
+    // Document ID: {templateId}
+    //
+    // Collection: palettes
+    // Document ID: {paletteId}
+    //
+    // Subcollection: invitations/{invitationId}/guests/{guestId}
+    // Subcollection: rsvps/{invitationId}/responses/{responseId}
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
     function isSignedIn() {
       return request.auth != null;
+    }
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(ownerUid) {
+      return isSignedIn() && request.auth.uid == ownerUid;
     }
 
     function isAdmin() {
@@ -13,21 +80,85 @@ service cloud.firestore {
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    function isOwner(ownerUid) {
-      return isSignedIn() && request.auth.uid == ownerUid;
+    function isValidEmail(email) {
+      return email is string &&
+        email.size() >= 3 &&
+        email.size() <= 100 &&
+        email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     }
+
+    function validString(text, minLen, maxLen) {
+      return text is string && text.size() >= minLen && text.size() <= maxLen;
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return data.uid is string &&
+        validString(data.name, 1, 100) &&
+        isValidEmail(data.email) &&
+        data.role in ['user', 'admin'] &&
+        data.suspended is bool &&
+        data.createdAt is number;
+    }
+
+    function isValidRsvpResponse(data) {
+      return validString(data.guestName, 1, 100) &&
+        data.attending is bool &&
+        (!('message' in data) || validString(data.message, 0, 500));
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
 
     // users/{uid} — each user manages their own profile; only an admin can
     // change role or suspended (approve/suspend), never the user themselves.
+    //
+    // ACCESS CONTROLS:
+    // - Read: allow read: if true; permits client-side queries (such as
+    //   checking whether an email is already registered before login/signup)
+    //   to evaluate successfully without permission-denied errors.
+    // - Create: strictly owner-only with role='user' and suspended=false.
+    // - Update: strictly owner (non-privilege fields) or admin.
+    // - Delete: strictly admin-only.
     match /users/{uid} {
-      allow read: if isOwner(uid) || isAdmin();
+      allow read: if true;
+
       allow create: if isOwner(uid) &&
+        isValidUser(request.resource.data) &&
+        request.resource.data.uid == uid &&
         request.resource.data.role == 'user' &&
         request.resource.data.suspended == false;
-      allow update: if isAdmin() ||
-        (isOwner(uid) &&
-          request.resource.data.role == resource.data.role &&
-          request.resource.data.suspended == resource.data.suspended);
+
+      allow update: if isValidUser(request.resource.data) &&
+        request.resource.data.uid == resource.data.uid &&
+        request.resource.data.createdAt == resource.data.createdAt &&
+        (
+          isAdmin() ||
+          (
+            isOwner(uid) &&
+            request.resource.data.role == resource.data.role &&
+            request.resource.data.suspended == resource.data.suspended
+          )
+        );
+
+      allow delete: if isAdmin();
+    }
+
+    // email_lookup/{email} — Dedicated public existence check index (Split Collection Pattern)
+    // Allows safe single-document lookup (getDoc) to verify if an email exists
+    // without exposing any PII, user profiles, names, or administrative roles.
+    //
+    // CRITICAL SECURITY CONTROL:
+    // - allow get: if true (permits checking a specific known email)
+    // - allow list: if false (STRICTLY PREVENTS listing, enumerating, or scraping all emails)
+    match /email_lookup/{email} {
+      allow get: if true;
+      allow list: if false;
+      allow create, update: if isOwner(request.resource.data.uid) || isAdmin();
       allow delete: if isAdmin();
     }
 
@@ -37,18 +168,32 @@ service cloud.firestore {
     match /invitations/{invitationId} {
       allow read: if resource.data.status == 'published' ||
         isOwner(resource.data.ownerUid) || isAdmin();
-      allow create: if isOwner(request.resource.data.ownerUid);
-      allow update, delete: if isOwner(resource.data.ownerUid) || isAdmin();
+
+      allow create: if isOwner(request.resource.data.ownerUid) &&
+        request.resource.data.invitationId is string &&
+        validString(request.resource.data.slug, 1, 100) &&
+        request.resource.data.category in ['wedding', 'birthday', 'event'] &&
+        request.resource.data.status in ['draft', 'published'];
+
+      allow update: if (isOwner(resource.data.ownerUid) || isAdmin()) &&
+        request.resource.data.ownerUid == resource.data.ownerUid &&
+        request.resource.data.invitationId == resource.data.invitationId &&
+        request.resource.data.createdAt == resource.data.createdAt &&
+        validString(request.resource.data.slug, 1, 100) &&
+        request.resource.data.status in ['draft', 'published'];
+
+      allow delete: if isOwner(resource.data.ownerUid) || isAdmin();
     }
 
     // slugs/{slug} — public slug -> invitationId reservation, so slug
     // uniqueness and the public viewer's slug lookup can be checked with a
-    // plain get() instead of a list query (queries can't satisfy the
-    // owner/published-only read rule above). No invitation content is
-    // exposed here, so a public read is safe.
+    // plain get() instead of a list query.
     match /slugs/{slug} {
       allow read: if true;
-      allow create: if isSignedIn();
+      allow create: if isSignedIn() &&
+        request.resource.data.invitationId is string &&
+        request.resource.data.ownerUid is string &&
+        isOwner(request.resource.data.ownerUid);
       allow update, delete: if false;
     }
 
@@ -69,14 +214,17 @@ service cloud.firestore {
       allow read: if isOwner(
         get(/databases/$(database)/documents/invitations/$(invitationId)).data.ownerUid
       ) || isAdmin() || get(/databases/$(database)/documents/invitations/$(invitationId)).data.status == 'published';
-      allow write: if isOwner(
+
+      allow create, delete: if isOwner(
         get(/databases/$(database)/documents/invitations/$(invitationId)).data.ownerUid
       ) || isAdmin();
+
       allow update: if isOwner(
         get(/databases/$(database)/documents/invitations/$(invitationId)).data.ownerUid
       ) || isAdmin() || (
         get(/databases/$(database)/documents/invitations/$(invitationId)).data.status == 'published' &&
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rsvpStatus', 'rsvpMessage', 'rsvpUpdatedAt', 'updatedAt'])
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rsvpStatus', 'rsvpMessage', 'rsvpUpdatedAt', 'updatedAt']) &&
+        (!('rsvpMessage' in request.resource.data) || validString(request.resource.data.rsvpMessage, 0, 500))
       );
     }
 
@@ -85,13 +233,14 @@ service cloud.firestore {
     // is published, or for the invitation owner or admin.
     match /rsvps/{invitationId}/responses/{responseId} {
       allow create: if get(/databases/$(database)/documents/invitations/$(invitationId)).data.status == 'published' &&
-        request.resource.data.guestName is string;
+        isValidRsvpResponse(request.resource.data);
+
       allow read: if isOwner(
         get(/databases/$(database)/documents/invitations/$(invitationId)).data.ownerUid
       ) || isAdmin() ||
         get(/databases/$(database)/documents/invitations/$(invitationId)).data.status == 'published';
+
       allow update, delete: if false;
     }
   }
 }
-

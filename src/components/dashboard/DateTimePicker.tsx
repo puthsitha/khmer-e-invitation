@@ -64,19 +64,19 @@ export function DateTimePicker({
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-gold/30 bg-cream/30 p-4 sm:p-5">
+    <div className="flex flex-col gap-3 rounded-2xl border border-gold/30 dark:border-gold/20 bg-cream/30 dark:bg-white/5 p-4 sm:p-5">
       {/* Label and formatted human-friendly preview badge */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gold/20 text-maroon">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gold/20 dark:bg-gold/25 text-maroon dark:text-gold">
             <CalendarDays className="h-4 w-4" />
           </span>
-          <span className="text-sm font-semibold text-maroon">
+          <span className="text-sm font-semibold text-maroon dark:text-[#f6eee8]">
             {label || t("dateLabel")}
           </span>
         </div>
 
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-white/90 px-3 py-1 text-xs font-semibold text-maroon shadow-xs">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 dark:border-gold/30 bg-white/90 dark:bg-[#1c161b] px-3 py-1 text-xs font-semibold text-maroon dark:text-[#f6eee8] shadow-xs">
           <Calendar className="h-3 w-3 text-gold" />
           <span>{formattedPreview}</span>
         </span>
@@ -86,7 +86,7 @@ export function DateTimePicker({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {/* Date Input */}
         <div className="flex flex-col gap-1.5">
-          <span className="text-xs font-semibold text-maroon/70">
+          <span className="text-xs font-semibold text-maroon/70 dark:text-[#f6eee8]/70">
             {t("dateLabel")}
           </span>
           <div className="relative flex items-center">
@@ -94,14 +94,14 @@ export function DateTimePicker({
               type="date"
               value={dateStr}
               onChange={(e) => handleDateChange(e.target.value)}
-              className="w-full rounded-xl border border-gold/40 bg-white px-3.5 py-2.5 text-sm font-medium text-maroon shadow-xs outline-none transition-all hover:border-gold/70 focus:border-maroon focus:ring-2 focus:ring-maroon/15 cursor-pointer"
+              className="w-full rounded-xl border border-gold/40 dark:border-gold/30 bg-white dark:bg-[#20181e] px-3.5 py-2.5 text-sm font-medium text-maroon dark:text-[#f6eee8] shadow-xs outline-none transition-all hover:border-gold/70 focus:border-maroon dark:focus:border-gold focus:ring-2 focus:ring-maroon/15 dark:focus:ring-gold/20 cursor-pointer"
             />
           </div>
         </div>
 
         {/* Time Selector */}
         <div className="flex flex-col gap-1.5">
-          <span className="text-xs font-semibold text-maroon/70">
+          <span className="text-xs font-semibold text-maroon/70 dark:text-[#f6eee8]/70">
             {t("timeLabel")}
           </span>
           <TimeSelect12h

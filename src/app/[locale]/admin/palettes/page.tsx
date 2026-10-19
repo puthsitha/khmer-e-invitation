@@ -40,20 +40,20 @@ function ColorField({
   onChange: (value: string) => void;
 }) {
   return (
-    <label className="flex flex-col gap-1 text-sm text-maroon">
+    <label className="flex flex-col gap-1 text-sm text-maroon dark:text-[#f6eee8]">
       {label}
       <span className="flex items-center gap-2">
         <input
           type="color"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="h-9 w-9 cursor-pointer rounded-lg border border-gold/40 p-1"
+          className="h-9 w-9 cursor-pointer rounded-lg border border-gold/40 dark:border-gold/30 bg-white dark:bg-[#20181e] p-1"
         />
         <input
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-24 rounded-lg border border-gold/40 px-2 py-1.5 text-xs transition-colors focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
+          className="w-24 rounded-lg border border-gold/40 dark:border-gold/30 bg-white dark:bg-[#20181e] text-maroon dark:text-[#f6eee8] px-2 py-1.5 text-xs transition-colors focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
         />
       </span>
     </label>
@@ -69,7 +69,11 @@ export default function AdminPalettesPage() {
   const tCommon = useTranslations("common");
 
   function refresh() {
-    listPalettes().then(setPalettes);
+    listPalettes()
+      .then(setPalettes)
+      .catch((err) => {
+        console.warn("Could not load palettes:", err);
+      });
   }
 
   useEffect(refresh, []);
@@ -116,16 +120,16 @@ export default function AdminPalettesPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut", delay: 0.05 }}
         onSubmit={handleSubmit}
-        className="mb-8 flex flex-wrap items-end gap-4 rounded-2xl border border-gold/30 bg-white p-5 shadow-sm"
+        className="mb-8 flex flex-wrap items-end gap-4 rounded-2xl border border-gold/30 dark:border-gold/20 bg-white dark:bg-[#1c161b] p-5 shadow-sm"
       >
-        <label className="flex flex-col gap-1 text-sm text-maroon">
+        <label className="flex flex-col gap-1 text-sm text-maroon dark:text-[#f6eee8]">
           {t("name")}
           <input
             required
             placeholder="Golden Rose"
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-            className="rounded-lg border border-gold/40 px-3 py-1.5 transition-colors focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
+            className="rounded-lg border border-gold/40 dark:border-gold/30 bg-white dark:bg-[#20181e] text-maroon dark:text-[#f6eee8] px-3 py-1.5 transition-colors focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
           />
         </label>
         <ColorField
@@ -153,7 +157,7 @@ export default function AdminPalettesPage() {
             type="submit"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className="cursor-pointer rounded-full bg-maroon px-5 py-2 text-sm text-cream shadow-md shadow-maroon/20 transition-colors hover:bg-maroon/90"
+            className="cursor-pointer rounded-full bg-maroon dark:bg-gold px-5 py-2 text-sm text-cream dark:text-maroon font-medium shadow-md shadow-maroon/20 transition-colors hover:bg-maroon/90 dark:hover:bg-gold/90"
           >
             {editingId ? tCommon("save") : t("add")}
           </motion.button>
@@ -163,7 +167,7 @@ export default function AdminPalettesPage() {
               onClick={cancelEdit}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="cursor-pointer rounded-full border border-gold/60 px-4 py-2 text-sm text-maroon transition-colors hover:bg-gold/10"
+              className="cursor-pointer rounded-full border border-gold/60 dark:border-gold/40 px-4 py-2 text-sm text-maroon dark:text-[#f6eee8] transition-colors hover:bg-gold/10"
             >
               {tCommon("cancel")}
             </motion.button>
@@ -171,7 +175,7 @@ export default function AdminPalettesPage() {
         </div>
       </motion.form>
 
-      {palettes.length === 0 && <p className="text-sm text-maroon/60">{t("empty")}</p>}
+      {palettes.length === 0 && <p className="text-sm text-maroon/60 dark:text-[#f6eee8]/60">{t("empty")}</p>}
 
       <motion.ul variants={listVariants} initial="hidden" animate="show" className="flex flex-col gap-2">
         <AnimatePresence>
@@ -181,8 +185,8 @@ export default function AdminPalettesPage() {
               variants={itemVariants}
               layout
               exit={{ opacity: 0, height: 0 }}
-              className={`flex items-center justify-between rounded-2xl border bg-white px-5 py-3 shadow-sm transition-shadow hover:shadow-md ${
-                editingId === p.paletteId ? "border-gold" : "border-gold/30"
+              className={`flex items-center justify-between rounded-2xl border bg-white dark:bg-[#1c161b] px-5 py-3 shadow-sm transition-shadow hover:shadow-md ${
+                editingId === p.paletteId ? "border-gold" : "border-gold/30 dark:border-gold/20"
               }`}
             >
               <button
@@ -194,19 +198,19 @@ export default function AdminPalettesPage() {
                   {[p.primary, p.secondary, p.background].map((color, i) => (
                     <span
                       key={i}
-                      className="h-6 w-6 rounded-full border-2 border-white shadow"
+                      className="h-6 w-6 rounded-full border-2 border-white dark:border-neutral-800 shadow"
                       style={{ backgroundColor: color }}
                     />
                   ))}
                 </span>
-                <strong className="text-maroon">{p.name}</strong>
+                <strong className="text-maroon dark:text-[#f6eee8]">{p.name}</strong>
               </button>
               <motion.button
                 type="button"
                 onClick={() => setPendingDelete(p)}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                className="cursor-pointer text-sm text-red-700 transition-colors hover:text-red-800"
+                className="cursor-pointer text-sm text-red-600 dark:text-red-400 transition-colors hover:text-red-700 dark:hover:text-red-300"
               >
                 {t("delete")}
               </motion.button>

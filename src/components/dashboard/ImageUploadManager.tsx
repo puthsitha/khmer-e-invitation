@@ -78,7 +78,7 @@ export function ImageUploadManager({
 
   return (
     <div className="flex flex-col gap-4">
-      {note && <p className="text-xs text-maroon/70 font-medium">{note}</p>}
+      {note && <p className="text-xs text-maroon/70 dark:text-[#f6eee8]/70 font-medium">{note}</p>}
 
       {/* Hidden native input */}
       <input
@@ -98,18 +98,18 @@ export function ImageUploadManager({
         onClick={() => !isUploading && fileInputRef.current?.click()}
         className={`group relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed p-6 text-center cursor-pointer transition-all duration-200 ${
           isDragging
-            ? "border-maroon bg-gold/10 scale-[1.01]"
-            : "border-gold/50 bg-white/60 hover:border-maroon/70 hover:bg-gold/5"
+            ? "border-maroon dark:border-gold bg-gold/10 scale-[1.01]"
+            : "border-gold/50 dark:border-gold/30 bg-white/60 dark:bg-[#20181e]/60 hover:border-maroon/70 dark:hover:border-gold hover:bg-gold/5"
         } ${isUploading ? "opacity-60 cursor-wait" : ""}`}
       >
         <div className="flex flex-col items-center gap-2">
           <motion.div
             whileHover={{ scale: 1.1 }}
-            className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold/20 text-maroon shadow-xs transition-colors group-hover:bg-maroon group-hover:text-cream"
+            className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold/20 dark:bg-gold/25 text-maroon dark:text-gold shadow-xs transition-colors group-hover:bg-maroon group-hover:text-cream dark:group-hover:bg-gold dark:group-hover:text-maroon"
           >
             {isUploading ? (
               <svg
-                className="h-6 w-6 animate-spin text-maroon group-hover:text-cream"
+                className="h-6 w-6 animate-spin text-maroon dark:text-gold"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -134,15 +134,15 @@ export function ImageUploadManager({
           </motion.div>
 
           <div className="flex flex-col items-center gap-1">
-            <p className="text-sm font-medium text-maroon">
+            <p className="text-sm font-medium text-maroon dark:text-[#f6eee8]">
               {isUploading ? labels.uploading : labels.dropzoneTitle}{" "}
               {!isUploading && (
-                <span className="font-semibold text-maroon underline decoration-gold underline-offset-4 hover:text-gold transition-colors">
+                <span className="font-semibold text-maroon dark:text-gold underline decoration-gold underline-offset-4 hover:text-gold transition-colors">
                   {labels.browseFiles}
                 </span>
               )}
             </p>
-            <p className="text-[11px] text-maroon/50">
+            <p className="text-[11px] text-maroon/50 dark:text-[#f6eee8]/50">
               {labels.supportsNote || "Supports JPEG, PNG, WebP (up to 100MB per image)"}
             </p>
           </div>
@@ -153,7 +153,7 @@ export function ImageUploadManager({
       {images.length > 0 && (
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-maroon">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-maroon dark:text-[#f6eee8]">
               <ImageIcon className="h-3.5 w-3.5 text-gold" />
               <span>
                 {labels.imagesCount
@@ -167,7 +167,7 @@ export function ImageUploadManager({
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
-                className="inline-flex items-center gap-1 text-xs font-semibold text-maroon hover:text-gold transition-colors"
+                className="inline-flex items-center gap-1 text-xs font-semibold text-maroon dark:text-gold hover:text-gold dark:hover:text-gold-light transition-colors"
               >
                 <Plus className="h-3.5 w-3.5" />
                 <span>{labels.addImage || "Add more"}</span>
@@ -189,7 +189,7 @@ export function ImageUploadManager({
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ duration: 0.25 }}
                     onClick={() => setPreviewIndex(index)}
-                    className="group relative aspect-square overflow-hidden rounded-2xl border border-gold/40 bg-white shadow-xs cursor-pointer"
+                    className="group relative aspect-square overflow-hidden rounded-2xl border border-gold/40 dark:border-gold/30 bg-white dark:bg-[#20181e] shadow-xs cursor-pointer"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img

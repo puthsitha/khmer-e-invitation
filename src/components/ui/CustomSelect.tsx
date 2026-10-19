@@ -67,7 +67,7 @@ export function CustomSelect({
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className={`flex w-full cursor-pointer items-center justify-between gap-2 rounded-xl border border-gold/40 bg-white text-sm text-maroon shadow-sm transition-colors hover:border-gold/70 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20 ${
+        className={`flex w-full cursor-pointer items-center justify-between gap-2 rounded-xl border border-gold/40 dark:border-gold/30 bg-white dark:bg-[#1c161b] text-sm text-maroon dark:text-[#f6eee8] shadow-sm transition-colors hover:border-gold/70 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20 ${
           buttonClassName || "py-1.5 pl-3 pr-2.5"
         }`}>
         <span className="flex items-center gap-2 truncate">
@@ -78,7 +78,7 @@ export function CustomSelect({
           size={16}
           strokeWidth={2}
           aria-hidden
-          className={`shrink-0 text-maroon/50 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`shrink-0 text-maroon/50 dark:text-[#f6eee8]/50 transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
       <AnimatePresence>
@@ -89,7 +89,7 @@ export function CustomSelect({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.98 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="absolute z-20 mt-1.5 w-full min-w-max overflow-hidden rounded-xl border border-gold/30 bg-white p-1 shadow-lg">
+            className="absolute z-20 mt-1.5 w-full min-w-max overflow-hidden rounded-xl border border-gold/30 dark:border-gold/30 bg-white dark:bg-[#20181e] p-1 shadow-lg">
             {options.map((option) => (
               <li
                 key={option.value}
@@ -103,8 +103,8 @@ export function CustomSelect({
                   }}
                   className={`flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors ${
                     option.value === value
-                      ? "bg-gold/15 text-maroon"
-                      : "text-maroon/80 hover:bg-cream"
+                      ? "bg-gold/15 dark:bg-gold/25 text-maroon dark:text-gold"
+                      : "text-maroon/80 dark:text-[#f6eee8]/80 hover:bg-cream dark:hover:bg-white/10"
                   }`}>
                   {option.swatches && <Swatches colors={option.swatches} />}
                   <span className="flex-1 truncate">{option.label}</span>
@@ -112,7 +112,7 @@ export function CustomSelect({
                     <Check
                       size={14}
                       strokeWidth={2.5}
-                      className="shrink-0 text-maroon"
+                      className="shrink-0 text-maroon dark:text-gold"
                     />
                   )}
                 </button>

@@ -109,13 +109,13 @@ export default function NewInvitationPage() {
 
   return (
     <main className="mx-auto max-w-lg px-6 py-10">
-      <h1 className="mb-6 font-[family-name:var(--font-heading-km)] text-2xl text-maroon sm:text-3xl">
+      <h1 className="mb-6 font-[family-name:var(--font-heading-km)] text-2xl text-maroon dark:text-[#f6eee8] sm:text-3xl">
         {t("title")}
       </h1>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         {/* Category Custom Dropdown */}
-        <div className="flex flex-col gap-1.5 text-sm text-maroon">
+        <div className="flex flex-col gap-1.5 text-sm text-maroon dark:text-[#f6eee8]">
           <label className="font-medium">{t("category")}</label>
           <CustomSelect
             value={category}
@@ -126,7 +126,7 @@ export default function NewInvitationPage() {
         </div>
 
         {/* Template Custom Dropdown */}
-        <div className="flex flex-col gap-1.5 text-sm text-maroon">
+        <div className="flex flex-col gap-1.5 text-sm text-maroon dark:text-[#f6eee8]">
           <label className="font-medium">{t("template")}</label>
           <CustomSelect
             value={templateId}
@@ -141,10 +141,10 @@ export default function NewInvitationPage() {
           <motion.div
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col gap-2 rounded-xl border border-gold/30 bg-white/75 p-3.5 shadow-xs">
-            <div className="flex items-center justify-between text-xs text-maroon/70">
+            className="flex flex-col gap-2 rounded-xl border border-gold/30 dark:border-gold/20 bg-white/75 dark:bg-[#1c161b] p-3.5 shadow-xs">
+            <div className="flex items-center justify-between text-xs text-maroon/70 dark:text-[#f6eee8]/70">
               <span className="font-semibold">{t("palette")}:</span>
-              <span className="font-medium text-maroon">
+              <span className="font-medium text-maroon dark:text-[#f6eee8]">
                 {selectedPalette.name}
               </span>
             </div>
@@ -156,11 +156,11 @@ export default function NewInvitationPage() {
               ].map((swatch, idx) => (
                 <div key={idx} className="flex items-center gap-2">
                   <span
-                    className="h-8 w-8 rounded-full border-2 border-white shadow-sm ring-1 ring-gold/40 transition-transform hover:scale-110"
+                    className="h-8 w-8 rounded-full border-2 border-white dark:border-[#20181e] shadow-sm ring-1 ring-gold/40 dark:ring-gold/30 transition-transform hover:scale-110"
                     style={{ backgroundColor: swatch.color }}
                     title={`${swatch.label}: ${swatch.color}`}
                   />
-                  <span className="text-xs text-maroon/60 hidden sm:inline">
+                  <span className="text-xs text-maroon/60 dark:text-[#f6eee8]/60 hidden sm:inline">
                     {swatch.label}
                   </span>
                 </div>
@@ -170,7 +170,7 @@ export default function NewInvitationPage() {
         )}
 
         {/* Required Title Input */}
-        <div className="flex flex-col gap-1.5 text-sm text-maroon">
+        <div className="flex flex-col gap-1.5 text-sm text-maroon dark:text-[#f6eee8]">
           <label htmlFor="invitation-title" className="font-medium">
             {t("titleLabel")} <span className="text-red-500">*</span>
           </label>
@@ -186,10 +186,10 @@ export default function NewInvitationPage() {
             onBlur={() => setTitleError(validateTitle(title))}
             placeholder={t("titlePlaceholder")}
             disabled={submitting}
-            className={`rounded-xl border bg-white px-4 py-2.5 text-sm text-maroon placeholder:text-maroon/30 shadow-xs outline-none transition-all duration-200 ${
+            className={`rounded-xl border bg-white dark:bg-[#20181e] px-4 py-2.5 text-sm text-maroon dark:text-[#f6eee8] placeholder:text-maroon/30 dark:placeholder:text-[#f6eee8]/30 shadow-xs outline-none transition-all duration-200 ${
               titleError
                 ? "border-2 border-red-500 ring-2 ring-red-500/20"
-                : "border-gold/40 focus:border-maroon focus:ring-2 focus:ring-maroon/20 hover:border-gold/70"
+                : "border-gold/40 dark:border-gold/30 focus:border-maroon dark:focus:border-gold focus:ring-2 focus:ring-maroon/20 dark:focus:ring-gold/20 hover:border-gold/70"
             }`}
           />
           <AnimatePresence>
@@ -199,7 +199,7 @@ export default function NewInvitationPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
                 transition={{ duration: 0.15 }}
-                className="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-red-600">
+                className="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-400">
                 <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                 <span>{titleError}</span>
               </motion.p>
@@ -214,8 +214,8 @@ export default function NewInvitationPage() {
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
-              className="flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 p-2.5 text-xs font-medium text-red-700">
-              <AlertCircle className="h-4 w-4 shrink-0 text-red-500" />
+              className="flex items-center gap-1.5 rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/40 p-2.5 text-xs font-medium text-red-700 dark:text-red-300">
+              <AlertCircle className="h-4 w-4 shrink-0 text-red-500 dark:text-red-400" />
               <span>{error}</span>
             </motion.p>
           )}
@@ -228,7 +228,7 @@ export default function NewInvitationPage() {
           whileHover={submitting ? undefined : { scale: 1.015 }}
           whileTap={submitting ? undefined : { scale: 0.985 }}
           transition={{ duration: 0.15 }}
-          className="group relative mt-2 flex h-12 w-full cursor-pointer items-center justify-center overflow-hidden rounded-full bg-maroon text-sm font-semibold text-cream shadow-md transition-all duration-200 hover:bg-maroon/95 disabled:cursor-not-allowed disabled:opacity-70">
+          className="group relative mt-2 flex h-12 w-full cursor-pointer items-center justify-center overflow-hidden rounded-full bg-maroon dark:bg-gold text-sm font-semibold text-cream dark:text-maroon shadow-md transition-all duration-200 hover:bg-maroon/95 dark:hover:bg-gold/90 disabled:cursor-not-allowed disabled:opacity-70">
           <AnimatePresence mode="wait">
             {submitting ? (
               <motion.div
@@ -239,7 +239,7 @@ export default function NewInvitationPage() {
                 transition={{ duration: 0.15 }}
                 className="flex items-center gap-2.5">
                 <svg
-                  className="h-4 w-4 animate-spin text-cream"
+                  className="h-4 w-4 animate-spin text-cream dark:text-maroon"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24">

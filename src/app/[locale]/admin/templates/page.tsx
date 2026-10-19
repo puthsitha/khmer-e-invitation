@@ -26,7 +26,7 @@ const PREVIEW_IMAGE_MAX_LABEL =
     : `${Math.floor(UPLOAD_LIMITS.galleryImageMaxBytes / 1024)}KB`;
 
 const inputClassName =
-  "rounded-lg border border-gold/40 px-3 py-1.5 transition-colors focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20";
+  "rounded-lg border border-gold/40 dark:border-gold/30 bg-white dark:bg-[#20181e] text-maroon dark:text-[#f6eee8] px-3 py-1.5 transition-colors focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20";
 
 const listVariants = {
   hidden: {},
@@ -63,7 +63,11 @@ export default function AdminTemplatesPage() {
     })) ?? [];
 
   function refresh() {
-    listTemplates().then(setTemplates);
+    listTemplates()
+      .then(setTemplates)
+      .catch((err) => {
+        console.warn("Could not load templates:", err);
+      });
   }
 
   useEffect(refresh, []);
@@ -117,9 +121,9 @@ export default function AdminTemplatesPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut", delay: 0.05 }}
         onSubmit={handleSubmit}
-        className="mb-8 flex max-w-md flex-col gap-4 rounded-2xl border border-gold/30 bg-white p-5 shadow-sm"
+        className="mb-8 flex max-w-md flex-col gap-4 rounded-2xl border border-gold/30 dark:border-gold/20 bg-white dark:bg-[#1c161b] p-5 shadow-sm"
       >
-        <label className="flex flex-col gap-1 text-sm text-maroon">
+        <label className="flex flex-col gap-1 text-sm text-maroon dark:text-[#f6eee8]">
           {t("name")}
           <input
             required
@@ -129,7 +133,7 @@ export default function AdminTemplatesPage() {
             className={`${inputClassName} w-full`}
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm text-maroon">
+        <label className="flex flex-col gap-1 text-sm text-maroon dark:text-[#f6eee8]">
           {t("category")}
           <CustomSelect
             value={category}
@@ -137,7 +141,7 @@ export default function AdminTemplatesPage() {
             options={categoryOptions}
           />
         </label>
-        <div className="flex flex-col gap-1 text-sm text-maroon">
+        <div className="flex flex-col gap-1 text-sm text-maroon dark:text-[#f6eee8]">
           <span>{t("previewImage")}</span>
           <span className="flex items-center gap-3">
             <input
@@ -150,7 +154,7 @@ export default function AdminTemplatesPage() {
             />
             <label
               htmlFor="template-preview-image"
-              className="cursor-pointer rounded-lg border border-gold/40 px-3 py-1.5 text-sm text-maroon transition-colors hover:bg-gold/10"
+              className="cursor-pointer rounded-lg border border-gold/40 dark:border-gold/30 px-3 py-1.5 text-sm text-maroon dark:text-[#f6eee8] transition-colors hover:bg-gold/10"
             >
               {uploading ? t("uploading") : previewImage ? t("changeImage") : t("uploadImage")}
             </label>
@@ -163,12 +167,12 @@ export default function AdminTemplatesPage() {
               />
             )}
           </span>
-          <span className="text-xs text-maroon/60">
+          <span className="text-xs text-maroon/60 dark:text-[#f6eee8]/60">
             {t("previewImageHint", { size: PREVIEW_IMAGE_MAX_LABEL })}
           </span>
-          {uploadError && <span className="text-xs text-red-700">{uploadError}</span>}
+          {uploadError && <span className="text-xs text-red-500 dark:text-red-400">{uploadError}</span>}
         </div>
-        <label className="flex flex-col gap-1 text-sm text-maroon">
+        <label className="flex flex-col gap-1 text-sm text-maroon dark:text-[#f6eee8]">
           {t("palette")}
           <CustomSelect
             value={selectedPalette}
@@ -181,14 +185,14 @@ export default function AdminTemplatesPage() {
           disabled={uploading}
           whileHover={{ scale: uploading ? 1 : 1.03 }}
           whileTap={{ scale: uploading ? 1 : 0.97 }}
-          className="cursor-pointer self-start rounded-full bg-maroon px-5 py-2 text-sm text-cream shadow-md shadow-maroon/20 transition-colors hover:bg-maroon/90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="cursor-pointer self-start rounded-full bg-maroon dark:bg-gold px-5 py-2 text-sm text-cream dark:text-maroon font-medium shadow-md shadow-maroon/20 transition-colors hover:bg-maroon/90 dark:hover:bg-gold/90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {t("add")}
         </motion.button>
       </motion.form>
 
       {templates.length === 0 && (
-        <p className="text-sm text-maroon/60">{t("empty")}</p>
+        <p className="text-sm text-maroon/60 dark:text-[#f6eee8]/60">{t("empty")}</p>
       )}
 
       <motion.ul
@@ -206,7 +210,7 @@ export default function AdminTemplatesPage() {
                 variants={itemVariants}
                 layout
                 exit={{ opacity: 0, height: 0 }}
-                className="flex items-center justify-between rounded-2xl border border-gold/30 bg-white px-5 py-3 shadow-sm transition-shadow hover:shadow-md"
+                className="flex items-center justify-between rounded-2xl border border-gold/30 dark:border-gold/20 bg-white dark:bg-[#1c161b] px-5 py-3 shadow-sm transition-shadow hover:shadow-md"
               >
                 <span className="flex items-center gap-3">
                   {palette && (
@@ -214,15 +218,15 @@ export default function AdminTemplatesPage() {
                       {[palette.primary, palette.secondary, palette.background].map((color) => (
                         <span
                           key={color}
-                          className="h-4 w-4 rounded-full border border-white shadow"
+                          className="h-4 w-4 rounded-full border border-white dark:border-neutral-800 shadow"
                           style={{ backgroundColor: color }}
                         />
                       ))}
                     </span>
                   )}
                   <span>
-                    <strong className="text-maroon">{tpl.name}</strong>{" "}
-                    <span className="text-sm text-maroon/60">
+                    <strong className="text-maroon dark:text-[#f6eee8]">{tpl.name}</strong>{" "}
+                    <span className="text-sm text-maroon/60 dark:text-[#f6eee8]/60">
                       ({tCategory(tpl.category)}
                       {palette ? `, ${palette.name}` : ""})
                     </span>
@@ -233,7 +237,7 @@ export default function AdminTemplatesPage() {
                   onClick={() => setPendingDelete(tpl)}
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
-                  className="cursor-pointer text-sm text-red-700 transition-colors hover:text-red-800"
+                  className="cursor-pointer text-sm text-red-600 dark:text-red-400 transition-colors hover:text-red-700 dark:hover:text-red-300"
                 >
                   {t("delete")}
                 </motion.button>

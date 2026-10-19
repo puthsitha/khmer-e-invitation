@@ -1,6 +1,7 @@
 import {
   collection,
   deleteDoc,
+  deleteField,
   doc,
   getDoc,
   getDocs,
@@ -16,9 +17,28 @@ import { db } from "./client";
 import type { AppUser, Invitation, Palette, RsvpResponse, Template, WeddingGuest, RsvpDecision } from "@/types";
 import { encryptGuestToken } from "@/lib/guestToken";
 
+function cleanUndefined<T extends Record<string, unknown>>(data: T): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(data)) {
+    if (value !== undefined) {
+      if (
+        value !== null &&
+        typeof value === "object" &&
+        !Array.isArray(value) &&
+        !(value instanceof Date)
+      ) {
+        result[key] = cleanUndefined(value as Record<string, unknown>);
+      } else {
+        result[key] = value;
+      }
+    }
+  }
+  return result;
+}
+
 function converter<T>() {
   return {
-    toFirestore: (data: T) => data as Record<string, unknown>,
+    toFirestore: (data: T) => cleanUndefined(data as Record<string, unknown>),
     fromFirestore: (snapshot: QueryDocumentSnapshot) =>
       ({ ...snapshot.data() }) as T,
   };
@@ -268,11 +288,15 @@ export async function listPalettes() {
 
   if (missing.length === 0) return existing;
 
-  const batch = writeBatch(db);
-  for (const palette of missing) {
-    batch.set(doc(palettesCol, palette.paletteId), palette);
+  try {
+    const batch = writeBatch(db);
+    for (const palette of missing) {
+      batch.set(doc(palettesCol, palette.paletteId), palette);
+    }
+    await batch.commit();
+  } catch {
+    // Non-admin or unauthenticated users cannot write to palettes; return merged in-memory
   }
-  await batch.commit();
   return [...existing, ...missing].sort((a, b) => a.name.localeCompare(b.name));
 }
 
@@ -362,9 +386,13 @@ export async function createWeddingGuest(
   });
 
   const newGuest: WeddingGuest = {
-    ...guest,
     guestId: ref.id,
     invitationId,
+    name: guest.name.trim(),
+    ...(guest.from?.trim() ? { from: guest.from.trim() } : {}),
+    ...(guest.by?.trim() ? { by: guest.by.trim() } : {}),
+    ...(guest.note?.trim() ? { note: guest.note.trim() } : {}),
+    ...(guest.no !== undefined ? { no: guest.no } : {}),
     token,
     isInvited: guest.isInvited ?? false,
     rsvpStatus: guest.rsvpStatus ?? "pending",
@@ -383,9 +411,18 @@ export async function updateWeddingGuest(
 ): Promise<void> {
   const guestRef = doc(db, "invitations", invitationId, "guests", guestId);
   const updateData: Record<string, unknown> = {
-    ...patch,
     updatedAt: Date.now(),
   };
+
+  for (const [key, value] of Object.entries(patch)) {
+    if (value === undefined || value === "") {
+      if (["from", "by", "note", "rsvpMessage"].includes(key)) {
+        updateData[key] = deleteField();
+      }
+    } else {
+      updateData[key] = value;
+    }
+  }
 
   if (patch.name) {
     updateData.token = await encryptGuestToken({
@@ -427,7 +464,16 @@ export async function batchImportWeddingGuests(
     by?: string;
     note?: string;
   }>,
-): Promise<WeddingGuest[]> {
+  replaces?: Array<{
+    guestId: string;
+    data: {
+      name: string;
+      from?: string;
+      by?: string;
+      note?: string;
+    };
+  }>,
+): Promise<{ created: WeddingGuest[]; updated: WeddingGuest[] }> {
   const guestsCol = collection(
     db,
     "invitations",
@@ -437,7 +483,62 @@ export async function batchImportWeddingGuests(
   const batch = writeBatch(db);
   const now = Date.now();
   const created: WeddingGuest[] = [];
+  const updated: WeddingGuest[] = [];
 
+  // 1. Process replacements
+  if (replaces && replaces.length > 0) {
+    for (const rep of replaces) {
+      const guestRef = doc(db, "invitations", invitationId, "guests", rep.guestId);
+      const updateData: Record<string, unknown> = {
+        updatedAt: now,
+      };
+
+      if (rep.data.name?.trim()) {
+        updateData.name = rep.data.name.trim();
+        updateData.token = await encryptGuestToken({
+          guestId: rep.guestId,
+          name: rep.data.name.trim(),
+          invitationId,
+        });
+      }
+
+      if (rep.data.from?.trim()) {
+        updateData.from = rep.data.from.trim();
+      } else {
+        updateData.from = deleteField();
+      }
+
+      if (rep.data.by?.trim()) {
+        updateData.by = rep.data.by.trim();
+      } else {
+        updateData.by = deleteField();
+      }
+
+      if (rep.data.note?.trim()) {
+        updateData.note = rep.data.note.trim();
+      } else {
+        updateData.note = deleteField();
+      }
+
+      batch.update(guestRef, updateData);
+
+      updated.push({
+        guestId: rep.guestId,
+        invitationId,
+        name: rep.data.name.trim(),
+        from: rep.data.from?.trim() || undefined,
+        by: rep.data.by?.trim() || undefined,
+        note: rep.data.note?.trim() || undefined,
+        token: (updateData.token as string) || "",
+        isInvited: false,
+        rsvpStatus: "pending",
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+  }
+
+  // 2. Process new guest additions
   for (let i = 0; i < guests.length; i++) {
     const item = guests[i];
     const ref = doc(guestsCol);
@@ -451,10 +552,10 @@ export async function batchImportWeddingGuests(
       guestId: ref.id,
       invitationId,
       no: item.no ?? i + 1,
-      name: item.name,
-      from: item.from,
-      by: item.by,
-      note: item.note,
+      name: item.name.trim(),
+      ...(item.from?.trim() ? { from: item.from.trim() } : {}),
+      ...(item.by?.trim() ? { by: item.by.trim() } : {}),
+      ...(item.note?.trim() ? { note: item.note.trim() } : {}),
       token,
       isInvited: false,
       rsvpStatus: "pending",
@@ -467,7 +568,7 @@ export async function batchImportWeddingGuests(
   }
 
   await batch.commit();
-  return created;
+  return { created, updated };
 }
 
 export async function submitGuestRsvp(

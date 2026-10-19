@@ -32,7 +32,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     return onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
-      setAppUser(firebaseUser ? await getUserDoc(firebaseUser.uid) : null);
+      if (firebaseUser) {
+        try {
+          const doc = await getUserDoc(firebaseUser.uid);
+          setAppUser(doc);
+        } catch {
+          setAppUser(null);
+        }
+      } else {
+        setAppUser(null);
+      }
       setLoading(false);
     });
   }, []);

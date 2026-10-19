@@ -15,7 +15,7 @@ export function LocaleSwitcher() {
   const router = useRouter();
 
   return (
-    <div className="flex shrink-0 items-center gap-0.5 sm:gap-1 rounded-full border border-gold/40 bg-cream/60 p-0.5 sm:p-1 text-xs sm:text-sm">
+    <div className="flex shrink-0 items-center gap-0.5 sm:gap-1 rounded-full border border-gold/40 dark:border-gold/30 bg-cream/60 dark:bg-white/10 p-0.5 sm:p-1 text-xs sm:text-sm">
       {routing.locales.map((loc) => (
         <button
           key={loc}
@@ -24,8 +24,8 @@ export function LocaleSwitcher() {
           aria-current={loc === locale}
           className={`cursor-pointer rounded-full px-2 py-0.5 sm:px-3 sm:py-1 transition-colors ${
             loc === locale
-              ? "bg-maroon text-cream font-medium"
-              : "text-maroon/70 hover:text-maroon"
+              ? "bg-maroon dark:bg-gold text-cream dark:text-maroon font-medium"
+              : "text-maroon/70 dark:text-[#f6eee8]/70 hover:text-maroon dark:hover:text-[#f6eee8]"
           }`}
         >
           {labels[loc]}

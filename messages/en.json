@@ -73,7 +73,9 @@
     "resetSuccessTitle": "Password Reset Successful!",
     "resetSuccessMessage": "Your password has been reset. You can now log in with your new password.",
     "backToLogin": "Back to Log In",
-    "invalidCode": "Invalid or expired verification code"
+    "invalidCode": "Invalid or expired verification code",
+    "emailNotFound": "No account found with this email address. Please check your email or contact us to create an account.",
+    "checkingEmail": "Checking email…"
   },
   "viewer": {
     "tapToOpen": "Tap to open",
@@ -339,7 +341,21 @@
         "addSuccess": "Guest added successfully.",
         "updateSuccess": "Guest updated successfully.",
         "deleteSuccess": "Guest removed.",
-        "importSuccess": "Successfully imported {count} guests."
+        "importSuccess": "Successfully imported {count} guests.",
+        "duplicateWarningTitle": "Duplicate Guest Detected",
+        "duplicateWarningDesc": "This guest already exists in the list. Please review before adding.",
+        "forceAdd": "Force Add",
+        "dontAdd": "Don't Add",
+        "replace": "Replace",
+        "replaceGuest": "Replace Existing",
+        "matchedExisting": "Existing in list",
+        "newCandidate": "New entry",
+        "duplicateExcelWarning": "{count} duplicate guest(s) detected in file.",
+        "skipDuplicatesOption": "Don't Add Duplicates (Skip {count})",
+        "replaceDuplicatesOption": "Replace Existing ({count})",
+        "forceAddAllOption": "Force Add All ({count})",
+        "badgeDuplicate": "Duplicate",
+        "badgeNew": "New"
       },
       "dateTimePicker": {
         "dateLabel": "Calendar Date",
@@ -354,7 +370,10 @@
     "signOut": "Sign out",
     "signOutTitle": "Sign out?",
     "signOutBody": "You'll need to log in again to access your account.",
-    "clearFilters": "Clear"
+    "clearFilters": "Clear",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeToggle": "Toggle light or dark theme"
   },
   "admin": {
     "loading": "Loading…",

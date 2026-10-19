@@ -33,16 +33,18 @@ export function TimeSelect12h({
   }
 
   const selectContainerClass =
-    "relative flex items-center rounded-xl border border-gold/40 bg-white shadow-xs transition-all hover:border-gold/70 focus-within:border-maroon focus-within:ring-2 focus-within:ring-maroon/15";
+    "relative flex items-center rounded-xl border border-gold/40 dark:border-gold/30 bg-white dark:bg-[#20181e] shadow-xs transition-all hover:border-gold/70 focus-within:border-maroon dark:focus-within:border-gold focus-within:ring-2 focus-within:ring-maroon/15 dark:focus-within:ring-gold/20";
   const selectClass =
-    "appearance-none bg-transparent py-2 pl-3 pr-7 text-sm font-medium text-maroon outline-none cursor-pointer";
+    "appearance-none bg-transparent py-2 pl-3 pr-7 text-sm font-medium text-maroon dark:text-[#f6eee8] outline-none cursor-pointer";
+  const optionClass =
+    "bg-white dark:bg-[#20181e] text-maroon dark:text-[#f6eee8]";
   const chevronClass =
-    "pointer-events-none absolute right-2 text-maroon/40";
+    "pointer-events-none absolute right-2 text-maroon/40 dark:text-[#f6eee8]/40";
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gold/15 text-maroon">
-        <Clock className="h-4 w-4 text-maroon/80" />
+      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gold/15 dark:bg-gold/25 text-maroon dark:text-gold">
+        <Clock className="h-4 w-4 text-maroon/80 dark:text-gold" />
       </span>
 
       {/* Hour */}
@@ -53,7 +55,7 @@ export function TimeSelect12h({
           className={selectClass}
         >
           {HOURS.map((h) => (
-            <option key={h} value={h}>
+            <option key={h} value={h} className={optionClass}>
               {h.toString().padStart(2, "0")}
             </option>
           ))}
@@ -61,7 +63,7 @@ export function TimeSelect12h({
         <ChevronDown size={14} className={chevronClass} />
       </div>
 
-      <span className="text-maroon/60 font-bold">:</span>
+      <span className="text-maroon/60 dark:text-[#f6eee8]/60 font-bold">:</span>
 
       {/* Minute */}
       <div className={selectContainerClass}>
@@ -71,7 +73,7 @@ export function TimeSelect12h({
           className={selectClass}
         >
           {MINUTES.map((m) => (
-            <option key={m} value={m}>
+            <option key={m} value={m} className={optionClass}>
               {m}
             </option>
           ))}
@@ -86,8 +88,8 @@ export function TimeSelect12h({
           onChange={(e) => update({ period: e.target.value as Period })}
           className={selectClass}
         >
-          <option value="AM">AM</option>
-          <option value="PM">PM</option>
+          <option value="AM" className={optionClass}>AM</option>
+          <option value="PM" className={optionClass}>PM</option>
         </select>
         <ChevronDown size={14} className={chevronClass} />
       </div>
