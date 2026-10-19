@@ -94,8 +94,8 @@ function GuestFormContent({
         rsvpStatus,
       });
       onClose();
-    } catch {
-      setError("Failed to save guest. Please try again.");
+    } catch (err) {
+      setError(err instanceof Error && err.message ? err.message : "Failed to save guest. Please try again.");
     } finally {
       setSaving(false);
     }

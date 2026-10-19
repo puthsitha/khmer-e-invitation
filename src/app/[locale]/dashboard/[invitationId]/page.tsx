@@ -130,8 +130,9 @@ export default function EditInvitationPage() {
       const created = await createWeddingGuest(invitationId, guestData);
       setGuests((prev) => [...prev, created]);
       setStatus(t("rsvp.addSuccess"));
-    } catch {
+    } catch (err) {
       setStatus(t("saveError"));
+      throw err;
     }
   }
 
@@ -142,8 +143,9 @@ export default function EditInvitationPage() {
         prev.map((g) => (g.guestId === guestId ? { ...g, ...patch, updatedAt: Date.now() } : g)),
       );
       setStatus(t("rsvp.updateSuccess"));
-    } catch {
+    } catch (err) {
       setStatus(t("saveError"));
+      throw err;
     }
   }
 
@@ -152,8 +154,9 @@ export default function EditInvitationPage() {
       await deleteWeddingGuest(invitationId, guestId);
       setGuests((prev) => prev.filter((g) => g.guestId !== guestId));
       setStatus(t("rsvp.deleteSuccess"));
-    } catch {
+    } catch (err) {
       setStatus(t("saveError"));
+      throw err;
     }
   }
 
@@ -164,11 +167,12 @@ export default function EditInvitationPage() {
     );
     try {
       await toggleGuestInvitedStatus(invitationId, guestId, newStatus);
-    } catch {
+    } catch (err) {
       setGuests((prev) =>
         prev.map((g) => (g.guestId === guestId ? { ...g, isInvited: currentStatus } : g)),
       );
       setStatus(t("saveError"));
+      throw err;
     }
   }
 
@@ -177,8 +181,9 @@ export default function EditInvitationPage() {
       const created = await batchImportWeddingGuests(invitationId, importedRows);
       setGuests((prev) => [...prev, ...created]);
       setStatus(t("rsvp.importSuccess", { count: created.length }));
-    } catch {
+    } catch (err) {
       setStatus(t("saveError"));
+      throw err;
     }
   }
 
