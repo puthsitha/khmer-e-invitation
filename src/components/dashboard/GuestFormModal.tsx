@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import {
   X,
@@ -43,6 +44,8 @@ interface GuestFormModalProps {
   existingGuests?: WeddingGuest[];
 }
 
+const emptySubscribe = () => () => {};
+
 export function GuestFormModal({
   isOpen,
   onClose,
@@ -51,13 +54,21 @@ export function GuestFormModal({
   initialGuest,
   existingGuests,
 }: GuestFormModalProps) {
-  if (!isOpen) return null;
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
+  if (!isOpen || !mounted) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+  const portalTarget =
+    typeof document !== "undefined"
+      ? document.getElementById("portal-root") || document.body
+      : null;
+
+  if (!portalTarget) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
+        className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
         onClick={onClose}
       />
 
@@ -69,7 +80,8 @@ export function GuestFormModal({
         onSave={onSave}
         onReplace={onReplace}
       />
-    </div>
+    </div>,
+    portalTarget
   );
 }
 
@@ -327,7 +339,7 @@ function GuestFormContent({
               onChange={(e) => setName(e.target.value)}
               placeholder={t("guestNamePlaceholder")}
               required
-              className="w-full rounded-xl border border-gold/40 dark:border-gold/30 bg-white dark:bg-[#20181e] px-3.5 py-2.5 text-xs font-medium text-maroon dark:text-[#f6eee8] placeholder:text-maroon/30 dark:placeholder:text-[#f6eee8]/30 shadow-2xs outline-none focus:border-maroon dark:focus:border-gold focus:ring-2 focus:ring-maroon/15 dark:focus:ring-gold/15"
+              className="w-full rounded-xl border border-gold/40 dark:border-gold/30 bg-white dark:bg-[#20181e] px-3.5 py-2.5 text-base sm:text-xs font-medium text-maroon dark:text-[#f6eee8] placeholder:text-maroon/30 dark:placeholder:text-[#f6eee8]/30 shadow-2xs outline-none focus:border-maroon dark:focus:border-gold focus:ring-2 focus:ring-maroon/15 dark:focus:ring-gold/15"
             />
           </div>
 
@@ -342,7 +354,7 @@ function GuestFormContent({
               value={from}
               onChange={(e) => setFrom(e.target.value)}
               placeholder={t("fromPlaceholder")}
-              className="w-full rounded-xl border border-gold/40 dark:border-gold/30 bg-white dark:bg-[#20181e] px-3.5 py-2.5 text-xs font-medium text-maroon dark:text-[#f6eee8] placeholder:text-maroon/30 dark:placeholder:text-[#f6eee8]/30 shadow-2xs outline-none focus:border-maroon dark:focus:border-gold focus:ring-2 focus:ring-maroon/15 dark:focus:ring-gold/15"
+              className="w-full rounded-xl border border-gold/40 dark:border-gold/30 bg-white dark:bg-[#20181e] px-3.5 py-2.5 text-base sm:text-xs font-medium text-maroon dark:text-[#f6eee8] placeholder:text-maroon/30 dark:placeholder:text-[#f6eee8]/30 shadow-2xs outline-none focus:border-maroon dark:focus:border-gold focus:ring-2 focus:ring-maroon/15 dark:focus:ring-gold/15"
             />
           </div>
 
@@ -357,7 +369,7 @@ function GuestFormContent({
               value={by}
               onChange={(e) => setBy(e.target.value)}
               placeholder={t("byPlaceholder")}
-              className="w-full rounded-xl border border-gold/40 dark:border-gold/30 bg-white dark:bg-[#20181e] px-3.5 py-2.5 text-xs font-medium text-maroon dark:text-[#f6eee8] placeholder:text-maroon/30 dark:placeholder:text-[#f6eee8]/30 shadow-2xs outline-none focus:border-maroon dark:focus:border-gold focus:ring-2 focus:ring-maroon/15 dark:focus:ring-gold/15"
+              className="w-full rounded-xl border border-gold/40 dark:border-gold/30 bg-white dark:bg-[#20181e] px-3.5 py-2.5 text-base sm:text-xs font-medium text-maroon dark:text-[#f6eee8] placeholder:text-maroon/30 dark:placeholder:text-[#f6eee8]/30 shadow-2xs outline-none focus:border-maroon dark:focus:border-gold focus:ring-2 focus:ring-maroon/15 dark:focus:ring-gold/15"
             />
           </div>
 
@@ -372,7 +384,7 @@ function GuestFormContent({
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder={t("notePlaceholder")}
-              className="w-full rounded-xl border border-gold/40 dark:border-gold/30 bg-white dark:bg-[#20181e] px-3.5 py-2.5 text-xs font-medium text-maroon dark:text-[#f6eee8] placeholder:text-maroon/30 dark:placeholder:text-[#f6eee8]/30 shadow-2xs outline-none focus:border-maroon dark:focus:border-gold focus:ring-2 focus:ring-maroon/15 dark:focus:ring-gold/15"
+              className="w-full rounded-xl border border-gold/40 dark:border-gold/30 bg-white dark:bg-[#20181e] px-3.5 py-2.5 text-base sm:text-xs font-medium text-maroon dark:text-[#f6eee8] placeholder:text-maroon/30 dark:placeholder:text-[#f6eee8]/30 shadow-2xs outline-none focus:border-maroon dark:focus:border-gold focus:ring-2 focus:ring-maroon/15 dark:focus:ring-gold/15"
             />
           </div>
 

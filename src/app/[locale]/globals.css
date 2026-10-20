@@ -115,6 +115,15 @@ select {
   color: var(--color-maroon);
 }
 
+/* Prevent iOS Safari from auto-zooming on focus when font-size is below 16px */
+@media screen and (max-width: 768px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
 input::placeholder,
 textarea::placeholder {
   color: color-mix(in srgb, var(--color-maroon) 45%, transparent);
