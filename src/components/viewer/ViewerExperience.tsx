@@ -27,7 +27,7 @@ import { Agenda } from "@/components/sections/Agenda";
 import { DigitalEnvelope } from "@/components/sections/DigitalEnvelope";
 import { GratitudeApology } from "@/components/sections/GratitudeApology";
 import { RsvpSection } from "@/components/sections/RsvpSection";
-import { ColorPaletteAccent } from "@/components/sections/ColorPaletteAccent";
+// import { ColorPaletteAccent } from "@/components/sections/ColorPaletteAccent";
 import { Closing } from "@/components/sections/Closing";
 import type { Invitation } from "@/types";
 
@@ -38,9 +38,10 @@ export function ViewerExperience({ slug }: { slug: string }) {
   const searchParams = useSearchParams();
   const token = searchParams.get("g");
   const initialTo = searchParams.get("to")?.trim();
-  const [guestInfo, setGuestInfo] = useState<{ guestId?: string; name?: string } | null>(
-    initialTo ? { name: initialTo } : null,
-  );
+  const [guestInfo, setGuestInfo] = useState<{
+    guestId?: string;
+    name?: string;
+  } | null>(initialTo ? { name: initialTo } : null);
 
   const urlLocale = useLocale();
   const [invitation, setInvitation] = useState<Invitation | null | undefined>(
@@ -50,9 +51,11 @@ export function ViewerExperience({ slug }: { slug: string }) {
   const [displayLocale, setDisplayLocale] = useState<"km" | "en">(
     urlLocale === "en" ? "en" : "km",
   );
-  const { start: startMusic, muted, toggleMute } = useBackgroundMusic(
-    invitation ? invitation.mediaUrls.bgMusic : undefined,
-  );
+  const {
+    start: startMusic,
+    muted,
+    toggleMute,
+  } = useBackgroundMusic(invitation ? invitation.mediaUrls.bgMusic : undefined);
 
   useEffect(() => {
     getInvitationBySlug(slug).then(setInvitation);
@@ -112,7 +115,10 @@ export function ViewerExperience({ slug }: { slug: string }) {
   const backdropImage = invitation.mediaUrls.gallery[0];
 
   return (
-    <NextIntlClientProvider locale={displayLocale} messages={viewerMessages[displayLocale]}>
+    <NextIntlClientProvider
+      locale={displayLocale}
+      messages={viewerMessages[displayLocale]}
+    >
       <PaletteProvider palette={invitation.colorPalette}>
         <div className="relative min-h-screen w-full max-w-full overflow-x-clip">
           <BackgroundBackdrop embedUrl={embedUrl} imageUrl={backdropImage} />
@@ -181,7 +187,7 @@ export function ViewerExperience({ slug }: { slug: string }) {
                   guestId={guestInfo?.guestId}
                   guestName={guestInfo?.name}
                 />
-                <ColorPaletteAccent invitation={invitation} />
+                {/* <ColorPaletteAccent invitation={invitation} /> */}
                 <Closing invitation={invitation} />
               </motion.div>
             )}
