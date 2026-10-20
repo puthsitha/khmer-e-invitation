@@ -76,7 +76,7 @@ export function MuiInput({
                       ? "text-maroon dark:text-gold"
                       : "text-maroon/70 dark:text-cream/80"
                 }`
-              : `left-4 top-3 text-sm ${
+              : `left-4 top-3 text-base sm:text-sm ${
                   hasError ? "text-red-500 dark:text-red-400" : "text-maroon/60 dark:text-cream/60"
                 }`
           }`}>
@@ -101,7 +101,7 @@ export function MuiInput({
           required={required}
           autoComplete={autoComplete}
           disabled={disabled}
-          className={`w-full rounded-xl bg-transparent px-4 py-3 text-sm text-maroon dark:text-cream caret-maroon dark:caret-gold outline-none transition-colors ${
+          className={`w-full rounded-xl bg-transparent px-4 py-3 text-base sm:text-sm text-maroon dark:text-cream caret-maroon dark:caret-gold outline-none transition-colors ${
             isPassword ? "pr-11" : ""
           }`}
         />

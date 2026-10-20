@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import {
   X,
@@ -41,12 +42,15 @@ interface GuestExcelImportModalProps {
   existingGuests?: WeddingGuest[];
 }
 
+const emptySubscribe = () => () => {};
+
 export function GuestExcelImportModal({
   isOpen,
   onClose,
   onImport,
   existingGuests = [],
 }: GuestExcelImportModalProps) {
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const t = useTranslations("dashboard.editor.rsvp");
   const tCommon = useTranslations("common");
 
@@ -67,7 +71,7 @@ export function GuestExcelImportModal({
     return analyzeImportRows(parsedRows, existingGuests);
   }, [parsedRows, existingGuests]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -150,16 +154,23 @@ export function GuestExcelImportModal({
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+  const portalTarget =
+    typeof document !== "undefined"
+      ? document.getElementById("portal-root") || document.body
+      : null;
+
+  if (!portalTarget) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
+        className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
         onClick={onClose}
       />
 
       {/* Modal Dialog */}
-      <div className="relative w-full max-w-xl max-h-[92vh] overflow-y-auto rounded-3xl border border-gold/40 dark:border-gold/30 bg-cream dark:bg-[#1c161b] p-5 sm:p-6 shadow-2xl z-10 animate-in fade-in zoom-in-95 duration-150">
+      <div className="relative w-full max-w-xl my-auto max-h-[90dvh] overflow-y-auto rounded-3xl border border-gold/40 dark:border-gold/30 bg-cream dark:bg-[#1c161b] p-5 sm:p-6 shadow-2xl z-10 animate-in fade-in zoom-in-95 duration-150">
         <div className="flex items-center justify-between border-b border-gold/20 pb-3">
           <div className="flex items-center gap-2">
             <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">
@@ -415,6 +426,7 @@ export function GuestExcelImportModal({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    portalTarget
   );
 }

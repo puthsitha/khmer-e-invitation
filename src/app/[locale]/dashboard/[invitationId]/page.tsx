@@ -62,7 +62,7 @@ import type {
 } from "@/types";
 
 const inputClassName =
-  "w-full rounded-xl border border-gold/40 dark:border-gold/30 bg-white/90 dark:bg-[#20181e] px-4 py-2.5 text-sm text-maroon dark:text-[#f6eee8] shadow-xs transition-all duration-200 placeholder:text-maroon/30 dark:placeholder:text-[#f6eee8]/30 hover:border-gold/70 dark:hover:border-gold/50 focus:border-maroon dark:focus:border-gold focus:bg-white dark:focus:bg-[#20181e] focus:outline-none focus:ring-2 focus:ring-maroon/15 dark:focus:ring-gold/15";
+  "w-full rounded-xl border border-gold/40 dark:border-gold/30 bg-white/90 dark:bg-[#20181e] px-4 py-2.5 text-base sm:text-sm text-maroon dark:text-[#f6eee8] shadow-xs transition-all duration-200 placeholder:text-maroon/30 dark:placeholder:text-[#f6eee8]/30 hover:border-gold/70 dark:hover:border-gold/50 focus:border-maroon dark:focus:border-gold focus:bg-white dark:focus:bg-[#20181e] focus:outline-none focus:ring-2 focus:ring-maroon/15 dark:focus:ring-gold/15";
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 20 },

@@ -18,7 +18,7 @@ export function BilingualField({
   placeholderEn?: string;
 }) {
   const fieldClassName =
-    "w-full rounded-xl border border-gold/40 dark:border-gold/30 bg-white/90 dark:bg-[#20181e] px-3.5 py-2.5 text-sm text-maroon dark:text-[#f6eee8] shadow-xs transition-all duration-200 placeholder:text-maroon/30 dark:placeholder:text-[#f6eee8]/30 hover:border-gold/70 focus:border-maroon dark:focus:border-gold focus:bg-white dark:focus:bg-[#20181e] focus:outline-none focus:ring-2 focus:ring-maroon/15 dark:focus:ring-gold/20";
+    "w-full rounded-xl border border-gold/40 dark:border-gold/30 bg-white/90 dark:bg-[#20181e] px-3.5 py-2.5 text-base sm:text-sm text-maroon dark:text-[#f6eee8] shadow-xs transition-all duration-200 placeholder:text-maroon/30 dark:placeholder:text-[#f6eee8]/30 hover:border-gold/70 focus:border-maroon dark:focus:border-gold focus:bg-white dark:focus:bg-[#20181e] focus:outline-none focus:ring-2 focus:ring-maroon/15 dark:focus:ring-gold/20";
 
   return (
     <div className="flex flex-col gap-2">
