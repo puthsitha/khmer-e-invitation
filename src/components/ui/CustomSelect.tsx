@@ -31,12 +31,14 @@ export function CustomSelect({
   options,
   className = "",
   buttonClassName = "",
+  disabled = false,
 }: {
   value: string;
   onChange: (value: string) => void;
   options: SelectOption[];
   className?: string;
   buttonClassName?: string;
+  disabled?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -64,12 +66,17 @@ export function CustomSelect({
     <div ref={rootRef} className={`relative ${className}`}>
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        disabled={disabled}
+        onClick={() => {
+          if (!disabled) setOpen((o) => !o);
+        }}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className={`flex w-full cursor-pointer items-center justify-between gap-2 rounded-xl border border-gold/40 dark:border-gold/30 bg-white dark:bg-[#1c161b] text-sm text-maroon dark:text-[#f6eee8] shadow-sm transition-colors hover:border-gold/70 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20 ${
-          buttonClassName || "py-1.5 pl-3 pr-2.5"
-        }`}>
+        className={`flex w-full items-center justify-between gap-2 rounded-xl border text-sm text-maroon dark:text-[#f6eee8] shadow-sm transition-colors focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20 ${
+          disabled
+            ? "cursor-not-allowed opacity-60 bg-neutral-100/90 dark:bg-[#151014] border-gold/20 dark:border-gold/15"
+            : "cursor-pointer border-gold/40 dark:border-gold/30 bg-white dark:bg-[#1c161b] hover:border-gold/70"
+        } ${buttonClassName || "py-1.5 pl-3 pr-2.5"}`}>
         <span className="flex items-center gap-2 truncate">
           {selected?.swatches && <Swatches colors={selected.swatches} />}
           {selected?.label ?? ""}

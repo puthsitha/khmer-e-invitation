@@ -7,6 +7,8 @@ import { Hourglass, Loader2, MailQuestion } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { getInvitationBySlug } from "@/lib/firebase/firestore";
 import { decryptGuestToken } from "@/lib/guestToken";
+import { buildEventMetadata } from "@/lib/eventMetadata";
+import { MOCK_WEDDING_INVITATION } from "@/lib/mockInvitation";
 import { useAutoScroll } from "@/hooks/useAutoScroll";
 import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 import { PaletteProvider } from "@/contexts/PaletteContext";
@@ -58,8 +60,25 @@ export function ViewerExperience({ slug }: { slug: string }) {
   } = useBackgroundMusic(invitation ? invitation.mediaUrls.bgMusic : undefined);
 
   useEffect(() => {
-    getInvitationBySlug(slug).then(setInvitation);
+    getInvitationBySlug(slug).then((data) => {
+      if (!data && slug === MOCK_WEDDING_INVITATION.slug) {
+        setInvitation(MOCK_WEDDING_INVITATION);
+      } else {
+        setInvitation(data);
+      }
+    });
   }, [slug]);
+
+  useEffect(() => {
+    if (invitation) {
+      const { title, description } = buildEventMetadata(invitation);
+      document.title = title;
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) {
+        metaDesc.setAttribute("content", description);
+      }
+    }
+  }, [invitation]);
 
   useEffect(() => {
     if (token) {
@@ -72,6 +91,10 @@ export function ViewerExperience({ slug }: { slug: string }) {
   }, [token, invitation?.invitationId]);
 
   useAutoScroll(stage === "opened");
+
+  function handleEnvelopeAnimationStart() {
+    startMusic();
+  }
 
   function handleOpenEnvelope() {
     setStage("landing");
@@ -109,10 +132,13 @@ export function ViewerExperience({ slug }: { slug: string }) {
     );
   }
 
-  const embedUrl = invitation.coverVideoEmbedUrl
-    ? toBackgroundEmbedUrl(invitation.coverVideoEmbedUrl)
-    : null;
-  const backdropImage = invitation.mediaUrls.gallery[0];
+  const isPhotoCover = invitation.coverMediaType === "photo";
+  const embedUrl =
+    !isPhotoCover && invitation.coverVideoEmbedUrl
+      ? toBackgroundEmbedUrl(invitation.coverVideoEmbedUrl)
+      : null;
+  const backdropImage =
+    invitation.coverImageUrl || invitation.mediaUrls.gallery[0];
 
   return (
     <NextIntlClientProvider
@@ -141,6 +167,7 @@ export function ViewerExperience({ slug }: { slug: string }) {
                 transition={{ duration: 0.4 }}
               >
                 <EnvelopeOpening
+                  onStartAnimation={handleEnvelopeAnimationStart}
                   onOpen={handleOpenEnvelope}
                   guestName={guestInfo?.name}
                 />

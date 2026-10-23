@@ -16,25 +16,31 @@ export function BackgroundBackdrop({
   imageUrl?: string;
 }) {
   return (
-    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-cream w-full max-w-full select-none" aria-hidden>
+    <div
+      className="pointer-events-none fixed inset-0 -z-10 overflow-hidden w-full max-w-full select-none"
+      aria-hidden
+    >
       {embedUrl ? (
-        <iframe
-          src={embedUrl}
-          title="Cover video"
-          allow="autoplay; encrypted-media"
-          className="pointer-events-none blur-[2px]"
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "max(120vw, calc(120vh * 16 / 9))",
-            height: "max(120vh, calc(120vw * 9 / 16))",
-            minWidth: "100%",
-            minHeight: "100%",
-            border: 0,
-          }}
-        />
+        <>
+          <iframe
+            src={embedUrl}
+            title="Cover video"
+            allow="autoplay; encrypted-media"
+            className="pointer-events-none blur-[2px]"
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "max(120vw, calc(120vh * 16 / 9))",
+              height: "max(120vh, calc(120vw * 9 / 16))",
+              minWidth: "100%",
+              minHeight: "100%",
+              border: 0,
+            }}
+          />
+          <div className="absolute inset-0 bg-cream/35" />
+        </>
       ) : imageUrl ? (
         <Image
           src={imageUrl}
@@ -42,11 +48,10 @@ export function BackgroundBackdrop({
           fill
           sizes="100vw"
           priority
-          className="scale-115 object-cover blur-[2px]"
+          className="scale-115 object-cover"
         />
       ) : null}
-      <div className="absolute inset-0 bg-cream/35" />
-      <AmbientSparks />
+      <AmbientSparks interactive />
     </div>
   );
 }

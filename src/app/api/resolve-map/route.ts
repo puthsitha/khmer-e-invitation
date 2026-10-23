@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseGoogleMapsDetails } from "@/lib/mapUrl";
+import { parseGoogleMapsDetails, extractCoordinates } from "@/lib/mapUrl";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const targetUrl = searchParams.get("url")?.trim();
-  const address = searchParams.get("address")?.trim();
   const locale = searchParams.get("locale") || "km";
 
   if (!targetUrl) {
@@ -35,21 +34,32 @@ export async function GET(request: NextRequest) {
     clearTimeout(timeout);
 
     const finalUrl = response.url || targetUrl;
-    const details = parseGoogleMapsDetails(finalUrl, address, locale);
+    let details = parseGoogleMapsDetails(finalUrl, null, locale);
+
+    // If coordinates were not in the final URL, inspect HTML content (staticmap, meta tags, JSON-LD)
+    if (!details?.lat && !details?.embedSrc) {
+      const html = await response.text().catch(() => "");
+      const coords = extractCoordinates(html);
+      if (coords) {
+        details = {
+          lat: coords.lat,
+          lng: coords.lng,
+          embedSrc: `https://maps.google.com/maps?q=${coords.lat},${coords.lng}&hl=${locale}&z=16&output=embed`,
+        };
+      }
+    }
 
     return NextResponse.json({
-      success: true,
+      success: Boolean(details?.embedSrc),
       originalUrl: targetUrl,
       finalUrl,
-      details,
+      details: details ?? null,
     });
   } catch (err) {
-    // Graceful fallback: parse with address
-    const fallbackDetails = parseGoogleMapsDetails(null, address, locale);
     return NextResponse.json({
       success: false,
       error: err instanceof Error ? err.message : "Failed to resolve URL",
-      details: fallbackDetails,
+      details: null,
     });
   }
 }

@@ -37,9 +37,11 @@ const DURATION_MS: Record<Phase, number> = {
 
 export function EnvelopeOpening({
   onOpen,
+  onStartAnimation,
   guestName: propGuestName,
 }: {
   onOpen: () => void;
+  onStartAnimation?: () => void;
   guestName?: string;
 }) {
   const t = useTranslations("viewer");
@@ -48,6 +50,12 @@ export function EnvelopeOpening({
   const guestName = propGuestName || paramGuestName;
   const reduceMotion = useReducedMotion();
   const [phase, setPhase] = useState<Phase>("closed");
+
+  function handleStart() {
+    if (phase !== "closed") return;
+    onStartAnimation?.();
+    setPhase("sealBreak");
+  }
 
   useEffect(() => {
     if (phase === "closed") return;
@@ -95,7 +103,7 @@ export function EnvelopeOpening({
       />
       <motion.button
         type="button"
-        onClick={() => phase === "closed" && setPhase("sealBreak")}
+        onClick={handleStart}
         disabled={phase !== "closed"}
         animate={idlePulse ? { scale: [1, 1.06, 1] } : { scale: 1 }}
         transition={
@@ -103,7 +111,7 @@ export function EnvelopeOpening({
             ? { duration: 2.2, repeat: Infinity, ease: "easeInOut" }
             : { duration: 0.3, ease: "easeOut" }
         }
-        className="relative h-56 w-80 sm:h-64 sm:w-96 scale-[0.82] min-[375px]:scale-90 min-[410px]:scale-100 origin-center transition-transform"
+        className="relative h-56 w-80 sm:h-64 sm:w-96 scale-[0.82] min-[375px]:scale-90 min-[410px]:scale-100 origin-center transition-transform cursor-pointer"
         style={{ perspective: 1400 }}
       >
         {/* envelope card — flips 180° to reveal its back */}
@@ -239,9 +247,10 @@ export function EnvelopeOpening({
 
       {phase === "closed" && (
         <motion.p
+          onClick={handleStart}
           animate={{ opacity: [0.4, 1, 0.4] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="text-sm uppercase tracking-widest text-maroon/70"
+          className="cursor-pointer select-none text-sm uppercase tracking-widest text-maroon/70"
         >
           {t("tapToOpen")}
         </motion.p>

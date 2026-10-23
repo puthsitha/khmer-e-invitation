@@ -21,6 +21,7 @@ import type { ParsedGuestRow } from "@/lib/excel";
 import {
   deleteMediaByUrl,
   uploadBgMusic,
+  uploadCoverImage,
   uploadDigitalEnvelopeQr,
   uploadGalleryImage,
   uploadStoryImage,
@@ -29,9 +30,10 @@ import {
 import { QrCode } from "@/components/ui/QrCode";
 import { BilingualField } from "@/components/dashboard/BilingualField";
 import { TimeSelect12h } from "@/components/dashboard/TimeSelect12h";
-import { VideoPreviewCard } from "@/components/dashboard/VideoPreviewCard";
+import { CoverBackdropManager } from "@/components/dashboard/CoverBackdropManager";
 import { PaletteSelector } from "@/components/dashboard/PaletteSelector";
 import { ImageUploadManager } from "@/components/dashboard/ImageUploadManager";
+import { AudioUploadManager } from "@/components/dashboard/AudioUploadManager";
 import { RsvpManager } from "@/components/dashboard/RsvpManager";
 import { DateTimePicker } from "@/components/dashboard/DateTimePicker";
 import { AutoDismissToast } from "@/components/dashboard/AutoDismissToast";
@@ -41,9 +43,9 @@ import {
   InvitationSectionKey,
 } from "@/components/dashboard/InvitationSidebar";
 import { InvitationTopNav } from "@/components/dashboard/InvitationTopNav";
+import { VenueMapPreview } from "@/components/dashboard/VenueMapPreview";
 import { usePalettes } from "@/hooks/usePalettes";
 import { asBilingual, EMPTY_BILINGUAL } from "@/lib/bilingual";
-import { parseGoogleMapsDetails } from "@/lib/mapUrl";
 import {
   MapPin,
   Video,
@@ -304,17 +306,17 @@ export default function EditInvitationPage() {
     });
   }
 
-  async function handleMusicUpload(files: FileList | null) {
-    const file = files?.[0];
+  async function handleMusicUpload(file: File) {
     if (!file || !invitation) return;
     setStatus(null);
     try {
       const url = await uploadBgMusic(invitation.invitationId, file);
       await save({ mediaUrls: { ...invitation.mediaUrls, bgMusic: url } });
     } catch (err) {
-      setStatus(
-        err instanceof UploadValidationError ? err.message : t("saveError"),
-      );
+      const msg =
+        err instanceof UploadValidationError ? err.message : t("saveError");
+      setStatus(msg);
+      throw err;
     }
   }
 
@@ -329,6 +331,20 @@ export default function EditInvitationPage() {
       setStatus(
         err instanceof UploadValidationError ? err.message : t("saveError"),
       );
+    }
+  }
+
+  async function handleCoverImageUpload(file: File) {
+    if (!file || !invitation) return;
+    setStatus(null);
+    try {
+      const url = await uploadCoverImage(invitation.invitationId, file);
+      await save({ coverImageUrl: url, coverMediaType: "photo" });
+    } catch (err) {
+      const msg =
+        err instanceof UploadValidationError ? err.message : t("saveError");
+      setStatus(msg);
+      throw err;
     }
   }
 
@@ -564,80 +580,50 @@ export default function EditInvitationPage() {
                   />
                 </label>
 
-                {(() => {
-                  const addr = asBilingual(invitation.content.address);
-                  const mapPreview = parseGoogleMapsDetails(
-                    invitation.content.mapUrl,
-                    addr.en || addr.km,
-                  );
-                  if (!mapPreview?.embedSrc) return null;
-                  return (
-                    <div className="overflow-hidden rounded-2xl border border-gold/30 dark:border-gold/20 bg-cream/30 dark:bg-white/5 shadow-2xs">
-                      <div className="flex items-center justify-between border-b border-gold/20 dark:border-gold/15 px-3.5 py-2 text-[11px] text-maroon/70 dark:text-[#f6eee8]/70 bg-cream/60 dark:bg-white/5">
-                        <span className="flex items-center gap-1.5 font-medium">
-                          <MapPin className="h-3.5 w-3.5 text-gold" />
-                          <span>
-                            {mapPreview.lat && mapPreview.lng
-                              ? `Coordinates: ${mapPreview.lat.toFixed(5)}, ${mapPreview.lng.toFixed(5)}`
-                              : mapPreview.query
-                                ? `Location: ${mapPreview.query}`
-                                : "Map Preview"}
-                          </span>
-                        </span>
-                        {invitation.content.mapUrl && (
-                          <a
-                            href={invitation.content.mapUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-semibold text-gold hover:underline"
-                          >
-                            Open Link ↗
-                          </a>
-                        )}
-                      </div>
-                      <div className="relative h-44 w-full">
-                        <iframe
-                          src={mapPreview.embedSrc}
-                          title="Venue Map Preview"
-                          className="h-full w-full border-0"
-                          loading="lazy"
-                        />
-                      </div>
-                    </div>
-                  );
-                })()}
+                {/* Map Preview (strictly derived from the Map URL) */}
+                <VenueMapPreview mapUrl={invitation.content.mapUrl} />
               </div>
 
-              {/* Cover Video Input & Live Preview */}
-              <div className="flex flex-col gap-3">
-                <label className="flex flex-col gap-1.5 text-sm font-semibold text-maroon dark:text-[#f6eee8]">
-                  <div className="flex items-center gap-1.5">
-                    <Video className="h-4 w-4 text-gold" />
-                    <span>{t("content.coverVideo")}</span>
-                  </div>
-                  <input
-                    type="url"
-                    defaultValue={invitation.coverVideoEmbedUrl ?? ""}
-                    placeholder={t("content.coverVideoPlaceholder")}
-                    onBlur={(e) => save({ coverVideoEmbedUrl: e.target.value })}
-                    className={inputClassName}
-                  />
-                </label>
-
-                <VideoPreviewCard
-                  url={invitation.coverVideoEmbedUrl ?? ""}
-                  onClear={() => save({ coverVideoEmbedUrl: "" })}
-                  labels={{
-                    previewTitle: t("content.videoPreviewTitle"),
-                    previewEmpty: t("content.videoPreviewEmpty"),
-                    previewHint: t("content.videoPreviewHint"),
-                    validYoutube: t("content.videoValidYoutube"),
-                    validVimeo: t("content.videoValidVimeo"),
-                    openLink: t("content.openVideoLink"),
-                    clear: t("content.clearVideo"),
-                  }}
-                />
-              </div>
+              {/* Cover Backdrop (Video & Photo Options) */}
+              <CoverBackdropManager
+                mediaType={invitation.coverMediaType ?? "video"}
+                videoUrl={invitation.coverVideoEmbedUrl ?? ""}
+                imageUrl={invitation.coverImageUrl ?? ""}
+                onChangeMediaType={(type) => save({ coverMediaType: type })}
+                onSaveVideoUrl={(url) => save({ coverVideoEmbedUrl: url })}
+                onUploadImage={handleCoverImageUpload}
+                onRemoveImage={async () => {
+                  if (invitation.coverImageUrl) {
+                    await deleteMediaByUrl(invitation.coverImageUrl).catch(() => {});
+                    await save({ coverImageUrl: "" });
+                  }
+                }}
+                inputClassName={inputClassName}
+                labels={{
+                  backdropTitle: t("content.backdropTitle"),
+                  typeVideo: t("content.backdropTypeVideo"),
+                  typePhoto: t("content.backdropTypePhoto"),
+                  coverVideo: t("content.coverVideo"),
+                  coverVideoPlaceholder: t("content.coverVideoPlaceholder"),
+                  videoPreviewTitle: t("content.videoPreviewTitle"),
+                  videoPreviewEmpty: t("content.videoPreviewEmpty"),
+                  videoPreviewHint: t("content.videoPreviewHint"),
+                  videoValidYoutube: t("content.videoValidYoutube"),
+                  videoValidVimeo: t("content.videoValidVimeo"),
+                  openVideoLink: t("content.openVideoLink"),
+                  clearVideo: t("content.clearVideo"),
+                  photoPreviewTitle: t("content.photoUploadTitle"),
+                  photoPreviewEmpty: t("content.photoUploadEmpty"),
+                  photoPreviewHint: t("content.photoUploadHint"),
+                  photoValid: t("content.photoValid"),
+                  removePhoto: t("content.removePhoto"),
+                  changePhoto: t("content.changePhoto"),
+                  dragDropPhoto: t("content.dragDropPhoto"),
+                  browseFiles: t("media.browseFiles"),
+                  uploadingPhoto: t("content.uploadingPhoto"),
+                  photoSupportsHint: t("content.photoSupportsHint"),
+                }}
+              />
 
               {/* Event Date & Time */}
               <DateTimePicker
@@ -828,57 +814,28 @@ export default function EditInvitationPage() {
               </div>
 
               {/* Background Music */}
-              <div className="flex flex-col gap-3 rounded-2xl border border-gold/30 dark:border-gold/20 bg-cream/20 dark:bg-white/5 p-5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gold/20 dark:bg-gold/25 text-maroon dark:text-[#f6eee8]">
-                      <Music className="h-4 w-4" />
-                    </span>
-                    <div>
-                      <h4 className="text-sm font-semibold text-maroon dark:text-[#f6eee8]">{t("media.musicTitle")}</h4>
-                      <p className="text-xs text-maroon/60 dark:text-[#f6eee8]/60">{t("media.musicNote")}</p>
-                    </div>
-                  </div>
-
-                  {invitation.mediaUrls.bgMusic && (
-                    <button
-                      type="button"
-                      onClick={async () => {
-                        if (!invitation.mediaUrls.bgMusic) return;
-                        await deleteMediaByUrl(invitation.mediaUrls.bgMusic).catch(() => {});
-                        await save({ mediaUrls: { ...invitation.mediaUrls, bgMusic: undefined } });
-                      }}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                      <span>{t("media.removeImage")}</span>
-                    </button>
-                  )}
-                </div>
-
-                <div className="mt-1">
-                  <input
-                    type="file"
-                    id="bg-music-input"
-                    accept="audio/mpeg,audio/mp4,audio/wav"
-                    onChange={(e) => handleMusicUpload(e.target.files)}
-                    className="hidden"
-                  />
-                  <label
-                    htmlFor="bg-music-input"
-                    className="inline-flex items-center gap-2 rounded-xl border border-gold/40 dark:border-gold/30 bg-white dark:bg-[#20181e] px-4 py-2.5 text-xs font-semibold text-maroon dark:text-[#f6eee8] shadow-xs transition-colors hover:bg-gold/15 dark:hover:bg-gold/20 cursor-pointer"
-                  >
-                    <UploadCloud className="h-4 w-4 text-gold" />
-                    <span>{invitation.mediaUrls.bgMusic ? t("media.changeAudio") : t("media.uploadAudio")}</span>
-                  </label>
-                </div>
-
-                {invitation.mediaUrls.bgMusic && (
-                  <div className="rounded-xl border border-gold/30 dark:border-gold/20 bg-white dark:bg-[#20181e] p-3 shadow-xs">
-                    <audio className="w-full" controls src={invitation.mediaUrls.bgMusic} />
-                  </div>
-                )}
-              </div>
+              <AudioUploadManager
+                audioUrl={invitation.mediaUrls.bgMusic}
+                onUpload={handleMusicUpload}
+                onRemove={async () => {
+                  if (!invitation.mediaUrls.bgMusic) return;
+                  await deleteMediaByUrl(invitation.mediaUrls.bgMusic).catch(() => {});
+                  await save({ mediaUrls: { ...invitation.mediaUrls, bgMusic: undefined } });
+                }}
+                labels={{
+                  musicTitle: t("media.musicTitle"),
+                  musicNote: t("media.musicNote"),
+                  dropzoneTitle: t("media.musicDropzoneTitle"),
+                  dropzoneReplaceTitle: t("media.musicDropzoneReplaceTitle"),
+                  browseFiles: t("media.browseFiles"),
+                  uploading: t("media.musicProcessing"),
+                  supportsNote: t("media.musicSupportsNote"),
+                  removeAudio: t("media.removeImage"),
+                  currentAudio: t("media.musicCurrentTrack"),
+                  removing: t("media.musicRemoving"),
+                  invalidAudioType: t("media.invalidAudioType"),
+                }}
+              />
 
               {/* Digital Envelope QR */}
               <div className="flex flex-col gap-2 rounded-2xl border border-gold/30 dark:border-gold/20 bg-cream/20 dark:bg-white/5 p-5">

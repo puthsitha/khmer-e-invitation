@@ -4,12 +4,13 @@ import { FormEvent, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/contexts/AuthContext";
-import { useRouter } from "@/i18n/navigation";
+import { useRouter, Link } from "@/i18n/navigation";
 import { createInvitation, listTemplates } from "@/lib/firebase/firestore";
 import { generateUniqueSlug } from "@/lib/slug";
 import { usePalettes } from "@/hooks/usePalettes";
 import { CustomSelect, SelectOption } from "@/components/ui/CustomSelect";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, ArrowLeft, Eye } from "lucide-react";
+import { ImageLightbox } from "@/components/viewer/ImageLightbox";
 import type { InvitationCategory, Template } from "@/types";
 
 const CATEGORIES: InvitationCategory[] = ["wedding", "birthday", "event"];
@@ -27,6 +28,8 @@ export default function NewInvitationPage() {
   const [titleError, setTitleError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [imgError, setImgError] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const palettes = usePalettes();
 
   useEffect(() => {
@@ -35,6 +38,11 @@ export default function NewInvitationPage() {
       setTemplateId(list[0]?.templateId ?? "");
     });
   }, [category]);
+
+  useEffect(() => {
+    setImgError(false);
+    setLightboxOpen(false);
+  }, [templateId]);
 
   const categoryOptions: SelectOption[] = CATEGORIES.map((c) => ({
     value: c,
@@ -109,6 +117,15 @@ export default function NewInvitationPage() {
 
   return (
     <main className="mx-auto max-w-lg px-6 py-10">
+      {/* Back to Dashboard Link */}
+      <Link
+        href="/dashboard"
+        className="group mb-5 inline-flex items-center gap-2 text-sm font-medium text-maroon/70 dark:text-[#f6eee8]/70 hover:text-maroon dark:hover:text-gold transition-colors cursor-pointer"
+      >
+        <ArrowLeft size={16} className="transition-transform duration-200 group-hover:-translate-x-1" />
+        <span>{t("backToDashboard")}</span>
+      </Link>
+
       <h1 className="mb-6 font-[family-name:var(--font-heading-km)] text-2xl text-maroon dark:text-[#f6eee8] sm:text-3xl">
         {t("title")}
       </h1>
@@ -136,12 +153,46 @@ export default function NewInvitationPage() {
           />
         </div>
 
-        {/* Enhanced Palette Preview (Suitable Size) */}
-        {selectedPalette && (
+        {/* Template Preview (Image if available, fallback to Palette if not) */}
+        {selectedTemplate?.previewImage && !imgError ? (
           <motion.div
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col gap-2 rounded-xl border border-gold/30 dark:border-gold/20 bg-white/75 dark:bg-[#1c161b] p-3.5 shadow-xs">
+            className="flex flex-col gap-2 rounded-xl border border-gold/30 dark:border-gold/20 bg-white/75 dark:bg-[#1c161b] p-3.5 shadow-xs"
+          >
+            <div className="flex items-center justify-between text-xs text-maroon/70 dark:text-[#f6eee8]/70">
+              <span className="font-semibold">{t("templatePreview")}:</span>
+              <span className="font-medium text-maroon dark:text-[#f6eee8]">
+                {selectedTemplate.name}
+              </span>
+            </div>
+            <div
+              onClick={() => setLightboxOpen(true)}
+              className="group/img relative aspect-video w-full cursor-pointer overflow-hidden rounded-lg border border-gold/25 bg-gold/5 dark:bg-[#251d24]"
+              title={t("viewFullImage")}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={selectedTemplate.previewImage}
+                alt={selectedTemplate.name}
+                referrerPolicy="no-referrer"
+                onError={() => setImgError(true)}
+                className="h-full w-full object-cover transition-transform duration-300 group-hover/img:scale-105"
+              />
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 backdrop-blur-[2px] transition-opacity duration-200 group-hover/img:opacity-100">
+                <span className="flex items-center gap-1.5 rounded-full bg-white/90 dark:bg-[#20181e]/90 px-3 py-1.5 text-xs font-medium text-maroon dark:text-gold shadow-md transition-transform duration-200 group-hover/img:scale-105">
+                  <Eye size={14} />
+                  <span>{t("viewFullImage")}</span>
+                </span>
+              </div>
+            </div>
+          </motion.div>
+        ) : selectedPalette ? (
+          <motion.div
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col gap-2 rounded-xl border border-gold/30 dark:border-gold/20 bg-white/75 dark:bg-[#1c161b] p-3.5 shadow-xs"
+          >
             <div className="flex items-center justify-between text-xs text-maroon/70 dark:text-[#f6eee8]/70">
               <span className="font-semibold">{t("palette")}:</span>
               <span className="font-medium text-maroon dark:text-[#f6eee8]">
@@ -167,7 +218,7 @@ export default function NewInvitationPage() {
               ))}
             </div>
           </motion.div>
-        )}
+        ) : null}
 
         {/* Required Title Input */}
         <div className="flex flex-col gap-1.5 text-sm text-maroon dark:text-[#f6eee8]">
@@ -221,57 +272,77 @@ export default function NewInvitationPage() {
           )}
         </AnimatePresence>
 
-        {/* Animated Loading Submit Button */}
-        <motion.button
-          type="submit"
-          disabled={submitting}
-          whileHover={submitting ? undefined : { scale: 1.015 }}
-          whileTap={submitting ? undefined : { scale: 0.985 }}
-          transition={{ duration: 0.15 }}
-          className="group relative mt-2 flex h-12 w-full cursor-pointer items-center justify-center overflow-hidden rounded-full bg-maroon dark:bg-gold text-sm font-semibold text-cream dark:text-maroon shadow-md transition-all duration-200 hover:bg-maroon/95 dark:hover:bg-gold/90 disabled:cursor-not-allowed disabled:opacity-70">
-          <AnimatePresence mode="wait">
-            {submitting ? (
-              <motion.div
-                key="creating"
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.15 }}
-                className="flex items-center gap-2.5">
-                <svg
-                  className="h-4 w-4 animate-spin text-cream dark:text-maroon"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24">
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-90"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                <span>{t("creating")}</span>
-              </motion.div>
-            ) : (
-              <motion.span
-                key="create"
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.15 }}>
-                {t("create")}
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </motion.button>
+        {/* Action Buttons: Cancel & Submit */}
+        <div className="mt-2 flex flex-col-reverse sm:flex-row items-center gap-3">
+          <Link
+            href="/dashboard"
+            className="flex h-12 w-full sm:flex-1 cursor-pointer items-center justify-center rounded-full border border-gold/40 dark:border-gold/30 bg-white/50 dark:bg-white/5 text-sm font-semibold text-maroon dark:text-[#f6eee8] hover:bg-gold/15 dark:hover:bg-gold/10 transition-colors"
+          >
+            {t("cancel")}
+          </Link>
+
+          <motion.button
+            type="submit"
+            disabled={submitting}
+            whileHover={submitting ? undefined : { scale: 1.015 }}
+            whileTap={submitting ? undefined : { scale: 0.985 }}
+            transition={{ duration: 0.15 }}
+            className="group relative flex h-12 w-full sm:flex-[2] cursor-pointer items-center justify-center overflow-hidden rounded-full bg-maroon dark:bg-gold text-sm font-semibold text-cream dark:text-maroon shadow-md transition-all duration-200 hover:bg-maroon/95 dark:hover:bg-gold/90 disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            <AnimatePresence mode="wait">
+              {submitting ? (
+                <motion.div
+                  key="creating"
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.15 }}
+                  className="flex items-center gap-2.5">
+                  <svg
+                    className="h-4 w-4 animate-spin text-cream dark:text-maroon"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24">
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-90"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  <span>{t("creating")}</span>
+                </motion.div>
+              ) : (
+                <motion.span
+                  key="create"
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.15 }}>
+                  {t("create")}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.button>
+        </div>
       </form>
+
+      {/* Lightbox Modal for Full Image View */}
+      {lightboxOpen && selectedTemplate?.previewImage && (
+        <ImageLightbox
+          photos={[selectedTemplate.previewImage]}
+          index={0}
+          onClose={() => setLightboxOpen(false)}
+          onChangeIndex={() => {}}
+        />
+      )}
     </main>
   );
 }

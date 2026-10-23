@@ -20,6 +20,13 @@ export async function loginWithEmail(email: string, password: string) {
 }
 
 export async function logout() {
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.removeItem("khmer_einvitation_user");
+    } catch {
+      // ignore
+    }
+  }
   await signOut(auth);
 }
 

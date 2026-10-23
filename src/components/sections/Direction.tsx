@@ -20,11 +20,14 @@ export function Direction({ invitation }: { invitation: Invitation }) {
   const mapUrl = invitation.content.mapUrl;
   const address = pickBilingual(invitation.content.address, locale);
 
-  // Synchronously parse map details (handles coords, place names, direct embeds, address fallback)
-  const initialDetails = useMemo(
-    () => parseGoogleMapsDetails(mapUrl, address, locale),
-    [mapUrl, address, locale],
-  );
+  // When mapUrl is provided, strictly parse details from the mapUrl.
+  // Address text is ONLY used as fallback if NO mapUrl was provided.
+  const initialDetails = useMemo(() => {
+    if (mapUrl) {
+      return parseGoogleMapsDetails(mapUrl, null, locale);
+    }
+    return address ? parseGoogleMapsDetails(null, address, locale) : null;
+  }, [mapUrl, address, locale]);
 
   const [resolvedEmbedSrc, setResolvedEmbedSrc] = useState<string | null>(null);
 
@@ -37,7 +40,7 @@ export function Direction({ invitation }: { invitation: Invitation }) {
     let cancelled = false;
     const apiUrl = `/api/resolve-map?url=${encodeURIComponent(
       mapUrl,
-    )}&address=${encodeURIComponent(address || "")}&locale=${locale}`;
+    )}&locale=${locale}`;
 
     fetch(apiUrl)
       .then((r) => r.json())
@@ -53,7 +56,7 @@ export function Direction({ invitation }: { invitation: Invitation }) {
     return () => {
       cancelled = true;
     };
-  }, [mapUrl, address, locale]);
+  }, [mapUrl, locale]);
 
   if (!mapUrl && !address) return null;
 
