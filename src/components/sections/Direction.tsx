@@ -71,7 +71,7 @@ export function Direction({ invitation }: { invitation: Invitation }) {
 
       {address && (
         <p
-          className="text-glow max-w-md leading-relaxed text-maroon/90"
+          className="text-glow max-w-md leading-relaxed text-[#fdf8f0]"
           style={bodyFontStyle(locale)}
         >
           {address}
@@ -79,7 +79,7 @@ export function Direction({ invitation }: { invitation: Invitation }) {
       )}
 
       {embedSrc && (
-        <div className="h-64 sm:h-72 w-full max-w-xl overflow-hidden rounded-2xl sm:rounded-3xl border border-gold/40 shadow-lg bg-cream/50">
+        <div className="ultra-thin-material h-64 sm:h-72 w-full max-w-xl overflow-hidden rounded-2xl sm:rounded-3xl">
           <iframe
             src={embedSrc}
             title="Venue Location Map"
@@ -95,9 +95,9 @@ export function Direction({ invitation }: { invitation: Invitation }) {
           href={directionsUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-full bg-gold px-6 py-2.5 text-xs sm:text-sm font-bold uppercase tracking-widest text-cream shadow-md transition-all hover:bg-gold/90 hover:scale-105 hover:shadow-lg cursor-pointer"
+          className="ultra-thin-material inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-xs sm:text-sm font-bold uppercase tracking-widest text-[#fdf8f0] transition-all hover:scale-105 hover:border-gold cursor-pointer"
         >
-          <Navigation className="h-3.5 w-3.5" />
+          <Navigation className="h-3.5 w-3.5 text-gold" />
           <span>{t("openInMaps")}</span>
         </a>
       )}

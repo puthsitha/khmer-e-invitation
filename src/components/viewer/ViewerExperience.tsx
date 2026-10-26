@@ -35,7 +35,13 @@ import type { Invitation } from "@/types";
 
 type Stage = "closed" | "landing" | "opened";
 
-export function ViewerExperience({ slug }: { slug: string }) {
+export function ViewerExperience({
+  slug,
+  initialInvitation,
+}: {
+  slug: string;
+  initialInvitation?: Invitation | null;
+}) {
   const t = useTranslations("viewer");
   const searchParams = useSearchParams();
   const token = searchParams.get("g");
@@ -47,7 +53,7 @@ export function ViewerExperience({ slug }: { slug: string }) {
 
   const urlLocale = useLocale();
   const [invitation, setInvitation] = useState<Invitation | null | undefined>(
-    undefined,
+    initialInvitation !== undefined ? initialInvitation : undefined,
   );
   const [stage, setStage] = useState<Stage>("closed");
   const [displayLocale, setDisplayLocale] = useState<"km" | "en">(
@@ -60,6 +66,7 @@ export function ViewerExperience({ slug }: { slug: string }) {
   } = useBackgroundMusic(invitation ? invitation.mediaUrls.bgMusic : undefined);
 
   useEffect(() => {
+    if (initialInvitation !== undefined) return;
     getInvitationBySlug(slug).then((data) => {
       if (!data && slug === MOCK_WEDDING_INVITATION.slug) {
         setInvitation(MOCK_WEDDING_INVITATION);
@@ -67,7 +74,7 @@ export function ViewerExperience({ slug }: { slug: string }) {
         setInvitation(data);
       }
     });
-  }, [slug]);
+  }, [slug, initialInvitation]);
 
   useEffect(() => {
     if (invitation) {
@@ -146,7 +153,7 @@ export function ViewerExperience({ slug }: { slug: string }) {
       messages={viewerMessages[displayLocale]}
     >
       <PaletteProvider palette={invitation.colorPalette}>
-        <div className="relative min-h-screen w-full max-w-full overflow-x-clip">
+        <div className="relative min-h-screen w-full max-w-full">
           <BackgroundBackdrop embedUrl={embedUrl} imageUrl={backdropImage} />
 
           {stage !== "closed" && (
@@ -159,66 +166,68 @@ export function ViewerExperience({ slug }: { slug: string }) {
             />
           )}
 
-          <AnimatePresence mode="wait">
-            {stage === "closed" && (
-              <motion.div
-                key="envelope"
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4 }}
-              >
-                <EnvelopeOpening
-                  onStartAnimation={handleEnvelopeAnimationStart}
-                  onOpen={handleOpenEnvelope}
-                  guestName={guestInfo?.name}
-                />
-              </motion.div>
-            )}
+          <div className="relative z-10 w-full max-w-full">
+            <AnimatePresence mode="wait">
+              {stage === "closed" && (
+                <motion.div
+                  key="envelope"
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <EnvelopeOpening
+                    onStartAnimation={handleEnvelopeAnimationStart}
+                    onOpen={handleOpenEnvelope}
+                    guestName={guestInfo?.name}
+                  />
+                </motion.div>
+              )}
 
-            {stage === "landing" && (
-              <motion.div
-                key="landing"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4 }}
-              >
-                <Hero
-                  invitation={invitation}
-                  guestName={guestInfo?.name}
-                  onOpen={handleOpenInvitation}
-                  onStartMusic={startMusic}
-                />
-              </motion.div>
-            )}
+              {stage === "landing" && (
+                <motion.div
+                  key="landing"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <Hero
+                    invitation={invitation}
+                    guestName={guestInfo?.name}
+                    onOpen={handleOpenInvitation}
+                    onStartMusic={startMusic}
+                  />
+                </motion.div>
+              )}
 
-            {stage === "opened" && (
-              <motion.div
-                key="opened"
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, ease: "easeOut" }}
-                className="w-full max-w-full"
-              >
-                <div className="h-20 sm:h-24" aria-hidden />
-                <FamilyInvitation invitation={invitation} />
-                <Countdown invitation={invitation} />
-                <CalendarSection invitation={invitation} />
-                <Gallery invitation={invitation} />
-                <Direction invitation={invitation} />
-                <OurStory invitation={invitation} />
-                <Agenda invitation={invitation} />
-                <DigitalEnvelope invitation={invitation} />
-                <GratitudeApology />
-                <RsvpSection
-                  invitation={invitation}
-                  guestId={guestInfo?.guestId}
-                  guestName={guestInfo?.name}
-                />
-                {/* <ColorPaletteAccent invitation={invitation} /> */}
-                <Closing invitation={invitation} />
-              </motion.div>
-            )}
-          </AnimatePresence>
+              {stage === "opened" && (
+                <motion.div
+                  key="opened"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.6, ease: "easeOut" }}
+                  className="w-full max-w-full"
+                >
+                  <div className="h-20 sm:h-24" aria-hidden />
+                  <FamilyInvitation invitation={invitation} />
+                  <Countdown invitation={invitation} />
+                  <CalendarSection invitation={invitation} />
+                  <Gallery invitation={invitation} />
+                  <Direction invitation={invitation} />
+                  <OurStory invitation={invitation} />
+                  <Agenda invitation={invitation} />
+                  <DigitalEnvelope invitation={invitation} />
+                  <GratitudeApology />
+                  <RsvpSection
+                    invitation={invitation}
+                    guestId={guestInfo?.guestId}
+                    guestName={guestInfo?.name}
+                  />
+                  {/* <ColorPaletteAccent invitation={invitation} /> */}
+                  <Closing invitation={invitation} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </PaletteProvider>
     </NextIntlClientProvider>

@@ -65,9 +65,17 @@ export default async function ViewerPage({
 }) {
   const { invitationSlug } = await params;
 
+  let initialInvitation = await getInvitationBySlug(invitationSlug);
+  if (!initialInvitation && invitationSlug === MOCK_WEDDING_INVITATION.slug) {
+    initialInvitation = MOCK_WEDDING_INVITATION;
+  }
+
   return (
     <Suspense fallback={null}>
-      <ViewerExperience slug={invitationSlug} />
+      <ViewerExperience
+        slug={invitationSlug}
+        initialInvitation={initialInvitation}
+      />
     </Suspense>
   );
 }

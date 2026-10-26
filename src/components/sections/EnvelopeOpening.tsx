@@ -27,12 +27,12 @@ const ORDER: Phase[] = [
 ];
 const DURATION_MS: Record<Phase, number> = {
   closed: 0,
-  sealBreak: 700,
-  flipping: 800,
-  flapOpen: 650,
-  cardOut: 600,
-  cardRotate: 700,
-  zoom: 650,
+  sealBreak: 350,
+  flipping: 450,
+  flapOpen: 350,
+  cardOut: 400,
+  cardRotate: 450,
+  zoom: 350,
 };
 
 export function EnvelopeOpening({
@@ -51,10 +51,27 @@ export function EnvelopeOpening({
   const reduceMotion = useReducedMotion();
   const [phase, setPhase] = useState<Phase>("closed");
 
+  // Preload front and back card images into browser cache so flip has zero pop-in
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const img1 = new window.Image();
+    img1.src = "/images/front_card.png";
+    const img2 = new window.Image();
+    img2.src = "/images/back_card.png";
+  }, []);
+
   function handleStart() {
     if (phase !== "closed") return;
     onStartAnimation?.();
     setPhase("sealBreak");
+  }
+
+  function handleEnvelopeClick() {
+    if (phase === "closed") {
+      handleStart();
+    } else if (phase !== "zoom") {
+      onOpen();
+    }
   }
 
   useEffect(() => {
@@ -89,7 +106,7 @@ export function EnvelopeOpening({
     <motion.div
       animate={{ opacity: zooming ? 0 : 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.5, delay: zooming ? 0.2 : 0 }}
+      transition={{ duration: 0.4, delay: zooming ? 0.1 : 0 }}
       className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 sm:gap-8 bg-cream px-4 sm:px-6 text-center w-full max-w-full overflow-hidden"
     >
       <Image
@@ -103,8 +120,7 @@ export function EnvelopeOpening({
       />
       <motion.button
         type="button"
-        onClick={handleStart}
-        disabled={phase !== "closed"}
+        onClick={handleEnvelopeClick}
         animate={idlePulse ? { scale: [1, 1.06, 1] } : { scale: 1 }}
         transition={
           idlePulse
@@ -119,7 +135,7 @@ export function EnvelopeOpening({
           className="absolute inset-0"
           style={{ transformStyle: "preserve-3d" }}
           animate={{ rotateY: flipped ? 180 : 0 }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
+          transition={{ duration: 0.45, ease: "easeInOut" }}
         >
           <div
             className="absolute inset-0 rounded-md bg-white shadow-2xl"
@@ -134,7 +150,7 @@ export function EnvelopeOpening({
                   : { rotate: 0, opacity: 1 }
               }
               transition={{
-                duration: sealBroken ? (reduceMotion ? 0.2 : 0.6) : 0.3,
+                duration: sealBroken ? (reduceMotion ? 0.2 : 0.35) : 0.3,
                 ease: "easeInOut",
               }}
             >
@@ -172,9 +188,9 @@ export function EnvelopeOpening({
         <motion.div
           animate={{ rotateX: flapOpen ? -170 : 0, opacity: flipDone ? 1 : 0 }}
           transition={{
-            duration: 0.65,
+            duration: 0.35,
             ease: "easeInOut",
-            opacity: { duration: 0.2 },
+            opacity: { duration: 0.15 },
           }}
           style={{
             transformOrigin: "top center",
@@ -191,7 +207,7 @@ export function EnvelopeOpening({
             scale: zooming ? 7 : cardOut ? 0.95 : 0.6,
             opacity: cardOut ? 1 : 0,
           }}
-          transition={{ duration: 0.7, ease: "easeInOut" }}
+          transition={{ duration: 0.45, ease: "easeInOut" }}
           className="absolute left-1/2 top-1/2 h-40 -translate-x-1/2 -translate-y-1/2 sm:h-48"
           style={{ aspectRatio: "961 / 1920" }}
         >
@@ -199,7 +215,7 @@ export function EnvelopeOpening({
             className="relative h-full w-full"
             style={{ transformStyle: "preserve-3d" }}
             animate={{ rotateY: cardRotating ? 360 : 0 }}
-            transition={{ duration: 0.7, ease: "easeInOut" }}
+            transition={{ duration: 0.45, ease: "easeInOut" }}
           >
             <div
               className="absolute inset-0 overflow-hidden shadow-xl"
@@ -209,6 +225,7 @@ export function EnvelopeOpening({
                 src="/images/front_card.png"
                 alt=""
                 fill
+                priority
                 sizes="200px"
                 className="object-cover"
               />
@@ -237,6 +254,7 @@ export function EnvelopeOpening({
                 src="/images/back_card.png"
                 alt=""
                 fill
+                priority
                 sizes="200px"
                 className="object-cover"
               />
@@ -254,6 +272,19 @@ export function EnvelopeOpening({
         >
           {t("tapToOpen")}
         </motion.p>
+      )}
+
+      {phase !== "closed" && (
+        <motion.button
+          type="button"
+          onClick={onOpen}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.6 }}
+          whileHover={{ opacity: 1 }}
+          className="cursor-pointer select-none text-xs uppercase tracking-widest text-maroon/60 underline hover:text-maroon transition-opacity"
+        >
+          {locale === "km" ? "ចុចដើម្បីរំលង" : "Tap to skip"}
+        </motion.button>
       )}
     </motion.div>
   );

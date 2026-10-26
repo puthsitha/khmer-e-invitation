@@ -53,11 +53,11 @@ export function Countdown({ invitation }: { invitation: Invitation }) {
         {units.map(([value, label], index) => (
           <motion.div
             key={label}
-            initial={{ opacity: 0, y: reduceMotion ? 0 : 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true, amount: 0.1 }}
-            transition={{ duration: 0.6, delay: index * 0.12, ease: "easeOut" }}
-            className="flex flex-col items-center gap-1 rounded-2xl border border-gold/35 bg-black/40 px-1.5 py-3 shadow-xl backdrop-blur-md sm:px-3 sm:py-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.08)]"
+            transition={{ duration: 0.6, delay: index * 0.1, ease: "easeOut" }}
+            className="ultra-thin-material flex flex-col items-center gap-1 rounded-2xl px-1.5 py-3 sm:px-3 sm:py-4"
           >
             <span className="font-[family-name:var(--font-heading-en)] text-2xl text-gold sm:text-4xl drop-shadow-[0_2px_8px_rgba(201,162,75,0.35)]">
               <AnimatedNumber value={String(value).padStart(2, "0")} />

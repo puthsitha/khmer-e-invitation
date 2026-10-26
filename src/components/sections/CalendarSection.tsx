@@ -144,7 +144,7 @@ export function CalendarSection({ invitation }: { invitation: Invitation }) {
       <button
         type="button"
         onClick={handleAddToCalendar}
-        className="flex items-center gap-2 rounded-full border border-gold/40 bg-black/40 px-6 py-3 text-sm uppercase tracking-widest text-[#fdf8f0] shadow-xl backdrop-blur-md transition-all hover:scale-105 hover:bg-black/60 hover:border-gold"
+        className="ultra-thin-material flex items-center gap-2 rounded-full px-6 py-3 text-sm uppercase tracking-widest text-[#fdf8f0] transition-all hover:scale-105 hover:border-gold cursor-pointer"
       >
         <CalendarPlus className="h-4 w-4" />
         {t("addToCalendar")}

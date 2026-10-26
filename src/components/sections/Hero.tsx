@@ -99,6 +99,8 @@ export function Hero({
           opacity: 0.78,
           marginBottom: "26px",
           animation: onOccasionInkAnimation,
+          textShadow:
+            "rgba(255, 255, 255, 0.95) 0px 1px 3px, rgba(255, 255, 255, 0.9) 0px 0px 8px, rgba(255, 255, 255, 0.7) 0px 2px 14px",
         }
       : {
           fontFamily: "var(--font-elegant-en)",
@@ -109,6 +111,8 @@ export function Hero({
           opacity: 0.78,
           marginBottom: "26px",
           animation: onOccasionInkAnimation,
+          textShadow:
+            "rgba(255, 255, 255, 0.95) 0px 1px 3px, rgba(255, 255, 255, 0.9) 0px 0px 8px, rgba(255, 255, 255, 0.7) 0px 2px 14px",
         };
 
   function handleOpenClick() {
@@ -127,7 +131,7 @@ export function Hero({
       style={{ WebkitOverflowScrolling: "touch", touchAction: "pan-y" }}
     >
       <div className="m-auto flex w-full max-w-lg flex-col items-center gap-4 sm:gap-5 py-4">
-        <p className="text-maroon" style={onOccasionStyle}>
+        <p className="text-glow text-maroon" style={onOccasionStyle}>
           {t("onOccasion")}
         </p>
 

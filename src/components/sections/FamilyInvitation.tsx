@@ -24,8 +24,13 @@ function FamilyBlock({
 
   return (
     <div>
-      <p className="mb-2 text-xs uppercase tracking-widest text-gold">{heading}</p>
-      <div className="flex flex-col gap-1 text-base font-bold text-maroon" style={{ ...bodyFontStyle(locale), fontWeight: 700 }}>
+      <p className="mb-2 text-xs uppercase tracking-widest text-gold">
+        {heading}
+      </p>
+      <div
+        className="flex flex-col gap-1 text-base font-bold text-maroon"
+        style={{ ...bodyFontStyle(locale), fontWeight: 700 }}
+      >
         {father && <p className="font-bold">{father}</p>}
         {mother && <p className="font-bold">{mother}</p>}
       </div>
@@ -43,7 +48,11 @@ export function FamilyInvitation({ invitation }: { invitation: Invitation }) {
     <SectionShell className="text-maroon">
       <GlassCard className="flex flex-col items-center gap-8">
         <div className="grid w-full grid-cols-1 items-center gap-8 sm:grid-cols-[1fr_auto_1fr]">
-          <FamilyBlock heading={t("groomFamily")} family={groomFamily} locale={locale} />
+          <FamilyBlock
+            heading={t("groomFamily")}
+            family={groomFamily}
+            locale={locale}
+          />
           <div className="relative hidden w-8 self-stretch sm:block md:w-10">
             <Image
               src="/images/vertical_divider.png"
@@ -54,7 +63,11 @@ export function FamilyInvitation({ invitation }: { invitation: Invitation }) {
               aria-hidden
             />
           </div>
-          <FamilyBlock heading={t("brideFamily")} family={brideFamily} locale={locale} />
+          <FamilyBlock
+            heading={t("brideFamily")}
+            family={brideFamily}
+            locale={locale}
+          />
         </div>
 
         <div className="flex flex-col items-center gap-3">

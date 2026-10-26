@@ -6,6 +6,10 @@
   --background: #fdf8f0;
   --foreground: #2a1a12;
 
+  /* Liquid Frosted Glass controls (matching LiquidGlassCard) */
+  --glass-blur: 28px;
+  --glass-opacity: 0.16;
+
   /* Khmer wedding default palette: Royal Gold */
   --color-gold: #c9a24b;
   --color-gold-light: #e6cd8a;
@@ -92,6 +96,74 @@ main {
     rgba(255, 255, 255, 0.9) 0px 0px 8px,
     rgba(255, 255, 255, 0.7) 0px 2px 14px;
 }
+
+/* Pure Liquid Crystal Glass (matching LiquidGlassCard from weather demo) */
+.ultra-thin-material {
+  background: rgba(255, 255, 255, var(--glass-opacity, 0.16));
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--glass-blur, 28px)) saturate(180%);
+  backdrop-filter: blur(var(--glass-blur, 28px)) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  box-shadow:
+    inset 2px 2px 3px 0 rgba(255, 255, 255, 0.45),
+    inset -2px -2px 3px 0 rgba(255, 255, 255, 0.35),
+    0 4px 16px rgba(0, 0, 0, 0.15),
+    0 0 24px rgba(255, 255, 255, 0.12);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+[data-palette] .ultra-thin-material,
+.dark .ultra-thin-material {
+  background: rgba(255, 255, 255, var(--glass-opacity, 0.16));
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--glass-blur, 28px)) saturate(180%);
+  backdrop-filter: blur(var(--glass-blur, 28px)) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  box-shadow:
+    inset 2px 2px 3px 0 rgba(255, 255, 255, 0.45),
+    inset -2px -2px 3px 0 rgba(255, 255, 255, 0.35),
+    0 4px 16px rgba(0, 0, 0, 0.15),
+    0 0 24px rgba(255, 255, 255, 0.12);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.ultra-thin-material-subtle {
+  background: rgba(255, 255, 255, calc(var(--glass-opacity, 0.16) * 0.7));
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur, 28px) * 0.7)) saturate(180%);
+  backdrop-filter: blur(calc(var(--glass-blur, 28px) * 0.7)) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow:
+    inset 1px 1px 2px 0 rgba(255, 255, 255, 0.35),
+    inset -1px -1px 2px 0 rgba(255, 255, 255, 0.25),
+    0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+[data-palette] .ultra-thin-material-subtle,
+.dark .ultra-thin-material-subtle {
+  background: rgba(255, 255, 255, calc(var(--glass-opacity, 0.16) * 0.7));
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur, 28px) * 0.7)) saturate(180%);
+  backdrop-filter: blur(calc(var(--glass-blur, 28px) * 0.7)) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow:
+    inset 1px 1px 2px 0 rgba(255, 255, 255, 0.35),
+    inset -1px -1px 2px 0 rgba(255, 255, 255, 0.25),
+    0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Blur intensity presets for easy control */
+.blur-glass-none { --glass-blur: 0px; }
+.blur-glass-xs { --glass-blur: 8px; }
+.blur-glass-sm { --glass-blur: 14px; }
+.blur-glass-md { --glass-blur: 20px; }
+.blur-glass-lg { --glass-blur: 32px; }
+.blur-glass-xl { --glass-blur: 48px; }
+.blur-glass-2xl { --glass-blur: 64px; }
 
 .image-glow {
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.18));

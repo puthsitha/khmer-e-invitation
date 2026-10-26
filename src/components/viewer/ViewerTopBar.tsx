@@ -30,14 +30,14 @@ export function ViewerTopBar({
             aria-label={
               muted ? "Unmute background music" : "Mute background music"
             }
-            className="flex items-center gap-1.5 sm:gap-2 rounded-full border border-gold/40 bg-cream/90 px-2.5 sm:px-3 py-1.5 text-xs uppercase tracking-widest text-maroon shadow-md backdrop-blur-md transition-transform hover:scale-105"
+            className="ultra-thin-material flex items-center gap-1.5 sm:gap-2 rounded-full px-2.5 sm:px-3 py-1.5 text-xs uppercase tracking-widest text-[#fdf8f0] shadow-md transition-transform hover:scale-105 active:scale-95"
           >
             {muted ? (
-              <VolumeX className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden />
+              <VolumeX className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#fdf8f0]/70" aria-hidden />
             ) : (
-              <Volume2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden />
+              <Volume2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gold" aria-hidden />
             )}
-            <span className="text-[11px] sm:text-xs">{muted ? "Off" : "On"}</span>
+            <span className="text-[11px] sm:text-xs font-semibold">{muted ? "Off" : "On"}</span>
           </button>
         )}
       </div>

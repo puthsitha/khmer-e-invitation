@@ -17,7 +17,7 @@ export function BackgroundBackdrop({
 }) {
   return (
     <div
-      className="pointer-events-none fixed inset-0 -z-10 overflow-hidden w-full max-w-full select-none"
+      className="pointer-events-none fixed inset-0 z-0 overflow-hidden w-full max-w-full select-none"
       aria-hidden
     >
       {embedUrl ? (
@@ -25,8 +25,8 @@ export function BackgroundBackdrop({
           <iframe
             src={embedUrl}
             title="Cover video"
-            allow="autoplay; encrypted-media"
-            className="pointer-events-none blur-[2px]"
+            allow="autoplay; fullscreen; encrypted-media"
+            className="pointer-events-none"
             style={{
               position: "absolute",
               top: "50%",
