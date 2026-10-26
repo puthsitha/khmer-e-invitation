@@ -19,7 +19,9 @@ export function SiteNav() {
 
   return (
     <nav className="flex items-center gap-4 text-sm text-maroon dark:text-[#f6eee8]">
-      {loading ? null : user ? (
+      {loading ? (
+        <div className="h-5 w-14 rounded-full bg-gold/20 dark:bg-gold/15 animate-pulse" />
+      ) : user ? (
         <>
           {appUser?.role === "admin" ? (
             <Link href="/admin" className="hover:underline">

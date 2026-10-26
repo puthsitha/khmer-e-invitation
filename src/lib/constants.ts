@@ -1,5 +1,5 @@
 export const UPLOAD_LIMITS = {
-  galleryImageMaxBytes: 100 * 1024 * 1024,
+  galleryImageMaxBytes: 10 * 1024 * 1024,
   galleryMaxImages: 20,
   bgMusicMaxBytes: 100 * 1024 * 1024,
 } as const;

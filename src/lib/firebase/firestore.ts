@@ -271,9 +271,17 @@ export async function createTemplate(
 
 export async function updateTemplate(
   templateId: string,
-  patch: Partial<Template>,
+  patch: Partial<Template> & Record<string, unknown>,
 ) {
-  await updateDoc(doc(templatesCol, templateId), patch);
+  const cleanPatch: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(patch)) {
+    if (value === undefined) {
+      cleanPatch[key] = deleteField();
+    } else {
+      cleanPatch[key] = value;
+    }
+  }
+  await updateDoc(doc(db, "templates", templateId), cleanPatch);
 }
 
 export async function deleteTemplate(templateId: string) {

@@ -23,6 +23,10 @@ function preloadAudio(url: string): Promise<ArrayBuffer | null> {
   return promise;
 }
 
+interface UseBackgroundMusicOptions {
+  fadeInDuration?: number; // seconds to fade from 0 to full volume
+}
+
 /**
  * Plays a looping background track through the Web Audio API instead of an
  * <audio> element. Browsers auto-expose an OS-level "Now Playing" media
@@ -32,12 +36,31 @@ function preloadAudio(url: string): Promise<ArrayBuffer | null> {
  *
  * Pre-loads the audio array buffer immediately when the hook mounts so that
  * when the user interacts to open the invitation, playback starts with zero lag.
+ * Fades in the volume smoothly from down to up (0 to 1) when playback begins.
  */
-export function useBackgroundMusic(url: string | undefined) {
+export function useBackgroundMusic(
+  url: string | undefined,
+  options?: UseBackgroundMusicOptions
+) {
+  const fadeInDuration = options?.fadeInDuration ?? 2.5;
   const contextRef = useRef<AudioContext | null>(null);
   const gainRef = useRef<GainNode | null>(null);
   const startedRef = useRef(false);
   const [muted, setMuted] = useState(false);
+  const mutedRef = useRef(false);
+
+  useEffect(() => {
+    mutedRef.current = muted;
+  }, [muted]);
+
+  // Clean up AudioContext on unmount
+  useEffect(() => {
+    return () => {
+      if (contextRef.current && contextRef.current.state !== "closed") {
+        contextRef.current.close().catch(() => {});
+      }
+    };
+  }, []);
 
   // Pre-load audio track immediately when URL becomes available
   useEffect(() => {
@@ -46,12 +69,21 @@ export function useBackgroundMusic(url: string | undefined) {
   }, [url]);
 
   const start = useCallback(() => {
-    if (!url || startedRef.current) return;
+    if (!url) return;
+
+    // If already started, ensure context is running if it was suspended
+    if (startedRef.current) {
+      if (contextRef.current?.state === "suspended") {
+        contextRef.current.resume().catch(() => {});
+      }
+      return;
+    }
     startedRef.current = true;
 
     const AudioContextClass =
       window.AudioContext ||
-      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      (window as unknown as { webkitAudioContext: typeof AudioContext })
+        .webkitAudioContext;
     if (!AudioContextClass) return;
 
     const context = new AudioContextClass();
@@ -77,7 +109,8 @@ export function useBackgroundMusic(url: string | undefined) {
     document.addEventListener("touchend", resumeOnInteraction);
 
     const gain = context.createGain();
-    gain.gain.value = muted ? 0 : 1;
+    // Start initial gain at 0 for fade in
+    gain.gain.setValueAtTime(0, context.currentTime);
     gain.connect(context.destination);
     gainRef.current = gain;
 
@@ -96,16 +129,36 @@ export function useBackgroundMusic(url: string | undefined) {
         source.loop = true;
         source.connect(gain);
         source.start(0);
+
+        // Fade in from 0 to 1 (or 0 if muted)
+        const targetVolume = mutedRef.current ? 0 : 1;
+        const now = context.currentTime;
+        gain.gain.cancelScheduledValues(now);
+        gain.gain.setValueAtTime(0, now);
+        if (targetVolume > 0 && fadeInDuration > 0) {
+          gain.gain.linearRampToValueAtTime(targetVolume, now + fadeInDuration);
+        } else {
+          gain.gain.setValueAtTime(targetVolume, now);
+        }
       })
       .catch((err) => {
         console.warn("Audio playback decode/start failed:", err);
       });
-  }, [url, muted]);
+  }, [url, fadeInDuration]);
 
   const toggleMute = useCallback(() => {
     setMuted((prev) => {
       const next = !prev;
-      if (gainRef.current) gainRef.current.gain.value = next ? 0 : 1;
+      mutedRef.current = next;
+      const gain = gainRef.current;
+      const context = contextRef.current;
+      if (gain && context) {
+        const now = context.currentTime;
+        gain.gain.cancelScheduledValues(now);
+        gain.gain.setValueAtTime(gain.gain.value, now);
+        // Smooth quick transition to prevent clicks/pops
+        gain.gain.linearRampToValueAtTime(next ? 0 : 1, now + 0.15);
+      }
       return next;
     });
   }, []);

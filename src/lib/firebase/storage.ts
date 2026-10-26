@@ -18,7 +18,7 @@ function formatBytes(bytes: number): string {
   return `${Math.round(bytes / 1024)}KB`;
 }
 
-function assertUpload(
+export function assertUpload(
   file: File,
   {
     maxBytes,
@@ -47,11 +47,20 @@ function assertUpload(
   }
 }
 
-async function uploadToCatbox(file: File): Promise<string> {
+export function validateTemplatePreviewImage(file: File) {
+  assertUpload(file, {
+    maxBytes: UPLOAD_LIMITS.galleryImageMaxBytes,
+    allowedTypes: ALLOWED_IMAGE_TYPES,
+    allowedExtensions: [".jpg", ".jpeg", ".png", ".webp", ".gif"],
+  });
+}
+
+async function uploadToCloudinary(file: File, folder = "khmer-e-invitation"): Promise<string> {
   const formData = new FormData();
   formData.append("file", file);
+  formData.append("folder", folder);
 
-  const res = await fetch("/api/catbox/upload", {
+  const res = await fetch("/api/upload", {
     method: "POST",
     body: formData,
   });
@@ -69,7 +78,7 @@ async function uploadToCatbox(file: File): Promise<string> {
 }
 
 export async function uploadGalleryImage(
-  _invitationId: string,
+  invitationId: string,
   file: File,
   existingCount: number,
 ) {
@@ -84,52 +93,76 @@ export async function uploadGalleryImage(
     allowedExtensions: [".jpg", ".jpeg", ".png", ".webp", ".gif"],
   });
 
-  return uploadToCatbox(file);
+  return uploadToCloudinary(file, `khmer-e-invitation/invitations/${invitationId}/gallery`);
 }
 
-export async function uploadBgMusic(_invitationId: string, file: File) {
+export async function uploadBgMusic(invitationId: string, file: File) {
   assertUpload(file, {
     maxBytes: UPLOAD_LIMITS.bgMusicMaxBytes,
     allowedTypes: ALLOWED_AUDIO_TYPES,
     allowedExtensions: [".mp3", ".wav", ".m4a", ".aac", ".ogg", ".mp4"],
   });
 
-  return uploadToCatbox(file);
+  return uploadToCloudinary(file, `khmer-e-invitation/invitations/${invitationId}/music`);
 }
 
-export async function uploadDigitalEnvelopeQr(_invitationId: string, file: File) {
+export async function uploadDigitalEnvelopeQr(invitationId: string, file: File) {
   assertUpload(file, {
     maxBytes: UPLOAD_LIMITS.galleryImageMaxBytes,
     allowedTypes: ALLOWED_IMAGE_TYPES,
     allowedExtensions: [".jpg", ".jpeg", ".png", ".webp", ".gif"],
   });
 
-  return uploadToCatbox(file);
+  return uploadToCloudinary(file, `khmer-e-invitation/invitations/${invitationId}/envelope`);
 }
 
-export async function uploadStoryImage(_invitationId: string, file: File) {
+export async function uploadStoryImage(invitationId: string, file: File) {
   assertUpload(file, {
     maxBytes: UPLOAD_LIMITS.galleryImageMaxBytes,
     allowedTypes: ALLOWED_IMAGE_TYPES,
     allowedExtensions: [".jpg", ".jpeg", ".png", ".webp", ".gif"],
   });
 
-  return uploadToCatbox(file);
+  return uploadToCloudinary(file, `khmer-e-invitation/invitations/${invitationId}/story`);
 }
 
-export async function uploadTemplatePreviewImage(_templateId: string, file: File) {
+export async function uploadCoverImage(invitationId: string, file: File) {
   assertUpload(file, {
     maxBytes: UPLOAD_LIMITS.galleryImageMaxBytes,
     allowedTypes: ALLOWED_IMAGE_TYPES,
     allowedExtensions: [".jpg", ".jpeg", ".png", ".webp", ".gif"],
   });
 
-  return uploadToCatbox(file);
+  return uploadToCloudinary(file, `khmer-e-invitation/invitations/${invitationId}/cover`);
+}
+
+export async function uploadTemplatePreviewImage(
+  templateId: string,
+  file: File,
+  _album?: string,
+) {
+  validateTemplatePreviewImage(file);
+  return uploadToCloudinary(file, `khmer-e-invitation/templates/${templateId}`);
 }
 
 export async function deleteMediaByUrl(url: string) {
   if (!url) return;
 
+  // Cloudinary URLs
+  if (url.includes("res.cloudinary.com")) {
+    const isAudio = /\.(mp3|wav|m4a|aac|ogg|mp4)($|\?)/i.test(url) || url.includes("/video/upload/");
+    await fetch("/api/delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        url,
+        resourceType: isAudio ? "video" : "image",
+      }),
+    }).catch(() => {});
+    return;
+  }
+
+  // Legacy Catbox URLs
   if (url.includes("catbox.moe")) {
     await fetch("/api/catbox/delete", {
       method: "POST",

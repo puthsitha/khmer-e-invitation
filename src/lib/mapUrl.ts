@@ -20,7 +20,12 @@ export function extractCoordinates(
   urlOrText?: string | null,
 ): { lat: number; lng: number } | null {
   if (!urlOrText) return null;
-  const trimmed = urlOrText.trim();
+  let trimmed = urlOrText.trim();
+  try {
+    trimmed = decodeURIComponent(trimmed);
+  } catch {
+    // ignore decode error
+  }
 
   // 1. Raw coordinates "11.5564, 104.8872" or "11.5564,104.8872"
   const rawCoordsMatch = trimmed.match(
@@ -32,7 +37,25 @@ export function extractCoordinates(
     if (isValidLatLng(lat, lng)) return { lat, lng };
   }
 
-  // 2. Google Maps Protobuf data parameters: !3d<lat>!4d<lng>
+  // 2. DMS coordinates e.g. 13°17'01.5"N+103°05'17.0"E or 13°17'01.5"N, 103°05'17.0"E
+  const dmsMatch = trimmed.match(
+    /(\d{1,2})°(\d{1,2})[`'’]([\d.]+)[`'’"“”]*([NSEW])[\s+,]+(\d{1,3})°(\d{1,2})[`'’]([\d.]+)[`'’"“”]*([NSEW])/i,
+  );
+  if (dmsMatch) {
+    let lat =
+      parseFloat(dmsMatch[1]) +
+      parseFloat(dmsMatch[2]) / 60 +
+      parseFloat(dmsMatch[3]) / 3600;
+    if (dmsMatch[4].toUpperCase() === "S") lat = -lat;
+    let lng =
+      parseFloat(dmsMatch[5]) +
+      parseFloat(dmsMatch[6]) / 60 +
+      parseFloat(dmsMatch[7]) / 3600;
+    if (dmsMatch[8].toUpperCase() === "W") lng = -lng;
+    if (isValidLatLng(lat, lng)) return { lat, lng };
+  }
+
+  // 3. Google Maps Protobuf data parameters: !3d<lat>!4d<lng>
   const protoMatch = trimmed.match(
     /!3d(-?\d{1,2}\.\d+)!4d(-?\d{1,3}\.\d+)/,
   );
@@ -42,7 +65,7 @@ export function extractCoordinates(
     if (isValidLatLng(lat, lng)) return { lat, lng };
   }
 
-  // 3. URL path @lat,lng (e.g. /maps/@11.5564,104.8872,17z or /place/.../@11.5564,104.8872)
+  // 4. URL path @lat,lng (e.g. /maps/@11.5564,104.8872,17z or /place/.../@11.5564,104.8872)
   const atMatch = trimmed.match(
     /@(-?\d{1,2}\.\d+),(-?\d{1,3}\.\d+)/,
   );
@@ -52,9 +75,9 @@ export function extractCoordinates(
     if (isValidLatLng(lat, lng)) return { lat, lng };
   }
 
-  // 4. Query params containing coordinates: ?q=lat,lng or ?ll=lat,lng or ?loc:lat,lng
+  // 5. Query params containing coordinates: ?q=lat,lng or ?ll=lat,lng or ?loc:lat,lng or center=lat,lng or markers=lat,lng
   const qCoordMatch = trimmed.match(
-    /[?&](?:q|query|ll|loc|center|sll)=(?:loc:)?(-?\d{1,2}\.\d+)[,\s]+(-?\d{1,3}\.\d+)/i,
+    /[?&](?:q|query|ll|loc|center|sll|markers)=(?:loc:)?(-?\d{1,2}\.\d+)[,\s%2C]+(-?\d{1,3}\.\d+)/i,
   );
   if (qCoordMatch) {
     const lat = parseFloat(qCoordMatch[1]);
@@ -71,7 +94,8 @@ function isValidLatLng(lat: number, lng: number): boolean {
 
 /**
  * Parses any Google Maps URL, coordinate string, or place name into a reliable Google Maps Embed iframe URL.
- * Falls back to the wedding venue address if mapUrl is missing or unparseable.
+ * When mapUrl is provided, it ONLY parses from mapUrl and never uses address text.
+ * Falls back to the wedding venue address ONLY when mapUrl is missing.
  */
 export function parseGoogleMapsDetails(
   mapUrl?: string | null,
@@ -81,53 +105,75 @@ export function parseGoogleMapsDetails(
   const url = mapUrl?.trim();
   const address = fallbackAddress?.trim();
 
-  // 1. Try extracting exact coordinates first (highest accuracy)
-  const coords = extractCoordinates(url);
-  if (coords) {
-    return {
-      lat: coords.lat,
-      lng: coords.lng,
-      embedSrc: `https://maps.google.com/maps?q=${coords.lat},${coords.lng}&hl=${locale}&z=16&output=embed`,
-    };
-  }
+  // If a map URL is provided, ONLY parse and resolve from the map URL.
+  // Never fall back to address text when a map URL is specified!
+  if (url) {
+    // 1. Try extracting exact coordinates first (highest accuracy)
+    const coords = extractCoordinates(url);
+    if (coords) {
+      return {
+        lat: coords.lat,
+        lng: coords.lng,
+        embedSrc: `https://maps.google.com/maps?q=${coords.lat},${coords.lng}&hl=${locale}&z=16&output=embed`,
+      };
+    }
 
-  // 2. Direct embed URLs already formatted for iframes
-  if (
-    url &&
-    (url.includes("/maps/embed") ||
-      (url.includes("output=embed") && !url.includes("q=http")))
-  ) {
-    return { embedSrc: url };
-  }
+    // 2. Direct embed URLs already formatted for iframes
+    if (
+      url.includes("/maps/embed") ||
+      (url.includes("output=embed") && !url.includes("q=http"))
+    ) {
+      return { embedSrc: url };
+    }
 
-  // 3. Extract place name or query from Google Maps URL
-  if (url && !isShortGoogleMapsUrl(url)) {
-    // Check for /maps/place/<placeName>
-    const placeMatch = url.match(/\/maps\/place\/([^/@?]+)/i);
-    if (placeMatch) {
-      const placeName = decodeURIComponent(placeMatch[1].replace(/\+/g, " "));
-      if (placeName && !placeName.startsWith("http")) {
-        return {
-          query: placeName,
-          embedSrc: `https://maps.google.com/maps?q=${encodeURIComponent(placeName)}&hl=${locale}&z=16&output=embed`,
-        };
+    // 3. Extract place name or query from Google Maps URL (if not short link)
+    if (!isShortGoogleMapsUrl(url)) {
+      // Check for /maps/place/<placeName>
+      const placeMatch = url.match(/\/maps\/place\/([^/@?]+)/i);
+      if (placeMatch) {
+        const placeName = decodeURIComponent(placeMatch[1].replace(/\+/g, " "));
+        if (placeName && !placeName.startsWith("http")) {
+          const coordsFromPlace = extractCoordinates(placeName);
+          if (coordsFromPlace) {
+            return {
+              lat: coordsFromPlace.lat,
+              lng: coordsFromPlace.lng,
+              embedSrc: `https://maps.google.com/maps?q=${coordsFromPlace.lat},${coordsFromPlace.lng}&hl=${locale}&z=16&output=embed`,
+            };
+          }
+          return {
+            query: placeName,
+            embedSrc: `https://maps.google.com/maps?q=${encodeURIComponent(placeName)}&hl=${locale}&z=16&output=embed`,
+          };
+        }
+      }
+
+      // Check for ?q=<placeName>
+      const queryParamMatch = url.match(/[?&](?:q|query)=([^&]+)/i);
+      if (queryParamMatch) {
+        const queryVal = decodeURIComponent(queryParamMatch[1].replace(/\+/g, " "));
+        if (queryVal && !queryVal.startsWith("http://") && !queryVal.startsWith("https://")) {
+          const coordsFromQuery = extractCoordinates(queryVal);
+          if (coordsFromQuery) {
+            return {
+              lat: coordsFromQuery.lat,
+              lng: coordsFromQuery.lng,
+              embedSrc: `https://maps.google.com/maps?q=${coordsFromQuery.lat},${coordsFromQuery.lng}&hl=${locale}&z=16&output=embed`,
+            };
+          }
+          return {
+            query: queryVal,
+            embedSrc: `https://maps.google.com/maps?q=${encodeURIComponent(queryVal)}&hl=${locale}&z=16&output=embed`,
+          };
+        }
       }
     }
 
-    // Check for ?q=<placeName>
-    const queryParamMatch = url.match(/[?&](?:q|query)=([^&]+)/i);
-    if (queryParamMatch) {
-      const queryVal = decodeURIComponent(queryParamMatch[1].replace(/\+/g, " "));
-      if (queryVal && !queryVal.startsWith("http://") && !queryVal.startsWith("https://")) {
-        return {
-          query: queryVal,
-          embedSrc: `https://maps.google.com/maps?q=${encodeURIComponent(queryVal)}&hl=${locale}&z=16&output=embed`,
-        };
-      }
-    }
+    // If map URL is present, DO NOT use address text for mapview!
+    return null;
   }
 
-  // 4. Fallback to the textual venue address
+  // 4. Fallback to the textual venue address ONLY when NO mapUrl was provided
   if (address) {
     return {
       query: address,

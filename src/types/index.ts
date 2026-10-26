@@ -64,7 +64,9 @@ export interface Invitation {
   colorPalette: string;
   eventDate: number;
   content: InvitationContent;
+  coverMediaType?: "video" | "photo";
   coverVideoEmbedUrl?: string;
+  coverImageUrl?: string;
   mediaUrls: InvitationMedia;
   createdAt: number;
   updatedAt: number;
@@ -77,6 +79,7 @@ export interface Template {
   previewImage: string;
   defaultColorPalette: string;
   defaultFonts: { heading: string; body: string };
+  description?: string;
 }
 
 /** A named color set applied as CSS variables to a template or invitation. */
