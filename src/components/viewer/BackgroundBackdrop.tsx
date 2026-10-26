@@ -51,7 +51,7 @@ export function BackgroundBackdrop({
           className="scale-115 object-cover"
         />
       ) : null}
-      <AmbientSparks interactive />
+      <AmbientSparks />
     </div>
   );
 }
