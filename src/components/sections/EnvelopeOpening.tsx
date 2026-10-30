@@ -39,10 +39,12 @@ export function EnvelopeOpening({
   onOpen,
   onStartAnimation,
   guestName: propGuestName,
+  contained = false,
 }: {
   onOpen: () => void;
   onStartAnimation?: () => void;
   guestName?: string;
+  contained?: boolean;
 }) {
   const t = useTranslations("viewer");
   const locale = useLocale();
@@ -107,7 +109,9 @@ export function EnvelopeOpening({
       animate={{ opacity: zooming ? 0 : 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4, delay: zooming ? 0.1 : 0 }}
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 sm:gap-8 bg-cream px-4 sm:px-6 text-center w-full max-w-full overflow-hidden"
+      className={`${
+        contained ? "relative min-h-[560px]" : "fixed inset-0"
+      } z-50 flex flex-col items-center justify-center gap-6 sm:gap-8 bg-cream px-4 sm:px-6 text-center w-full max-w-full overflow-hidden`}
     >
       <Image
         src="/images/bg.png"

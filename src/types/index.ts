@@ -53,6 +53,15 @@ export interface InvitationMedia {
   digitalEnvelopeQr?: string;
 }
 
+export interface TemplateColors {
+  primary: string;
+  secondary: string;
+  text: string;
+  background: string;
+  /** Opacity percentage (0–100) for the template background color & card surfaces */
+  backgroundOpacity?: number;
+}
+
 export interface Invitation {
   invitationId: string;
   ownerUid: string;
@@ -61,7 +70,8 @@ export interface Invitation {
   templateId: string;
   defaultLocale: "km" | "en";
   status: InvitationStatus;
-  colorPalette: string;
+  /** @deprecated Colors are now defined directly on the Template */
+  colorPalette?: string;
   eventDate: number;
   content: InvitationContent;
   coverMediaType?: "video" | "photo";
@@ -77,12 +87,19 @@ export interface Template {
   category: InvitationCategory;
   name: string;
   previewImage: string;
-  defaultColorPalette: string;
-  defaultFonts: { heading: string; body: string };
   description?: string;
+  colors: TemplateColors;
+  backgroundType: "none" | "photo" | "video";
+  backgroundImageUrl?: string;
+  backgroundVideoUrl?: string;
+  hasMusic: boolean;
+  defaultMusicUrl?: string;
+  defaultFonts: { heading: string; body: string };
+  /** @deprecated Replaced by colors */
+  defaultColorPalette?: string;
 }
 
-/** A named color set applied as CSS variables to a template or invitation. */
+/** @deprecated Palettes are merged into Template.colors */
 export interface Palette {
   paletteId: string;
   name: string;

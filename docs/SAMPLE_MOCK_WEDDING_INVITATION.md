@@ -3,6 +3,7 @@
 This document provides a **complete, production-grade mock wedding invitation dataset** and setup guide for the **Khmer E-Invitation** application in the development environment.
 
 It includes:
+
 - **Full Data Schema** covering 100% of the `Invitation` model without missing any fields.
 - **Realistic Bilingual Content** in formal Khmer (`km`) and English (`en`) for couple names, parent names, formal invitations, address, and ceremonial timeline.
 - **Working Media Assets**:
@@ -33,13 +34,13 @@ It includes:
 
 When running `npm run dev`, you can access and test the invitation at:
 
-| Purpose | Route / URL |
-| :--- | :--- |
-| **Khmer Viewer** | `http://localhost:3000/km/i/chenda-monyroth-wedding` |
-| **English Viewer** | `http://localhost:3000/en/i/chenda-monyroth-wedding` |
+| Purpose                     | Route / URL                                                             |
+| :-------------------------- | :---------------------------------------------------------------------- |
+| **Khmer Viewer**            | `http://localhost:3000/km/i/chenda-monyroth-wedding`                    |
+| **English Viewer**          | `http://localhost:3000/en/i/chenda-monyroth-wedding`                    |
 | **Personalized Guest Link** | `http://localhost:3000/km/i/chenda-monyroth-wedding?to=ឯកឧត្តម+ជា+សុខា` |
-| **Dashboard Editor** | `http://localhost:3000/dashboard/mock-wedding-chenda-monyroth` |
-| **Create New Invitation** | `http://localhost:3000/dashboard/new` |
+| **Dashboard Editor**        | `http://localhost:3000/dashboard/mock-wedding-chenda-monyroth`          |
+| **Create New Invitation**   | `http://localhost:3000/dashboard/new`                                   |
 
 ---
 
@@ -119,7 +120,7 @@ When running `npm run dev`, you can access and test the invitation at:
           "km": "ការឈរទស្សនាថ្ងៃរះនៅពីមុខប្រាសាទអង្គរវត្តជាមួយគ្នា បានធ្វើឱ្យយើងទាំងពីរកាន់តែយល់ចិត្ត និងចងក្រងនូវការចងចាំដ៏មានតម្លៃដែលមិនអាចបំភ្លេចបាន។",
           "en": "Watching the golden sunrise illuminate Angkor Wat hand-in-hand taught us how beautiful life is when shared with your kindred soul."
         },
-        "image": "https://images.unsplash.com/photo-1609137144822-4458cb5e33eb?auto=format&fit=crop&w=1000&q=80"
+        "image": ""
       },
       {
         "title": {
@@ -141,7 +142,7 @@ When running `npm run dev`, you can access and test the invitation at:
           "km": "ថ្ងៃនេះ យើងទាំងពីរសូមចាប់ដៃគ្នាសាងគ្រួសារដ៏កក់ក្តៅ និងដើរលើវិថីជីវិតជាមួយគ្នាដោយក្តីស្រឡាញ់ ភាពស្មោះត្រង់ និងការយល់ចិត្តជារៀងរហូត។",
           "en": "Today, with humble and grateful hearts, we unite our souls to build a loving home and walk the journey of life as partners for eternity."
         },
-        "image": "https://images.unsplash.com/photo-1519225429980-715cb0215aed?auto=format&fit=crop&w=1000&q=80"
+        "image": ""
       }
     ],
     "agenda": [
@@ -208,6 +209,7 @@ When running `npm run dev`, you can access and test the invitation at:
 For the invitation above to resolve properly in both the **public viewer** and the **admin dashboard**, the following supporting documents should also exist in Firestore:
 
 ### A. Slug Reservation Document
+
 - **Collection:** `slugs`
 - **Document ID:** `chenda-monyroth-wedding`
 - **Data:**
@@ -218,6 +220,7 @@ For the invitation above to resolve properly in both the **public viewer** and t
   ```
 
 ### B. Template Document
+
 - **Collection:** `templates`
 - **Document ID:** `classic-khmer-gold`
 - **Data:**
@@ -236,6 +239,7 @@ For the invitation above to resolve properly in both the **public viewer** and t
   ```
 
 ### C. Color Palette Document
+
 - **Collection:** `palettes`
 - **Document ID:** `royal-gold`
 - **Data:**
@@ -251,9 +255,11 @@ For the invitation above to resolve properly in both the **public viewer** and t
   ```
 
 ### D. Mock RSVP Responses
+
 - **Collection:** `rsvps/mock-wedding-chenda-monyroth/responses`
 
 1. **Document ID:** `rsvp-001`
+
    ```json
    {
      "responseId": "rsvp-001",
@@ -306,6 +312,7 @@ SEED_EMAIL=you@example.com SEED_PASSWORD=yourpass npm run seed:wedding
 ```
 
 Once authenticated, the script automatically:
+
 - Signs in via Firebase Auth
 - Detects your `ownerUid`
 - Generates a conflict-free unique slug

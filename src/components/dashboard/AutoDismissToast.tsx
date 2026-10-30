@@ -37,7 +37,7 @@ export function AutoDismissToast({
           className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2"
         >
           <div
-            className={`flex items-center gap-2.5 rounded-full px-4 py-2.5 text-xs font-semibold shadow-xl backdrop-blur-md transition-all ${
+            className={`flex items-center gap-2.5 rounded-full px-4 py-2.5 text-xs font-semibold shadow-xl transition-all ${
               isError
                 ? "border border-red-300 bg-red-600 text-white"
                 : "border border-gold/40 bg-maroon text-cream"

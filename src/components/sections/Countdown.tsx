@@ -62,7 +62,7 @@ export function Countdown({ invitation }: { invitation: Invitation }) {
             <span className="font-[family-name:var(--font-heading-en)] text-2xl text-gold sm:text-4xl drop-shadow-[0_2px_8px_rgba(201,162,75,0.35)]">
               <AnimatedNumber value={String(value).padStart(2, "0")} />
             </span>
-            <span className="text-[9px] uppercase tracking-wider text-[#fdf8f0]/80 sm:text-[10px] sm:tracking-widest">
+            <span className="text-[9px] uppercase tracking-wider text-maroon/80 sm:text-[10px] sm:tracking-widest font-medium">
               {label}
             </span>
           </motion.div>

@@ -6,8 +6,6 @@
   --background: #fdf8f0;
   --foreground: #2a1a12;
 
-  /* Liquid Frosted Glass controls (matching LiquidGlassCard) */
-  --glass-blur: 28px;
   --glass-opacity: 0.16;
 
   /* Khmer wedding default palette: Royal Gold */
@@ -87,83 +85,81 @@ main {
   touch-action: pan-y;
 }
 
-/* Lifts text/images that sit directly on the blurred photo backdrop
-   (no card behind them) so they stay legible over busy areas — same
-   soft white-glow recipe as the Hero couple names. */
+/* Lifts text/images that sit directly on the photo backdrop
+   (no card behind them) so they stay legible over busy areas — tinted
+   by the template background color for both light & dark themes. */
 .text-glow {
   text-shadow:
-    rgba(255, 255, 255, 0.95) 0px 1px 3px,
-    rgba(255, 255, 255, 0.9) 0px 0px 8px,
-    rgba(255, 255, 255, 0.7) 0px 2px 14px;
+    0 1px 4px color-mix(in srgb, var(--color-bg, #fdf8f0) 90%, transparent),
+    0 0 12px color-mix(in srgb, var(--color-bg, #fdf8f0) 80%, transparent);
 }
 
-/* Pure Liquid Crystal Glass (matching LiquidGlassCard from weather demo) */
+/* Card surface (adapted to template colors for clean legibility without blur) */
 .ultra-thin-material {
-  background: rgba(255, 255, 255, var(--glass-opacity, 0.16));
-  -webkit-backdrop-filter: blur(28px) saturate(180%);
-  backdrop-filter: blur(28px) saturate(180%);
-  -webkit-backdrop-filter: blur(var(--glass-blur, 28px)) saturate(180%);
-  backdrop-filter: blur(var(--glass-blur, 28px)) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.32);
+  background: color-mix(
+    in srgb,
+    color-mix(
+      in srgb,
+      var(--color-bg, #fdf8f0) 82%,
+      var(--color-secondary, #7a1f2b) 18%
+    ) var(--bg-opacity, 85%),
+    transparent
+  );
+  border: 1px solid color-mix(in srgb, var(--color-primary, #c9a24b) 42%, transparent);
   box-shadow:
-    inset 2px 2px 3px 0 rgba(255, 255, 255, 0.45),
-    inset -2px -2px 3px 0 rgba(255, 255, 255, 0.35),
-    0 4px 16px rgba(0, 0, 0, 0.15),
-    0 0 24px rgba(255, 255, 255, 0.12);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+    0 12px 36px -8px rgba(0, 0, 0, 0.22),
+    inset 0 1px 1px 0 color-mix(in srgb, var(--color-primary, #c9a24b) 25%, rgba(255, 255, 255, 0.2));
+  color: var(--color-text, var(--color-maroon));
 }
 
 [data-palette] .ultra-thin-material,
 .dark .ultra-thin-material {
-  background: rgba(255, 255, 255, var(--glass-opacity, 0.16));
-  -webkit-backdrop-filter: blur(28px) saturate(180%);
-  backdrop-filter: blur(28px) saturate(180%);
-  -webkit-backdrop-filter: blur(var(--glass-blur, 28px)) saturate(180%);
-  backdrop-filter: blur(var(--glass-blur, 28px)) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.32);
+  background: color-mix(
+    in srgb,
+    color-mix(
+      in srgb,
+      var(--color-bg, #fdf8f0) 82%,
+      var(--color-secondary, #7a1f2b) 18%
+    ) var(--bg-opacity, 85%),
+    transparent
+  );
+  border: 1px solid color-mix(in srgb, var(--color-primary, #c9a24b) 42%, transparent);
   box-shadow:
-    inset 2px 2px 3px 0 rgba(255, 255, 255, 0.45),
-    inset -2px -2px 3px 0 rgba(255, 255, 255, 0.35),
-    0 4px 16px rgba(0, 0, 0, 0.15),
-    0 0 24px rgba(255, 255, 255, 0.12);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+    0 12px 36px -8px rgba(0, 0, 0, 0.22),
+    inset 0 1px 1px 0 color-mix(in srgb, var(--color-primary, #c9a24b) 25%, rgba(255, 255, 255, 0.2));
+  color: var(--color-text, var(--color-maroon));
 }
 
 .ultra-thin-material-subtle {
-  background: rgba(255, 255, 255, calc(var(--glass-opacity, 0.16) * 0.7));
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(calc(var(--glass-blur, 28px) * 0.7)) saturate(180%);
-  backdrop-filter: blur(calc(var(--glass-blur, 28px) * 0.7)) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  box-shadow:
-    inset 1px 1px 2px 0 rgba(255, 255, 255, 0.35),
-    inset -1px -1px 2px 0 rgba(255, 255, 255, 0.25),
-    0 2px 8px rgba(0, 0, 0, 0.1);
+  background: color-mix(
+    in srgb,
+    color-mix(
+      in srgb,
+      var(--color-bg, #fdf8f0) 75%,
+      var(--color-secondary, #7a1f2b) 25%
+    ) var(--bg-opacity, 85%),
+    transparent
+  );
+  border: 1px solid color-mix(in srgb, var(--color-primary, #c9a24b) 30%, transparent);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  color: var(--color-text, var(--color-maroon));
 }
 
 [data-palette] .ultra-thin-material-subtle,
 .dark .ultra-thin-material-subtle {
-  background: rgba(255, 255, 255, calc(var(--glass-opacity, 0.16) * 0.7));
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(calc(var(--glass-blur, 28px) * 0.7)) saturate(180%);
-  backdrop-filter: blur(calc(var(--glass-blur, 28px) * 0.7)) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  box-shadow:
-    inset 1px 1px 2px 0 rgba(255, 255, 255, 0.35),
-    inset -1px -1px 2px 0 rgba(255, 255, 255, 0.25),
-    0 2px 8px rgba(0, 0, 0, 0.1);
+  background: color-mix(
+    in srgb,
+    color-mix(
+      in srgb,
+      var(--color-bg, #fdf8f0) 75%,
+      var(--color-secondary, #7a1f2b) 25%
+    ) var(--bg-opacity, 85%),
+    transparent
+  );
+  border: 1px solid color-mix(in srgb, var(--color-primary, #c9a24b) 30%, transparent);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  color: var(--color-text, var(--color-maroon));
 }
-
-/* Blur intensity presets for easy control */
-.blur-glass-none { --glass-blur: 0px; }
-.blur-glass-xs { --glass-blur: 8px; }
-.blur-glass-sm { --glass-blur: 14px; }
-.blur-glass-md { --glass-blur: 20px; }
-.blur-glass-lg { --glass-blur: 32px; }
-.blur-glass-xl { --glass-blur: 48px; }
-.blur-glass-2xl { --glass-blur: 64px; }
 
 .image-glow {
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.18));
@@ -223,20 +219,17 @@ input[type="color"] {
   );
 }
 
-/* Couple-name entrance: an "ink settling" reveal (blur + rise into focus). */
+/* Couple-name entrance: rise into focus. */
 @keyframes name-ink-reveal {
   0% {
     opacity: 0;
-    filter: blur(6px);
     transform: translateY(6px);
   }
   60% {
     opacity: 1;
-    filter: blur(0);
   }
   100% {
     opacity: 1;
-    filter: blur(0);
     transform: translateY(0);
   }
 }
@@ -251,7 +244,7 @@ input[type="color"] {
   }
 }
 
-/* Slow ambient drift for the sign-in screen's blurred backdrop orbs. */
+/* Slow ambient drift for the sign-in screen's backdrop orbs. */
 @keyframes login-orb-drift {
   0%,
   100% {

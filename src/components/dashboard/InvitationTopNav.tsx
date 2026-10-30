@@ -26,7 +26,7 @@ export function InvitationTopNav({
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className="sticky top-0 z-30 flex h-14 w-full shrink-0 items-center justify-between gap-2 border-b border-gold/30 dark:border-gold/25 bg-cream/90 dark:bg-[#140f13]/90 px-3 sm:gap-4 sm:px-6 backdrop-blur-md"
+      className="sticky top-0 z-30 flex h-14 w-full shrink-0 items-center justify-between gap-2 border-b border-gold/30 dark:border-gold/25 bg-cream/95 dark:bg-[#140f13]/95 px-3 sm:gap-4 sm:px-6"
     >
       {/* Left: Mobile hamburger & breadcrumbs */}
       <div className="flex min-w-0 flex-1 items-center gap-1.5 sm:gap-3">

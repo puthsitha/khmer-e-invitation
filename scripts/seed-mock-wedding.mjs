@@ -34,7 +34,9 @@ const firebaseConfig = {
 };
 
 if (!firebaseConfig.projectId) {
-  console.error("❌ Missing NEXT_PUBLIC_FIREBASE_PROJECT_ID in .env.local or process.env");
+  console.error(
+    "❌ Missing NEXT_PUBLIC_FIREBASE_PROJECT_ID in .env.local or process.env",
+  );
   process.exit(1);
 }
 
@@ -51,19 +53,31 @@ async function seed() {
 
   if (!email || !password) {
     console.error("\n⚠️  AUTHENTICATION REQUIRED");
-    console.error("------------------------------------------------------------------");
-    console.error("Firestore security rules require an authenticated user to write");
+    console.error(
+      "------------------------------------------------------------------",
+    );
+    console.error(
+      "Firestore security rules require an authenticated user to write",
+    );
     console.error("invitations (request.auth.uid == ownerUid).\n");
     console.error("Choose one of the following methods:\n");
     console.error("  Method A (Terminal):");
-    console.error("    node scripts/seed-mock-wedding.mjs <your-email> <your-password>");
+    console.error(
+      "    node scripts/seed-mock-wedding.mjs <your-email> <your-password>",
+    );
     console.error("    OR:");
-    console.error("    SEED_EMAIL=you@domain.com SEED_PASSWORD=yourpass npm run seed:wedding\n");
+    console.error(
+      "    SEED_EMAIL=you@domain.com SEED_PASSWORD=yourpass npm run seed:wedding\n",
+    );
     console.error("  Method B (Web UI - Recommended):");
     console.error("    1. Start your local server: npm run dev");
     console.error("    2. Log in at http://localhost:3000/login");
-    console.error("    3. Click the '✨ Seed Mock Wedding' button on your dashboard!");
-    console.error("------------------------------------------------------------------\n");
+    console.error(
+      "    3. Click the '✨ Seed Mock Wedding' button on your dashboard!",
+    );
+    console.error(
+      "------------------------------------------------------------------\n",
+    );
     process.exit(1);
   }
 
@@ -84,7 +98,9 @@ async function seed() {
   const existingSlugSnap = await getDoc(doc(db, "slugs", slug));
   if (existingSlugSnap.exists()) {
     slug = `${baseSlug}-${Date.now().toString().slice(-4)}`;
-    console.log(`ℹ️ Slug '${baseSlug}' was already taken. Using '${slug}' instead.`);
+    console.log(
+      `ℹ️ Slug '${baseSlug}' was already taken. Using '${slug}' instead.`,
+    );
   }
 
   const invitationId = `mock-${slug}`;
@@ -137,7 +153,8 @@ async function seed() {
         km: "មជ្ឈមណ្ឌល ឌឹ ព្រេមៀ សែនសុខ (អគារ A - ជាន់ផ្ទាល់ដី) ផ្លូវ ១០០៣ សង្កាត់ភ្នំពេញថ្មី ខណ្ឌសែនសុខ រាជធានីភ្នំពេញ",
         en: "The Premier Centre Sen Sok (Building A - Ground Floor), Street 1003, Sangkat Phnom Penh Thmey, Khan Sen Sok, Phnom Penh, Cambodia",
       },
-      mapUrl: "https://maps.google.com/?q=The+Premier+Centre+Sen+Sok+Phnom+Penh",
+      mapUrl:
+        "https://maps.google.com/?q=The+Premier+Centre+Sen+Sok+Phnom+Penh",
       story: [
         {
           title: {
@@ -148,7 +165,8 @@ async function seed() {
             km: "យើងបានជួបគ្នាជាលើកដំបូងនៅហាងកាហ្វេតូចមួយកណ្តាលរាជធានីភ្នំពេញក្នុងរដូវរំហើយ។ គ្រាន់តែឃើញស្នាមញញឹមដ៏ស្រទន់របស់នាងដំបូង បេះដូងខ្ញុំក៏ដឹងថា ពិភពលោករបស់ខ្ញុំនឹងលែងដូចមុនទៀតហើយ។",
             en: "We first met at a cozy café in central Phnom Penh on a breezy autumn afternoon. One gentle smile across the room was all it took for both of us to know our lives had changed forever.",
           },
-          image: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1000&q=80",
+          image:
+            "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1000&q=80",
         },
         {
           title: {
@@ -159,7 +177,7 @@ async function seed() {
             km: "ការឈរទស្សនាថ្ងៃរះនៅពីមុខប្រាសាទអង្គរវត្តជាមួយគ្នា បានធ្វើឱ្យយើងទាំងពីរកាន់តែយល់ចិត្ត និងចងក្រងនូវការចងចាំដ៏មានតម្លៃដែលមិនអាចបំភ្លេចបាន។",
             en: "Watching the golden sunrise illuminate Angkor Wat hand-in-hand taught us how beautiful life is when shared with your kindred soul.",
           },
-          image: "https://images.unsplash.com/photo-1609137144822-4458cb5e33eb?auto=format&fit=crop&w=1000&q=80",
+          image: "",
         },
         {
           title: {
@@ -170,7 +188,8 @@ async function seed() {
             km: "នៅក្រោមពន្លឺថ្ងៃលិចពណ៌មាសតាមបណ្តោយដងទន្លេចតុមុខ ចិន្តាបានលុតជង្គង់សុំមុន្នីរ័ត្នរៀបការ ជាមួយនឹងចម្លើយ 'យល់ព្រម' អមដោយទឹកភ្នែកនៃក្តីរំភើប។",
             en: "Under the golden sunset along the Chaktomuk riverfront, Chenda knelt down with a ring, and Monyroth said 'Yes' through tears of pure joy.",
           },
-          image: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=1000&q=80",
+          image:
+            "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=1000&q=80",
         },
         {
           title: {
@@ -181,7 +200,7 @@ async function seed() {
             km: "ថ្ងៃនេះ យើងទាំងពីរសូមចាប់ដៃគ្នាសាងគ្រួសារដ៏កក់ក្តៅ និងដើរលើវិថីជីវិតជាមួយគ្នាដោយក្តីស្រឡាញ់ ភាពស្មោះត្រង់ និងការយល់ចិត្តជារៀងរហូត។",
             en: "Today, with humble and grateful hearts, we unite our souls to build a loving home and walk the journey of life as partners for eternity.",
           },
-          image: "https://images.unsplash.com/photo-1519225429980-715cb0215aed?auto=format&fit=crop&w=1000&q=80",
+          image: "",
         },
       ],
       agenda: [
@@ -223,7 +242,8 @@ async function seed() {
       ],
     },
     mediaUrls: {
-      bgMusic: "https://assets.mixkit.co/music/preview/mixkit-romantic-wedding-640.mp3",
+      bgMusic:
+        "https://assets.mixkit.co/music/preview/mixkit-romantic-wedding-640.mp3",
       gallery: [
         "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80",
         "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80",
@@ -234,7 +254,8 @@ async function seed() {
         "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=1200&q=80",
         "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1200&q=80",
       ],
-      digitalEnvelopeQr: "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=KHQR_BAKONG_MOCK_PAYMENT_SOK_CHINDA_KEO_MONYROTH",
+      digitalEnvelopeQr:
+        "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=KHQR_BAKONG_MOCK_PAYMENT_SOK_CHINDA_KEO_MONYROTH",
     },
     createdAt: Date.now(),
     updatedAt: Date.now(),
@@ -249,7 +270,8 @@ async function seed() {
     responseId: "rsvp-001",
     guestName: "ឯកឧត្តម ជា សុខា",
     attending: true,
-    message: "សូមប្រសិទ្ធពរជ័យឱ្យគូស្វាមីភរិយាថ្មី ជួបតែសុភមង្គល និងស្រឡាញ់គ្នារហូតដល់ចាស់កោងខ្នង!",
+    message:
+      "សូមប្រសិទ្ធពរជ័យឱ្យគូស្វាមីភរិយាថ្មី ជួបតែសុភមង្គល និងស្រឡាញ់គ្នារហូតដល់ចាស់កោងខ្នង!",
     createdAt: Date.now() - 3600000,
   });
 
@@ -257,19 +279,28 @@ async function seed() {
     responseId: "rsvp-002",
     guestName: "Mr. & Mrs. David Miller",
     attending: true,
-    message: "Wishing Chenda & Monyroth a lifetime of endless love and happiness. Congratulations!",
+    message:
+      "Wishing Chenda & Monyroth a lifetime of endless love and happiness. Congratulations!",
     createdAt: Date.now() - 1800000,
   });
 
   await batch.commit();
 
   console.log("\n🎉 Seeding completed successfully!");
-  console.log("------------------------------------------------------------------");
+  console.log(
+    "------------------------------------------------------------------",
+  );
   console.log(`🔗 Public URL (Khmer):   http://localhost:3000/km/i/${slug}`);
   console.log(`🔗 Public URL (English): http://localhost:3000/en/i/${slug}`);
-  console.log(`🔗 Personalized Link:    http://localhost:3000/km/i/${slug}?to=ឯកឧត្តម+ជា+សុខា`);
-  console.log(`✏️ Dashboard Edit URL:   http://localhost:3000/dashboard/${invitationId}`);
-  console.log("------------------------------------------------------------------\n");
+  console.log(
+    `🔗 Personalized Link:    http://localhost:3000/km/i/${slug}?to=ឯកឧត្តម+ជា+សុខា`,
+  );
+  console.log(
+    `✏️ Dashboard Edit URL:   http://localhost:3000/dashboard/${invitationId}`,
+  );
+  console.log(
+    "------------------------------------------------------------------\n",
+  );
 }
 
 seed().catch((err) => {

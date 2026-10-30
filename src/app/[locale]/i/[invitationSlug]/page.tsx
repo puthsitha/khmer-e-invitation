@@ -1,9 +1,27 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { ViewerExperience } from "@/components/viewer/ViewerExperience";
-import { getInvitationBySlug } from "@/lib/firebase/firestore";
+import { getInvitationBySlug, getTemplate } from "@/lib/firebase/firestore";
 import { buildEventMetadata } from "@/lib/eventMetadata";
-import { MOCK_WEDDING_INVITATION } from "@/lib/mockInvitation";
+import {
+  MOCK_WEDDING_INVITATION,
+  createSampleInvitationForTemplate,
+} from "@/lib/mockInvitation";
+
+async function resolveInvitationForSlug(invitationSlug: string) {
+  if (invitationSlug.startsWith("sample-")) {
+    const tplId = invitationSlug.slice("sample-".length);
+    const tpl = await getTemplate(tplId).catch(() => null);
+    if (tpl) {
+      return createSampleInvitationForTemplate(tpl);
+    }
+  }
+  const inv = await getInvitationBySlug(invitationSlug);
+  if (!inv && invitationSlug === MOCK_WEDDING_INVITATION.slug) {
+    return MOCK_WEDDING_INVITATION;
+  }
+  return inv;
+}
 
 type Props = {
   params: Promise<{ locale: string; invitationSlug: string }>;
@@ -14,10 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { invitationSlug } = await params;
 
   try {
-    let invitation = await getInvitationBySlug(invitationSlug);
-    if (!invitation && invitationSlug === MOCK_WEDDING_INVITATION.slug) {
-      invitation = MOCK_WEDDING_INVITATION;
-    }
+    const invitation = await resolveInvitationForSlug(invitationSlug);
 
     if (!invitation) {
       return {
@@ -64,11 +79,7 @@ export default async function ViewerPage({
   params: Promise<{ invitationSlug: string }>;
 }) {
   const { invitationSlug } = await params;
-
-  let initialInvitation = await getInvitationBySlug(invitationSlug);
-  if (!initialInvitation && invitationSlug === MOCK_WEDDING_INVITATION.slug) {
-    initialInvitation = MOCK_WEDDING_INVITATION;
-  }
+  const initialInvitation = await resolveInvitationForSlug(invitationSlug);
 
   return (
     <Suspense fallback={null}>

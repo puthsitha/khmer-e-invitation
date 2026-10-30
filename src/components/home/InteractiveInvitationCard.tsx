@@ -30,10 +30,6 @@ export function InteractiveInvitationCard() {
   // Dynamic ground shadow that moves realistically opposite to the tilt direction
   const shadowX = useTransform(smoothX, [-0.5, 0.5], [24, -24]);
   const shadowY = useTransform(smoothY, [-0.5, 0.5], [28, 8]);
-  const shadowBlur = useTransform([smoothX, smoothY], ([x, y]) => {
-    const dist = Math.sqrt(Math.pow(x as number, 2) + Math.pow(y as number, 2));
-    return 30 + dist * 35;
-  });
 
   // Specular glare effect moving opposite to tilt
   const glareX = useTransform(smoothX, [-0.5, 0.5], [10, 90]);
@@ -89,7 +85,6 @@ export function InteractiveInvitationCard() {
             x: reduceMotion ? 0 : shadowX,
             y: reduceMotion ? 0 : shadowY,
             background: "radial-gradient(ellipse, rgba(122, 31, 43, 0.28) 0%, rgba(201, 162, 75, 0.12) 50%, transparent 75%)",
-            filter: useTransform(shadowBlur, (b) => `blur(${b}px)`),
           }}
         />
 
@@ -217,7 +212,7 @@ export function InteractiveInvitationCard() {
               >
                 <WaxSeal size={74} />
               </motion.div>
-              <span className="rounded-full bg-cream/95 px-3.5 py-1 text-[10px] font-medium tracking-wider text-gold-light border border-gold/40 shadow-xs backdrop-blur-sm transition-all duration-200 group-hover/cta:border-gold group-hover/cta:bg-gold/15 group-hover/cta:text-maroon group-hover/cta:shadow-sm">
+              <span className="rounded-full bg-cream/95 px-3.5 py-1 text-[10px] font-medium tracking-wider text-gold-light border border-gold/40 shadow-xs transition-all duration-200 group-hover/cta:border-gold group-hover/cta:bg-gold/15 group-hover/cta:text-maroon group-hover/cta:shadow-sm">
                 {locale === "km" ? "ចុចដើម្បីបើកទស្សនា" : "Tap to open invitation"}
               </span>
             </Link>

@@ -255,7 +255,7 @@ export function ForgotPasswordModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
+            className="fixed inset-0 bg-black/65 transition-opacity"
             aria-hidden
           />
 

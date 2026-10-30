@@ -5,10 +5,13 @@ import { NextIntlClientProvider, useLocale, useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import { Hourglass, Loader2, MailQuestion } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { getInvitationBySlug } from "@/lib/firebase/firestore";
+import { getInvitationBySlug, getTemplate } from "@/lib/firebase/firestore";
 import { decryptGuestToken } from "@/lib/guestToken";
 import { buildEventMetadata } from "@/lib/eventMetadata";
-import { MOCK_WEDDING_INVITATION } from "@/lib/mockInvitation";
+import {
+  createSampleInvitationForTemplate,
+  MOCK_WEDDING_INVITATION,
+} from "@/lib/mockInvitation";
 import { useAutoScroll } from "@/hooks/useAutoScroll";
 import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 import { PaletteProvider } from "@/contexts/PaletteContext";
@@ -29,18 +32,25 @@ import { Agenda } from "@/components/sections/Agenda";
 import { DigitalEnvelope } from "@/components/sections/DigitalEnvelope";
 import { GratitudeApology } from "@/components/sections/GratitudeApology";
 import { RsvpSection } from "@/components/sections/RsvpSection";
-// import { ColorPaletteAccent } from "@/components/sections/ColorPaletteAccent";
 import { Closing } from "@/components/sections/Closing";
-import type { Invitation } from "@/types";
+import type { Invitation, Template } from "@/types";
 
 type Stage = "closed" | "landing" | "opened";
 
 export function ViewerExperience({
   slug,
   initialInvitation,
+  templateOverride,
+  initialStage = "closed",
+  contained = false,
+  disableAutoScroll = false,
 }: {
   slug: string;
   initialInvitation?: Invitation | null;
+  templateOverride?: Template | null;
+  initialStage?: Stage;
+  contained?: boolean;
+  disableAutoScroll?: boolean;
 }) {
   const t = useTranslations("viewer");
   const searchParams = useSearchParams();
@@ -52,32 +62,73 @@ export function ViewerExperience({
   } | null>(initialTo ? { name: initialTo } : null);
 
   const urlLocale = useLocale();
-  const [invitation, setInvitation] = useState<Invitation | null | undefined>(
-    initialInvitation !== undefined ? initialInvitation : undefined,
-  );
-  const [stage, setStage] = useState<Stage>("closed");
+  const [fetchedInvitation, setFetchedInvitation] = useState<
+    Invitation | null | undefined
+  >(undefined);
+  const invitation =
+    initialInvitation !== undefined ? initialInvitation : fetchedInvitation;
+
+  const [fetchedTemplate, setFetchedTemplate] = useState<Template | null>(null);
+  const [stageState, setStage] = useState<Stage>(initialStage);
+  const [prevInitialStage, setPrevInitialStage] = useState<Stage>(initialStage);
+  if (initialStage !== prevInitialStage) {
+    setPrevInitialStage(initialStage);
+    setStage(initialStage);
+  }
+  const stage = stageState;
+
   const [displayLocale, setDisplayLocale] = useState<"km" | "en">(
     urlLocale === "en" ? "en" : "km",
   );
+
+  useEffect(() => {
+    if (templateOverride !== undefined) {
+      return;
+    }
+    if (!invitation?.templateId) return;
+    let cancelled = false;
+    getTemplate(invitation.templateId)
+      .then((tpl) => {
+        if (!cancelled) setFetchedTemplate(tpl);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [invitation?.templateId, templateOverride]);
+
+  const activeTemplate = templateOverride ?? fetchedTemplate;
+  const musicEnabled = activeTemplate ? activeTemplate.hasMusic : true;
+  const effectiveMusicUrl =
+    musicEnabled && invitation
+      ? invitation.mediaUrls.bgMusic || activeTemplate?.defaultMusicUrl
+      : undefined;
+
   const {
     start: startMusic,
     muted,
     toggleMute,
-  } = useBackgroundMusic(invitation ? invitation.mediaUrls.bgMusic : undefined);
+  } = useBackgroundMusic(effectiveMusicUrl);
 
   useEffect(() => {
     if (initialInvitation !== undefined) return;
-    getInvitationBySlug(slug).then((data) => {
+    getInvitationBySlug(slug).then(async (data) => {
       if (!data && slug === MOCK_WEDDING_INVITATION.slug) {
-        setInvitation(MOCK_WEDDING_INVITATION);
+        setFetchedInvitation(MOCK_WEDDING_INVITATION);
+      } else if (!data && slug.startsWith("sample-")) {
+        const tplId = slug.slice("sample-".length);
+        const tpl = await getTemplate(tplId);
+        setFetchedInvitation(
+          tpl ? createSampleInvitationForTemplate(tpl) : null
+        );
       } else {
-        setInvitation(data);
+        setFetchedInvitation(data);
       }
     });
   }, [slug, initialInvitation]);
 
   useEffect(() => {
-    if (invitation) {
+    if (invitation && !contained) {
       const { title, description } = buildEventMetadata(invitation);
       document.title = title;
       const metaDesc = document.querySelector('meta[name="description"]');
@@ -85,7 +136,7 @@ export function ViewerExperience({
         metaDesc.setAttribute("content", description);
       }
     }
-  }, [invitation]);
+  }, [invitation, contained]);
 
   useEffect(() => {
     if (token) {
@@ -97,7 +148,7 @@ export function ViewerExperience({
     }
   }, [token, invitation?.invitationId]);
 
-  useAutoScroll(stage === "opened");
+  useAutoScroll(!disableAutoScroll && !contained && stage === "opened");
 
   function handleEnvelopeAnimationStart() {
     startMusic();
@@ -139,34 +190,71 @@ export function ViewerExperience({
     );
   }
 
-  const isPhotoCover = invitation.coverMediaType === "photo";
+  const effectiveMediaType =
+    activeTemplate?.backgroundType && activeTemplate.backgroundType !== "none"
+      ? activeTemplate.backgroundType
+      : activeTemplate?.backgroundType === "none"
+        ? "none"
+        : invitation.coverMediaType;
+
+  const rawVideoUrl =
+    activeTemplate?.backgroundType === "video"
+      ? activeTemplate.backgroundVideoUrl
+      : activeTemplate
+        ? undefined
+        : invitation.coverVideoEmbedUrl;
+
   const embedUrl =
-    !isPhotoCover && invitation.coverVideoEmbedUrl
-      ? toBackgroundEmbedUrl(invitation.coverVideoEmbedUrl)
+    effectiveMediaType === "video" && rawVideoUrl
+      ? toBackgroundEmbedUrl(rawVideoUrl)
       : null;
+
   const backdropImage =
-    invitation.coverImageUrl || invitation.mediaUrls.gallery[0];
+    effectiveMediaType === "photo"
+      ? activeTemplate?.backgroundImageUrl ||
+        invitation.coverImageUrl ||
+        invitation.mediaUrls.gallery[0]
+      : undefined;
 
   return (
     <NextIntlClientProvider
       locale={displayLocale}
       messages={viewerMessages[displayLocale]}
     >
-      <PaletteProvider palette={invitation.colorPalette}>
-        <div className="relative min-h-screen w-full max-w-full">
-          <BackgroundBackdrop embedUrl={embedUrl} imageUrl={backdropImage} />
+      <PaletteProvider
+        colors={activeTemplate?.colors}
+        templateId={invitation.templateId}
+        palette={invitation.colorPalette}
+      >
+        <div
+          className={`@container relative ${
+            contained
+              ? "h-full w-full overflow-hidden"
+              : "min-h-screen w-full max-w-full overflow-x-clip"
+          }`}
+        >
+          <BackgroundBackdrop
+            embedUrl={embedUrl}
+            imageUrl={backdropImage}
+            contained={contained}
+          />
 
           {stage !== "closed" && (
             <ViewerTopBar
               locale={displayLocale}
               onChangeLocale={setDisplayLocale}
-              hasMusic={Boolean(invitation.mediaUrls.bgMusic)}
+              hasMusic={Boolean(effectiveMusicUrl)}
               muted={muted}
               onToggleMute={toggleMute}
+              contained={contained}
             />
           )}
 
-          <div className="relative z-10 w-full max-w-full">
+          <div
+            className={`relative z-10 mx-auto w-full max-w-[768px] ${
+              contained ? "h-full overflow-y-auto overflow-x-hidden" : ""
+            }`}
+          >
             <AnimatePresence mode="wait">
               {stage === "closed" && (
                 <motion.div
@@ -178,6 +266,7 @@ export function ViewerExperience({
                     onStartAnimation={handleEnvelopeAnimationStart}
                     onOpen={handleOpenEnvelope}
                     guestName={guestInfo?.name}
+                    contained={contained}
                   />
                 </motion.div>
               )}
@@ -195,6 +284,7 @@ export function ViewerExperience({
                     guestName={guestInfo?.name}
                     onOpen={handleOpenInvitation}
                     onStartMusic={startMusic}
+                    contained={contained}
                   />
                 </motion.div>
               )}
@@ -207,7 +297,7 @@ export function ViewerExperience({
                   transition={{ duration: 0.6, ease: "easeOut" }}
                   className="w-full max-w-full"
                 >
-                  <div className="h-20 sm:h-24" aria-hidden />
+                  <div className={contained ? "h-8" : "h-20 sm:h-24"} aria-hidden />
                   <FamilyInvitation invitation={invitation} />
                   <Countdown invitation={invitation} />
                   <CalendarSection invitation={invitation} />
@@ -222,7 +312,6 @@ export function ViewerExperience({
                     guestId={guestInfo?.guestId}
                     guestName={guestInfo?.name}
                   />
-                  {/* <ColorPaletteAccent invitation={invitation} /> */}
                   <Closing invitation={invitation} />
                 </motion.div>
               )}

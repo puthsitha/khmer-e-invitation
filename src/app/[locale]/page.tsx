@@ -9,7 +9,7 @@ import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { SiteNav } from "@/components/ui/SiteNav";
 import { OrnamentDivider } from "@/components/ui/OrnamentDivider";
 import { AmbientSparks } from "@/components/ui/AmbientSparks";
-import { InteractiveInvitationCard } from "@/components/home/InteractiveInvitationCard";
+import { TemplateShowcase } from "@/components/home/TemplateShowcase";
 import { FeatureShowcase } from "@/components/home/FeatureShowcase";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { Link } from "@/i18n/navigation";
@@ -39,8 +39,8 @@ export default function HomePage() {
       <header
         className={`sticky top-0 z-50 w-full border-b transition-all duration-300 px-4 sm:px-8 ${
           isScrolled
-            ? "border-gold/40 dark:border-gold/25 bg-cream/95 dark:bg-[#140f13]/95 shadow-md backdrop-blur-lg py-3"
-            : "border-gold/25 dark:border-gold/20 bg-cream/80 dark:bg-[#140f13]/80 backdrop-blur-md py-4"
+            ? "border-gold/40 dark:border-gold/25 bg-cream/95 dark:bg-[#140f13]/95 shadow-md py-3"
+            : "border-gold/25 dark:border-gold/20 bg-cream/95 dark:bg-[#140f13]/95 py-4"
         }`}
       >
         <div className="mx-auto flex max-w-6xl items-center justify-between">
@@ -72,13 +72,13 @@ export default function HomePage() {
       {/* Main Content */}
       <main className="relative overflow-x-clip">
         {/* Hero Section */}
-        <section className="relative z-20 mx-auto flex max-w-5xl flex-col items-center px-4 pt-10 pb-8 text-center sm:pt-14">
+        <section className="relative z-20 mx-auto flex max-w-5xl flex-col items-center px-4 pt-12 pb-8 text-center sm:pt-16">
           {/* Main Heading */}
           <motion.h1
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
-            className="font-[family-name:var(--font-heading-km)] text-3xl leading-snug tracking-tight text-maroon dark:text-[#f6eee8] sm:text-5xl md:text-6xl"
+            className="font-[family-name:var(--font-heading-km)] text-3xl leading-[1.6] tracking-tight text-maroon dark:text-[#f6eee8] sm:text-5xl sm:leading-[1.5] md:text-6xl md:leading-[1.45]"
           >
             {t("heading")}
           </motion.h1>
@@ -135,29 +135,21 @@ export default function HomePage() {
                   <span>{t("cta")}</span>
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
-                <Link
+                {/* <Link
                   href="/i/chenda-monyroth-wedding"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border border-gold/40 dark:border-gold/30 bg-cream/80 dark:bg-white/5 px-6 py-3.5 font-[family-name:var(--font-body-km)] text-sm font-medium text-maroon dark:text-[#f6eee8] shadow-sm backdrop-blur-sm transition-all hover:bg-gold/15 dark:hover:bg-white/10 hover:border-gold active:scale-95"
+                  className="inline-flex items-center gap-2 rounded-full border border-gold/40 dark:border-gold/30 bg-cream/95 dark:bg-white/5 px-6 py-3.5 font-[family-name:var(--font-body-km)] text-sm font-medium text-maroon dark:text-[#f6eee8] shadow-sm transition-all hover:bg-gold/15 dark:hover:bg-white/10 hover:border-gold active:scale-95"
                 >
                   <span>{t("exploreDemo")}</span>
-                </Link>
+                </Link> */}
               </>
             )}
           </motion.div>
-
-          {/* 3D Interactive Invitation Card Centerpiece */}
-          <motion.div
-            id="interactive-card"
-            initial={{ opacity: 0, scale: 0.92 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="mt-10 w-full"
-          >
-            <InteractiveInvitationCard />
-          </motion.div>
         </section>
+
+        {/* Sample Templates Showcase */}
+        <TemplateShowcase />
 
         {/* Feature Showcase Grid */}
         <div className="relative z-20 flex justify-center">
@@ -165,7 +157,7 @@ export default function HomePage() {
         </div>
 
         {/* Decorative Traditional Footer */}
-        <footer className="relative z-20 mt-16 border-t border-gold/25 dark:border-gold/20 bg-cream/60 dark:bg-[#140f13]/60 py-8 text-center backdrop-blur-xs">
+        <footer className="relative z-20 mt-16 border-t border-gold/25 dark:border-gold/20 bg-cream/80 dark:bg-[#140f13]/80 py-8 text-center">
           <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 px-4">
             <div className="relative h-6 w-32 opacity-70">
               <Image

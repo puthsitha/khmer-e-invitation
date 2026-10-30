@@ -135,7 +135,7 @@ export function InvitationSidebar({
   return (
     <>
       {/* Desktop Sticky Left Sidebar */}
-      <aside className="hidden h-full w-64 shrink-0 flex-col border-r border-gold/30 dark:border-gold/20 bg-cream/90 dark:bg-[#140f13]/90 py-4 backdrop-blur-md lg:flex">
+      <aside className="hidden h-full w-64 shrink-0 flex-col border-r border-gold/30 dark:border-gold/20 bg-cream/95 dark:bg-[#140f13]/95 py-4 lg:flex">
         {content}
       </aside>
 
@@ -148,7 +148,7 @@ export function InvitationSidebar({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs lg:hidden"
+              className="fixed inset-0 z-50 bg-black/50 lg:hidden"
               onClick={onCloseMobile}
             />
             <motion.aside

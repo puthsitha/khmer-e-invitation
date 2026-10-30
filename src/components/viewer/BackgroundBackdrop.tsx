@@ -2,22 +2,27 @@ import Image from "next/image";
 import { AmbientSparks } from "@/components/ui/AmbientSparks";
 
 /**
- * Fixed, heavily blurred full-viewport photo/video that stays in place behind
- * the whole scrolling experience, so every section reads as a frosted-glass
- * card floating over one continuous backdrop rather than a stack of flat
- * blocks. Prefers the cover video embed, falls back to the first gallery
- * photo, falls back to a plain cream background.
+ * Fixed full-viewport photo/video/color backdrop that stays in place behind
+ * the scrolling experience, tinted with the template's background and secondary
+ * colors so text and cards remain clean and legible.
  */
 export function BackgroundBackdrop({
   embedUrl,
   imageUrl,
+  contained = false,
 }: {
   embedUrl?: string | null;
   imageUrl?: string;
+  contained?: boolean;
 }) {
   return (
     <div
-      className="pointer-events-none fixed inset-0 z-0 overflow-hidden w-full max-w-full select-none"
+      className={`pointer-events-none ${
+        contained
+          ? "absolute inset-0 h-full w-full"
+          : "fixed inset-0 h-screen w-screen"
+      } z-0 overflow-hidden max-w-full select-none`}
+      style={{ backgroundColor: "var(--color-bg, var(--color-cream))" }}
       aria-hidden
     >
       {embedUrl ? (
@@ -26,7 +31,7 @@ export function BackgroundBackdrop({
             src={embedUrl}
             title="Cover video"
             allow="autoplay; fullscreen; encrypted-media"
-            className="pointer-events-none"
+            className="pointer-events-none opacity-45"
             style={{
               position: "absolute",
               top: "50%",
@@ -39,18 +44,45 @@ export function BackgroundBackdrop({
               border: 0,
             }}
           />
-          <div className="absolute inset-0 bg-cream/35" />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundColor:
+                "color-mix(in srgb, var(--color-bg, #fdf8f0) var(--bg-opacity, 85%), transparent)",
+            }}
+          />
         </>
       ) : imageUrl ? (
-        <Image
-          src={imageUrl}
-          alt=""
-          fill
-          sizes="100vw"
-          priority
-          className="scale-115 object-cover"
+        <>
+          <Image
+            src={imageUrl}
+            alt=""
+            fill
+            sizes="100vw"
+            priority
+            unoptimized={
+              imageUrl.startsWith("blob:") || imageUrl.startsWith("data:")
+            }
+            className="scale-105 object-cover"
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundColor:
+                "color-mix(in srgb, var(--color-bg, #fdf8f0) var(--bg-opacity, 85%), transparent)",
+            }}
+          />
+        </>
+      ) : (
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(circle at 50% 20%, color-mix(in srgb, var(--color-secondary, #7a1f2b) 25%, var(--color-bg, #fdf8f0)) 0%, var(--color-bg, #fdf8f0) 80%)",
+            opacity: "var(--bg-opacity, 85%)",
+          }}
         />
-      ) : null}
+      )}
       <AmbientSparks />
     </div>
   );

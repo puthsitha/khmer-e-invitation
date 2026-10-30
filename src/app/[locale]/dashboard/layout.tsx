@@ -69,7 +69,7 @@ export default function DashboardLayout({
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-gold/30 dark:border-gold/20 bg-cream/85 dark:bg-[#181216]/90 px-4 sm:px-6 py-3 sm:py-4 backdrop-blur-md"
+          className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-gold/30 dark:border-gold/20 bg-cream/95 dark:bg-[#181216]/95 px-4 sm:px-6 py-3 sm:py-4"
         >
           <Link
             href="/dashboard"

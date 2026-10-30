@@ -132,14 +132,14 @@ export default function LoginPage() {
       {/* Ambient animated backdrop: soft drifting gold/maroon orbs */}
       <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
         <div
-          className="login-orb absolute -left-24 -top-24 h-72 w-72 rounded-full bg-gold/30 dark:bg-gold/15 blur-3xl"
+          className="login-orb absolute -left-24 -top-24 h-72 w-72 rounded-full bg-gold/10 dark:bg-gold/5"
           style={{
             ["--orb-drift-x" as string]: "6%",
             ["--orb-drift-y" as string]: "8%",
           }}
         />
         <div
-          className="login-orb absolute -right-20 top-1/3 h-80 w-80 rounded-full bg-maroon/20 dark:bg-maroon/10 blur-3xl"
+          className="login-orb absolute -right-20 top-1/3 h-80 w-80 rounded-full bg-maroon/10 dark:bg-maroon/5"
           style={{
             ["--orb-drift-x" as string]: "-5%",
             ["--orb-drift-y" as string]: "-7%",
@@ -147,7 +147,7 @@ export default function LoginPage() {
           }}
         />
         <div
-          className="login-orb absolute bottom-[-6rem] left-1/3 h-72 w-72 rounded-full bg-gold-light/30 dark:bg-gold/10 blur-3xl"
+          className="login-orb absolute bottom-[-6rem] left-1/3 h-72 w-72 rounded-full bg-gold-light/15 dark:bg-gold/5"
           style={{
             ["--orb-drift-x" as string]: "4%",
             ["--orb-drift-y" as string]: "-6%",
@@ -161,7 +161,7 @@ export default function LoginPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
-        className="relative z-10 grid w-full max-w-4xl grid-cols-1 items-stretch gap-6 overflow-hidden rounded-3xl border border-gold/30 dark:border-gold/20 bg-white/75 dark:bg-[#1a1318]/90 p-4 shadow-2xl backdrop-blur-xl sm:p-8 lg:grid-cols-2 lg:gap-8">
+        className="relative z-10 grid w-full max-w-4xl grid-cols-1 items-stretch gap-6 overflow-hidden rounded-3xl border border-gold/30 dark:border-gold/20 bg-white/95 dark:bg-[#1a1318]/95 p-4 shadow-2xl sm:p-8 lg:grid-cols-2 lg:gap-8">
         {/* Left Column: Interactive Animated Characters Hero */}
         <div className="flex items-center justify-center bg-transparent p-2 sm:p-4">
           <InteractiveAuthHero

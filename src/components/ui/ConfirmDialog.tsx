@@ -76,8 +76,6 @@ export function ConfirmDialog({
             height: "100vh",
             zIndex: 99999,
             backgroundColor: "rgba(0, 0, 0, 0.65)",
-            backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",

@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import {
   getInvitation,
+  getTemplate,
   listRsvpResponses,
   listWeddingGuests,
   createWeddingGuest,
@@ -15,13 +16,12 @@ import {
   batchImportWeddingGuests,
   updateInvitation,
 } from "@/lib/firebase/firestore";
-import type { WeddingGuest, RsvpDecision } from "@/types";
+import type { WeddingGuest, RsvpDecision, Template } from "@/types";
 import type { ParsedGuestRow } from "@/lib/excel";
 
 import {
   deleteMediaByUrl,
   uploadBgMusic,
-  uploadCoverImage,
   uploadDigitalEnvelopeQr,
   uploadGalleryImage,
   uploadStoryImage,
@@ -30,8 +30,6 @@ import {
 import { QrCode } from "@/components/ui/QrCode";
 import { BilingualField } from "@/components/dashboard/BilingualField";
 import { TimeSelect12h } from "@/components/dashboard/TimeSelect12h";
-import { CoverBackdropManager } from "@/components/dashboard/CoverBackdropManager";
-import { PaletteSelector } from "@/components/dashboard/PaletteSelector";
 import { ImageUploadManager } from "@/components/dashboard/ImageUploadManager";
 import { AudioUploadManager } from "@/components/dashboard/AudioUploadManager";
 import { RsvpManager } from "@/components/dashboard/RsvpManager";
@@ -44,14 +42,10 @@ import {
 } from "@/components/dashboard/InvitationSidebar";
 import { InvitationTopNav } from "@/components/dashboard/InvitationTopNav";
 import { VenueMapPreview } from "@/components/dashboard/VenueMapPreview";
-import { usePalettes } from "@/hooks/usePalettes";
 import { asBilingual, EMPTY_BILINGUAL } from "@/lib/bilingual";
 import {
   MapPin,
-  Video,
-  Music,
   Trash2,
-  UploadCloud,
   Plus,
   Share2,
 } from "lucide-react";
@@ -112,14 +106,23 @@ export default function EditInvitationPage() {
 
   const t = useTranslations("dashboard.editor");
   const tStatus = useTranslations("dashboard.list.status");
-  const palettes = usePalettes();
+  const [template, setTemplate] = useState<Template | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
     getInvitation(invitationId)
       .then((inv) => {
-        if (!cancelled) setInvitation(inv);
+        if (!cancelled) {
+          setInvitation(inv);
+          if (inv?.templateId) {
+            getTemplate(inv.templateId)
+              .then((tpl) => {
+                if (!cancelled) setTemplate(tpl);
+              })
+              .catch(() => {});
+          }
+        }
       })
       .catch((err) => {
         console.warn("Could not load invitation:", err);
@@ -334,20 +337,6 @@ export default function EditInvitationPage() {
     }
   }
 
-  async function handleCoverImageUpload(file: File) {
-    if (!file || !invitation) return;
-    setStatus(null);
-    try {
-      const url = await uploadCoverImage(invitation.invitationId, file);
-      await save({ coverImageUrl: url, coverMediaType: "photo" });
-    } catch (err) {
-      const msg =
-        err instanceof UploadValidationError ? err.message : t("saveError");
-      setStatus(msg);
-      throw err;
-    }
-  }
-
   // --- Family fields -------------------------------------------------
   function updateFamily(
     key: "groomFamily" | "brideFamily",
@@ -460,7 +449,7 @@ export default function EditInvitationPage() {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="sticky top-0 z-20 border-b border-gold/25 dark:border-gold/20 bg-cream/95 dark:bg-[#140f13]/95 px-4 py-3 shadow-xs sm:backdrop-blur-md sm:px-8 sm:py-4"
+            className="sticky top-0 z-20 border-b border-gold/25 dark:border-gold/20 bg-cream/95 dark:bg-[#140f13]/95 px-4 py-3 shadow-xs sm:px-8 sm:py-4"
           >
             <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
               <div className="flex flex-col justify-center min-w-0 max-w-full">
@@ -584,61 +573,11 @@ export default function EditInvitationPage() {
                 <VenueMapPreview mapUrl={invitation.content.mapUrl} />
               </div>
 
-              {/* Cover Backdrop (Video & Photo Options) */}
-              <CoverBackdropManager
-                mediaType={invitation.coverMediaType ?? "video"}
-                videoUrl={invitation.coverVideoEmbedUrl ?? ""}
-                imageUrl={invitation.coverImageUrl ?? ""}
-                onChangeMediaType={(type) => save({ coverMediaType: type })}
-                onSaveVideoUrl={(url) => save({ coverVideoEmbedUrl: url })}
-                onUploadImage={handleCoverImageUpload}
-                onRemoveImage={async () => {
-                  if (invitation.coverImageUrl) {
-                    await deleteMediaByUrl(invitation.coverImageUrl).catch(() => {});
-                    await save({ coverImageUrl: "" });
-                  }
-                }}
-                inputClassName={inputClassName}
-                labels={{
-                  backdropTitle: t("content.backdropTitle"),
-                  typeVideo: t("content.backdropTypeVideo"),
-                  typePhoto: t("content.backdropTypePhoto"),
-                  coverVideo: t("content.coverVideo"),
-                  coverVideoPlaceholder: t("content.coverVideoPlaceholder"),
-                  videoPreviewTitle: t("content.videoPreviewTitle"),
-                  videoPreviewEmpty: t("content.videoPreviewEmpty"),
-                  videoPreviewHint: t("content.videoPreviewHint"),
-                  videoValidYoutube: t("content.videoValidYoutube"),
-                  videoValidVimeo: t("content.videoValidVimeo"),
-                  openVideoLink: t("content.openVideoLink"),
-                  clearVideo: t("content.clearVideo"),
-                  photoPreviewTitle: t("content.photoUploadTitle"),
-                  photoPreviewEmpty: t("content.photoUploadEmpty"),
-                  photoPreviewHint: t("content.photoUploadHint"),
-                  photoValid: t("content.photoValid"),
-                  removePhoto: t("content.removePhoto"),
-                  changePhoto: t("content.changePhoto"),
-                  dragDropPhoto: t("content.dragDropPhoto"),
-                  browseFiles: t("media.browseFiles"),
-                  uploadingPhoto: t("content.uploadingPhoto"),
-                  photoSupportsHint: t("content.photoSupportsHint"),
-                }}
-              />
-
               {/* Event Date & Time */}
               <DateTimePicker
                 value={invitation.eventDate}
                 onChange={(newTimestamp) => save({ eventDate: newTimestamp })}
                 label={t("content.eventDate")}
-              />
-
-              {/* Color Palette Selector */}
-              <PaletteSelector
-                palettes={palettes ?? []}
-                selectedId={invitation.colorPalette}
-                onSelect={(pId) => save({ colorPalette: pId })}
-                title={t("content.colorPalette")}
-                description={t("content.colorPaletteDescription")}
               />
               </Section>
             )}
@@ -813,29 +752,31 @@ export default function EditInvitationPage() {
                 />
               </div>
 
-              {/* Background Music */}
-              <AudioUploadManager
-                audioUrl={invitation.mediaUrls.bgMusic}
-                onUpload={handleMusicUpload}
-                onRemove={async () => {
-                  if (!invitation.mediaUrls.bgMusic) return;
-                  await deleteMediaByUrl(invitation.mediaUrls.bgMusic).catch(() => {});
-                  await save({ mediaUrls: { ...invitation.mediaUrls, bgMusic: undefined } });
-                }}
-                labels={{
-                  musicTitle: t("media.musicTitle"),
-                  musicNote: t("media.musicNote"),
-                  dropzoneTitle: t("media.musicDropzoneTitle"),
-                  dropzoneReplaceTitle: t("media.musicDropzoneReplaceTitle"),
-                  browseFiles: t("media.browseFiles"),
-                  uploading: t("media.musicProcessing"),
-                  supportsNote: t("media.musicSupportsNote"),
-                  removeAudio: t("media.removeImage"),
-                  currentAudio: t("media.musicCurrentTrack"),
-                  removing: t("media.musicRemoving"),
-                  invalidAudioType: t("media.invalidAudioType"),
-                }}
-              />
+              {/* Background Music (only if enabled on template by admin) */}
+              {(!template || template.hasMusic) && (
+                <AudioUploadManager
+                  audioUrl={invitation.mediaUrls.bgMusic}
+                  onUpload={handleMusicUpload}
+                  onRemove={async () => {
+                    if (!invitation.mediaUrls.bgMusic) return;
+                    await deleteMediaByUrl(invitation.mediaUrls.bgMusic).catch(() => {});
+                    await save({ mediaUrls: { ...invitation.mediaUrls, bgMusic: undefined } });
+                  }}
+                  labels={{
+                    musicTitle: t("media.musicTitle"),
+                    musicNote: t("media.musicNote"),
+                    dropzoneTitle: t("media.musicDropzoneTitle"),
+                    dropzoneReplaceTitle: t("media.musicDropzoneReplaceTitle"),
+                    browseFiles: t("media.browseFiles"),
+                    uploading: t("media.musicProcessing"),
+                    supportsNote: t("media.musicSupportsNote"),
+                    removeAudio: t("media.removeImage"),
+                    currentAudio: t("media.musicCurrentTrack"),
+                    removing: t("media.musicRemoving"),
+                    invalidAudioType: t("media.invalidAudioType"),
+                  }}
+                />
+              )}
 
               {/* Digital Envelope QR */}
               <div className="flex flex-col gap-2 rounded-2xl border border-gold/30 dark:border-gold/20 bg-cream/20 dark:bg-white/5 p-5">

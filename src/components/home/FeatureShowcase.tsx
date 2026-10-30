@@ -29,7 +29,7 @@ export function FeatureShowcase() {
           viewport={{ once: true, margin: "-40px" }}
           transition={{ delay: 0.1, duration: 0.5 }}
           whileHover={{ y: -6, scale: 1.02 }}
-          className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-gold/40 dark:border-gold/25 bg-gradient-to-b from-[#fffefc] to-[#fcf6ed] dark:from-[#1c161b] dark:to-[#171217] p-6 shadow-lg backdrop-blur-md transition-all duration-300 hover:border-gold hover:shadow-[0_20px_45px_rgba(201,162,75,0.22)]"
+          className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-gold/40 dark:border-gold/25 bg-gradient-to-b from-[#fffefc] to-[#fcf6ed] dark:from-[#1c161b] dark:to-[#171217] p-6 shadow-lg transition-all duration-300 hover:border-gold hover:shadow-[0_20px_45px_rgba(201,162,75,0.22)]"
         >
           <div>
             {/* Title & Description */}
@@ -70,7 +70,7 @@ export function FeatureShowcase() {
           viewport={{ once: true, margin: "-40px" }}
           transition={{ delay: 0.2, duration: 0.5 }}
           whileHover={{ y: -6, scale: 1.02 }}
-          className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-gold/40 dark:border-gold/25 bg-gradient-to-b from-[#fffefc] to-[#fcf6ed] dark:from-[#1c161b] dark:to-[#171217] p-6 shadow-lg backdrop-blur-md transition-all duration-300 hover:border-gold hover:shadow-[0_20px_45px_rgba(201,162,75,0.22)]"
+          className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-gold/40 dark:border-gold/25 bg-gradient-to-b from-[#fffefc] to-[#fcf6ed] dark:from-[#1c161b] dark:to-[#171217] p-6 shadow-lg transition-all duration-300 hover:border-gold hover:shadow-[0_20px_45px_rgba(201,162,75,0.22)]"
         >
           <div>
             {/* Title & Description */}
@@ -111,7 +111,7 @@ export function FeatureShowcase() {
           viewport={{ once: true, margin: "-40px" }}
           transition={{ delay: 0.3, duration: 0.5 }}
           whileHover={{ y: -6, scale: 1.02 }}
-          className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-gold/40 dark:border-gold/25 bg-gradient-to-b from-[#fffefc] to-[#fcf6ed] dark:from-[#1c161b] dark:to-[#171217] p-6 shadow-lg backdrop-blur-md transition-all duration-300 hover:border-gold hover:shadow-[0_20px_45px_rgba(201,162,75,0.22)]"
+          className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-gold/40 dark:border-gold/25 bg-gradient-to-b from-[#fffefc] to-[#fcf6ed] dark:from-[#1c161b] dark:to-[#171217] p-6 shadow-lg transition-all duration-300 hover:border-gold hover:shadow-[0_20px_45px_rgba(201,162,75,0.22)]"
         >
           <div>
             {/* Title & Description */}

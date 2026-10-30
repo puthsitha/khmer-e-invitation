@@ -17,7 +17,10 @@ export function GratitudeApology() {
         <SectionHeading icon={<Heart className="h-4 w-4" />} dividerVariant={4}>
           {t("gratitudeTitle")}
         </SectionHeading>
-        <p className="leading-relaxed text-maroon/90" style={bodyFontStyle(locale)}>
+        <p
+          className="text-[15px] @sm:text-base leading-[2] text-maroon/95"
+          style={bodyFontStyle(locale)}
+        >
           {t("gratitudeText")}
         </p>
       </GlassCard>
