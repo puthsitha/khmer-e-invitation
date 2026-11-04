@@ -12,7 +12,7 @@ export function EnvTag() {
 
   return (
     <div
-      className="fixed bottom-3 right-3 z-50 rounded-full border border-white/20 bg-black/70 px-3 py-1 text-xs font-semibold tracking-wide text-white shadow-lg backdrop-blur-sm pointer-events-none select-none"
+      className="fixed bottom-3 right-3 z-50 rounded-full border border-white/20 bg-black/80 px-3 py-1 text-xs font-semibold tracking-wide text-white shadow-lg pointer-events-none select-none"
       aria-hidden="true"
     >
       {label}

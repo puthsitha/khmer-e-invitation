@@ -52,14 +52,14 @@ export function ImageLightbox({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 p-4 backdrop-blur-md select-none"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 p-4 select-none"
       onClick={onClose}
     >
       {/* Top Controls Bar */}
       <div className="absolute left-4 right-4 top-4 z-10 flex items-center justify-between pointer-events-none">
         {/* Counter Badge */}
         {photos.length > 1 ? (
-          <span className="rounded-full bg-white/15 px-3.5 py-1 text-xs font-semibold text-cream backdrop-blur-md pointer-events-auto">
+          <span className="rounded-full bg-white/15 px-3.5 py-1 text-xs font-semibold text-cream pointer-events-auto">
             {index + 1} / {photos.length}
           </span>
         ) : (
@@ -101,7 +101,7 @@ export function ImageLightbox({
               goPrev();
             }}
             aria-label="Previous photo"
-            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-cream backdrop-blur-xs transition-all hover:bg-white/25 hover:scale-105 active:scale-95 cursor-pointer sm:left-6"
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-cream transition-all hover:bg-white/25 hover:scale-105 active:scale-95 cursor-pointer sm:left-6"
           >
             <ChevronLeft className="h-6 w-6" />
           </button>
@@ -112,7 +112,7 @@ export function ImageLightbox({
               goNext();
             }}
             aria-label="Next photo"
-            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-cream backdrop-blur-xs transition-all hover:bg-white/25 hover:scale-105 active:scale-95 cursor-pointer sm:right-6"
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-cream transition-all hover:bg-white/25 hover:scale-105 active:scale-95 cursor-pointer sm:right-6"
           >
             <ChevronRight className="h-6 w-6" />
           </button>

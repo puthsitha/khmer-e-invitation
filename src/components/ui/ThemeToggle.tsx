@@ -20,7 +20,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       transition={{ duration: 0.15 }}
       aria-label={t("themeToggle")}
       title={isDark ? t("themeLight") : t("themeDark")}
-      className={`relative flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-full border border-gold/40 bg-cream/70 text-maroon backdrop-blur-xs transition-colors hover:border-gold hover:bg-gold/15 dark:border-gold/30 dark:bg-black/40 dark:text-gold dark:hover:bg-gold/20 cursor-pointer ${className}`}
+      className={`relative flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-full border border-gold/40 bg-cream/90 text-maroon transition-colors hover:border-gold hover:bg-gold/15 dark:border-gold/30 dark:bg-black/60 dark:text-gold dark:hover:bg-gold/20 cursor-pointer ${className}`}
     >
       <motion.div
         key={isDark ? "dark" : "light"}

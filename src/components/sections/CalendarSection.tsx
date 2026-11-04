@@ -144,9 +144,9 @@ export function CalendarSection({ invitation }: { invitation: Invitation }) {
       <button
         type="button"
         onClick={handleAddToCalendar}
-        className="ultra-thin-material flex items-center gap-2 rounded-full px-6 py-3 text-sm uppercase tracking-widest text-[#fdf8f0] transition-all hover:scale-105 hover:border-gold cursor-pointer"
+        className="ultra-thin-material flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-widest text-maroon transition-all hover:scale-105 hover:border-gold cursor-pointer"
       >
-        <CalendarPlus className="h-4 w-4" />
+        <CalendarPlus className="h-4 w-4 text-gold" />
         {t("addToCalendar")}
       </button>
     </SectionShell>

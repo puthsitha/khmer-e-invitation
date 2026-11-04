@@ -13,12 +13,11 @@ import { formatKhmerDate, formatKhmerTime } from "@/lib/khmerDate";
 import type { Invitation } from "@/types";
 
 /** Reference look captured from wedgo.app's English-mode couple names,
- * adapted to the app's Khmer maroon palette instead of the source's green. */
+ * adapted to the template's text & primary palette. */
 const enNameStyle: CSSProperties = {
   color: "var(--color-maroon)",
   lineHeight: 1.15,
-  textShadow:
-    "rgba(255, 255, 255, 0.28) 0px 1px 2px, rgba(255, 255, 255, 0.2) 0px 2px 6px, rgba(255, 255, 255, 0.14) 0px 4px 16px",
+  textShadow: "0 2px 10px rgba(0, 0, 0, 0.18)",
   letterSpacing: "0.005em",
   fontWeight: 400,
   wordBreak: "break-word",
@@ -26,12 +25,10 @@ const enNameStyle: CSSProperties = {
   fontSize: "clamp(1.5rem, 6.5vw, 2.625rem)",
 };
 
-/** Same reference treatment for the Khmer couple names, keeping the app's
- * existing maroon color (inherited) instead of the reference's green. */
+/** Same reference treatment for the Khmer couple names. */
 const kmNameStyle: CSSProperties = {
   lineHeight: 1.8,
-  textShadow:
-    "rgba(255, 255, 255, 0.28) 0px 1px 2px, rgba(255, 255, 255, 0.2) 0px 2px 6px, rgba(255, 255, 255, 0.14) 0px 4px 16px",
+  textShadow: "0 2px 10px rgba(0, 0, 0, 0.18)",
   letterSpacing: "0px",
   fontWeight: 400,
   wordBreak: "break-word",
@@ -44,11 +41,13 @@ export function Hero({
   guestName: propGuestName,
   onOpen,
   onStartMusic,
+  contained = false,
 }: {
   invitation: Invitation;
   guestName?: string;
   onOpen: () => void;
   onStartMusic: () => void;
+  contained?: boolean;
 }) {
   const t = useTranslations("viewer");
   const locale = useLocale();
@@ -96,23 +95,19 @@ export function Hero({
           letterSpacing: "0px",
           textTransform: "none",
           fontWeight: 400,
-          opacity: 0.78,
-          marginBottom: "26px",
+          opacity: 0.9,
+          marginBottom: "18px",
           animation: onOccasionInkAnimation,
-          textShadow:
-            "rgba(255, 255, 255, 0.95) 0px 1px 3px, rgba(255, 255, 255, 0.9) 0px 0px 8px, rgba(255, 255, 255, 0.7) 0px 2px 14px",
         }
       : {
           fontFamily: "var(--font-elegant-en)",
           fontSize: "clamp(11px, 2.9vw, 13px)",
           letterSpacing: "0.36em",
           textTransform: "uppercase",
-          fontWeight: 500,
-          opacity: 0.78,
-          marginBottom: "26px",
+          fontWeight: 600,
+          opacity: 0.9,
+          marginBottom: "18px",
           animation: onOccasionInkAnimation,
-          textShadow:
-            "rgba(255, 255, 255, 0.95) 0px 1px 3px, rgba(255, 255, 255, 0.9) 0px 0px 8px, rgba(255, 255, 255, 0.7) 0px 2px 14px",
         };
 
   function handleOpenClick() {
@@ -127,7 +122,9 @@ export function Hero({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4, ease: "easeInOut" }}
-      className="fixed inset-0 z-40 flex flex-col items-center overflow-y-auto overflow-x-clip px-4 py-8 sm:px-6 sm:py-12 text-center text-maroon min-h-screen w-full max-w-full"
+      className={`${
+        contained ? "relative min-h-[560px]" : "fixed inset-0 min-h-screen"
+      } z-40 flex flex-col items-center overflow-y-auto overflow-x-clip px-4 py-8 sm:px-6 sm:py-12 text-center text-maroon w-full max-w-full`}
       style={{ WebkitOverflowScrolling: "touch", touchAction: "pan-y" }}
     >
       <div className="m-auto flex w-full max-w-lg flex-col items-center gap-4 sm:gap-5 py-4">
@@ -167,19 +164,19 @@ export function Hero({
       />
 
       <p
-        className="text-glow max-w-xs text-base italic text-maroon/80"
+        className="max-w-xs text-base italic text-maroon/80"
         style={bodyFontStyle(locale)}
       >
         {t("requestPleasure")}
       </p>
 
       <div
-        className="text-glow flex flex-col items-center gap-1 text-maroon/90"
+        className="flex flex-col items-center gap-1 text-maroon/90"
         style={bodyFontStyle(locale)}
       >
-        <p className="text-lg">{date}</p>
-        <p>{time}</p>
-        {address && <p className="max-w-xs">{address}</p>}
+        <p className="text-lg font-medium">{date}</p>
+        <p className="text-gold font-semibold">{time}</p>
+        {address && <p className="max-w-xs text-sm opacity-85 mt-1">{address}</p>}
       </div>
 
       <div className="relative mt-4">
@@ -187,13 +184,13 @@ export function Hero({
         <motion.button
           type="button"
           onClick={handleOpenClick}
-          animate={shouldReduceMotion ? undefined : { scale: [1, 1.06, 1] }}
+          animate={shouldReduceMotion ? undefined : { scale: [1, 1.05, 1] }}
           transition={
             shouldReduceMotion
               ? undefined
               : { duration: 2.2, repeat: Infinity, ease: "easeInOut" }
           }
-          className="relative overflow-hidden rounded-full bg-gold px-8 py-3 text-sm uppercase tracking-widest text-cream shadow-lg"
+          className="relative overflow-hidden rounded-full bg-gold px-8 py-3 text-sm font-bold uppercase tracking-widest text-[#140f13] shadow-lg cursor-pointer"
         >
           {!shouldReduceMotion && (
             <span

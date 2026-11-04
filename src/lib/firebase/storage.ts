@@ -145,6 +145,30 @@ export async function uploadTemplatePreviewImage(
   return uploadToCloudinary(file, `khmer-e-invitation/templates/${templateId}`);
 }
 
+export async function uploadTemplateBackgroundImage(
+  templateId: string,
+  file: File,
+) {
+  assertUpload(file, {
+    maxBytes: UPLOAD_LIMITS.galleryImageMaxBytes,
+    allowedTypes: ALLOWED_IMAGE_TYPES,
+    allowedExtensions: [".jpg", ".jpeg", ".png", ".webp", ".gif"],
+  });
+  return uploadToCloudinary(file, `khmer-e-invitation/templates/${templateId}/background`);
+}
+
+export async function uploadTemplateMusic(
+  templateId: string,
+  file: File,
+) {
+  assertUpload(file, {
+    maxBytes: UPLOAD_LIMITS.bgMusicMaxBytes,
+    allowedTypes: ALLOWED_AUDIO_TYPES,
+    allowedExtensions: [".mp3", ".wav", ".m4a", ".aac", ".ogg", ".mp4"],
+  });
+  return uploadToCloudinary(file, `khmer-e-invitation/templates/${templateId}/music`);
+}
+
 export async function deleteMediaByUrl(url: string) {
   if (!url) return;
 

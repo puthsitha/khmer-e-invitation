@@ -9,7 +9,7 @@ export function SectionShell({
 }) {
   return (
     <section
-      className={`flex w-full max-w-full flex-col items-center justify-center gap-6 px-4 py-8 sm:px-6 sm:py-16 text-center ${className}`}
+      className={`mx-auto flex w-full max-w-[768px] flex-col items-center justify-center gap-6 px-3.5 py-8 @xl:px-8 @xl:py-12 text-center ${className}`}
     >
       {children}
     </section>

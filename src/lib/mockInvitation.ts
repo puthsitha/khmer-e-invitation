@@ -5,7 +5,7 @@ export const MOCK_WEDDING_INVITATION: Invitation = {
   ownerUid: "dev-user-001",
   slug: "chenda-monyroth-wedding",
   category: "wedding",
-  templateId: "classic-khmer-gold",
+  templateId: "royal-kh",
   defaultLocale: "km",
   status: "published",
   colorPalette: "royal-gold",
@@ -71,8 +71,7 @@ export const MOCK_WEDDING_INVITATION: Invitation = {
           km: "ការឈរទស្សនាថ្ងៃរះនៅពីមុខប្រាសាទអង្គរវត្តជាមួយគ្នា បានធ្វើឱ្យយើងទាំងពីរកាន់តែយល់ចិត្ត និងចងក្រងនូវការចងចាំដ៏មានតម្លៃដែលមិនអាចបំភ្លេចបាន។",
           en: "Watching the golden sunrise illuminate Angkor Wat hand-in-hand taught us how beautiful life is when shared with your kindred soul.",
         },
-        image:
-          "https://images.unsplash.com/photo-1609137144822-4458cb5e33eb?auto=format&fit=crop&w=1000&q=80",
+        image: "",
       },
       {
         title: {
@@ -95,8 +94,7 @@ export const MOCK_WEDDING_INVITATION: Invitation = {
           km: "ថ្ងៃនេះ យើងទាំងពីរសូមចាប់ដៃគ្នាសាងគ្រួសារដ៏កក់ក្តៅ និងដើរលើវិថីជីវិតជាមួយគ្នាដោយក្តីស្រឡាញ់ ភាពស្មោះត្រង់ និងការយល់ចិត្តជារៀងរហូត។",
           en: "Today, with humble and grateful hearts, we unite our souls to build a loving home and walk the journey of life as partners for eternity.",
         },
-        image:
-          "https://images.unsplash.com/photo-1519225429980-715cb0215aed?auto=format&fit=crop&w=1000&q=80",
+        image: "",
       },
     ],
     agenda: [
@@ -158,17 +156,55 @@ export const MOCK_WEDDING_INVITATION: Invitation = {
 };
 
 export const MOCK_TEMPLATE: Template = {
-  templateId: "classic-khmer-gold",
+  templateId: "royal-kh",
   category: "wedding",
-  name: "Classic Khmer Gold Wedding",
+  name: "Royal KH · ខ្មែររាជវង្ស",
   previewImage:
     "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=600&q=80",
-  defaultColorPalette: "royal-gold",
+  colors: {
+    primary: "#c9a24b",
+    secondary: "#7a1f2b",
+    text: "#3b1319",
+    background: "#fdf8f0",
+  },
+  backgroundType: "photo",
+  backgroundImageUrl:
+    "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1600&q=80",
+  hasMusic: true,
+  defaultMusicUrl:
+    "https://assets.mixkit.co/music/preview/mixkit-romantic-wedding-640.mp3",
   defaultFonts: {
     heading: "Moul",
     body: "Kantumruy Pro",
   },
 };
+
+export function createSampleInvitationForTemplate(
+  template: Template,
+): Invitation {
+  return {
+    ...MOCK_WEDDING_INVITATION,
+    invitationId: `sample-${template.templateId}`,
+    slug: `preview-${template.templateId}`,
+    category: template.category,
+    templateId: template.templateId,
+    status: "published",
+    coverMediaType:
+      template.backgroundType === "video"
+        ? "video"
+        : template.backgroundType === "photo"
+          ? "photo"
+          : undefined,
+    coverImageUrl: template.backgroundImageUrl,
+    coverVideoEmbedUrl: template.backgroundVideoUrl,
+    mediaUrls: {
+      ...MOCK_WEDDING_INVITATION.mediaUrls,
+      bgMusic: template.hasMusic
+        ? template.defaultMusicUrl || MOCK_WEDDING_INVITATION.mediaUrls.bgMusic
+        : undefined,
+    },
+  };
+}
 
 export const MOCK_PALETTE: Palette = {
   paletteId: "royal-gold",

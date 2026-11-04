@@ -13,7 +13,6 @@ import Image from "next/image";
 import {
   LayoutDashboard,
   Menu,
-  Palette,
   Users,
   X,
   LayoutTemplate,
@@ -64,7 +63,6 @@ export default function AdminLayout({
       label: t("nav.templates"),
       icon: LayoutTemplate,
     },
-    { href: "/admin/palettes", label: t("nav.palettes"), icon: Palette },
   ] as const;
 
   const isActive = (href: string) =>
@@ -103,7 +101,7 @@ export default function AdminLayout({
         initial={{ opacity: 0, x: -12 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-gold/30 dark:border-gold/20 bg-cream/80 dark:bg-[#181216]/95 py-6 backdrop-blur-md lg:flex">
+        className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-gold/30 dark:border-gold/20 bg-cream/95 dark:bg-[#181216]/95 py-6 lg:flex">
         <div className="mb-8 flex items-center gap-2.5 px-6 font-[family-name:var(--font-heading-km)] text-xl text-maroon dark:text-cream transition-opacity">
           <div className="relative h-7 w-7 shrink-0">
             <Image
@@ -139,7 +137,7 @@ export default function AdminLayout({
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-gold/30 dark:border-gold/20 bg-cream/80 dark:bg-[#181216]/90 px-4 sm:px-6 py-3 sm:py-4 backdrop-blur-md">
+          className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-gold/30 dark:border-gold/20 bg-cream/95 dark:bg-[#181216]/95 px-4 sm:px-6 py-3 sm:py-4">
           <span className="flex min-w-0 items-center gap-2 sm:gap-3">
             <button
               type="button"
@@ -167,7 +165,7 @@ export default function AdminLayout({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.25 }}
-                className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm lg:hidden"
+                className="fixed inset-0 z-50 bg-black/50 lg:hidden"
                 onClick={() => setMobileNavOpen(false)}
               />
               <motion.aside

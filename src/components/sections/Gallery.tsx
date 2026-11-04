@@ -10,7 +10,7 @@ import { SectionHeading } from "@/components/viewer/SectionHeading";
 import { ImageLightbox } from "@/components/viewer/ImageLightbox";
 import type { Invitation } from "@/types";
 
-const ORBIT_RADIUS_PERCENT = 35;
+const ORBIT_RADIUS_PERCENT = 36;
 const ORBIT_DURATION_SECONDS = 50;
 
 function OrbitGallery({
@@ -21,13 +21,18 @@ function OrbitGallery({
   onSelect: (index: number) => void;
 }) {
   const reduceMotion = useReducedMotion();
-  const thumbSizeClass =
-    photos.length > 8
-      ? "h-12 w-12 sm:h-18 sm:w-18"
-      : "h-16 w-16 min-[380px]:h-20 min-[380px]:w-20 sm:h-28 sm:w-28 md:h-32 md:w-32";
+  const count = Math.max(photos.length, 1);
+
+  // Calculate circle diameter as a % of the square container so photos scale
+  // proportionally with any screen size and never overlap adjacent circles.
+  const maxNonOverlappingPercent =
+    count > 1
+      ? 2 * ORBIT_RADIUS_PERCENT * Math.sin(Math.PI / count) * 0.86
+      : 24;
+  const thumbPercent = Math.max(12, Math.min(23.5, maxNonOverlappingPercent));
 
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[260px] min-[380px]:max-w-[280px] sm:max-w-md md:max-w-lg">
+    <div className="relative mx-auto aspect-square w-full max-w-[min(88vw,320px)] @sm:max-w-[420px] @md:max-w-[460px]">
       <motion.div
         className="absolute inset-0"
         animate={reduceMotion ? undefined : { rotate: 360 }}
@@ -49,9 +54,14 @@ function OrbitGallery({
 
           return (
             <motion.div
-              key={url}
-              className="absolute -translate-x-1/2 -translate-y-1/2"
-              style={{ left: `${left}%`, top: `${top}%` }}
+              key={`${url}-${index}`}
+              className="absolute -translate-x-1/2 -translate-y-1/2 aspect-square"
+              style={{
+                left: `${left}%`,
+                top: `${top}%`,
+                width: `${thumbPercent}%`,
+                height: `${thumbPercent}%`,
+              }}
               animate={reduceMotion ? undefined : { rotate: -360 }}
               transition={
                 reduceMotion
@@ -66,13 +76,13 @@ function OrbitGallery({
               <button
                 type="button"
                 onClick={() => onSelect(index)}
-                className={`relative ${thumbSizeClass} overflow-hidden rounded-full border-2 border-gold/60 shadow-lg transition-transform hover:scale-105`}
+                className="relative h-full w-full overflow-hidden rounded-full border-2 border-gold/60 shadow-lg transition-transform hover:scale-105"
               >
                 <Image
                   src={url}
                   alt=""
                   fill
-                  sizes="144px"
+                  sizes="(max-width: 640px) 80px, 120px"
                   className="object-cover"
                   loading="lazy"
                 />
@@ -82,7 +92,7 @@ function OrbitGallery({
         })}
       </motion.div>
 
-      <div className="absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 drop-shadow-md sm:h-12 sm:w-12">
+      <div className="absolute left-1/2 top-1/2 h-[13%] w-[13%] -translate-x-1/2 -translate-y-1/2 drop-shadow-md">
         <Image src="/images/Frame_1.png" alt="" fill sizes="48px" className="object-contain" aria-hidden />
       </div>
     </div>

@@ -7,10 +7,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter, Link } from "@/i18n/navigation";
 import { createInvitation, listTemplates } from "@/lib/firebase/firestore";
 import { generateUniqueSlug } from "@/lib/slug";
-import { usePalettes } from "@/hooks/usePalettes";
 import { CustomSelect, SelectOption } from "@/components/ui/CustomSelect";
-import { AlertCircle, ArrowLeft, Eye } from "lucide-react";
-import { ImageLightbox } from "@/components/viewer/ImageLightbox";
+import { AlertCircle, ArrowLeft, ExternalLink, Eye, Music } from "lucide-react";
 import type { InvitationCategory, Template } from "@/types";
 
 const CATEGORIES: InvitationCategory[] = ["wedding", "birthday", "event"];
@@ -29,20 +27,14 @@ export default function NewInvitationPage() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [imgError, setImgError] = useState(false);
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const palettes = usePalettes();
 
   useEffect(() => {
     listTemplates(category).then((list) => {
       setTemplates(list);
       setTemplateId(list[0]?.templateId ?? "");
+      setImgError(false);
     });
   }, [category]);
-
-  useEffect(() => {
-    setImgError(false);
-    setLightboxOpen(false);
-  }, [templateId]);
 
   const categoryOptions: SelectOption[] = CATEGORIES.map((c) => ({
     value: c,
@@ -52,18 +44,16 @@ export default function NewInvitationPage() {
   const templateOptions: SelectOption[] =
     templates.length === 0
       ? [{ value: "", label: t("noTemplates") }]
-      : templates.map((tmpl) => {
-          const pal = palettes?.find(
-            (p) => p.paletteId === tmpl.defaultColorPalette,
-          );
-          return {
-            value: tmpl.templateId,
-            label: tmpl.name,
-            swatches: pal
-              ? [pal.primary, pal.secondary, pal.background]
-              : undefined,
-          };
-        });
+      : templates.map((tmpl) => ({
+          value: tmpl.templateId,
+          label: tmpl.name,
+          swatches: [
+            tmpl.colors.primary,
+            tmpl.colors.secondary,
+            tmpl.colors.text,
+            tmpl.colors.background,
+          ],
+        }));
 
   function validateTitle(val: string): string | null {
     if (!val.trim()) {
@@ -91,15 +81,11 @@ export default function NewInvitationPage() {
     setSubmitting(true);
     try {
       const slug = await generateUniqueSlug(title.trim());
-      const selectedTemplate = templates.find(
-        (t) => t.templateId === templateId,
-      );
       const invitation = await createInvitation(user.uid, {
         slug,
         category,
         templateId,
         defaultLocale: "km",
-        colorPalette: selectedTemplate?.defaultColorPalette ?? "royal-gold",
       });
       router.push(`/dashboard/${invitation.invitationId}`);
     } catch (err) {
@@ -111,9 +97,8 @@ export default function NewInvitationPage() {
   }
 
   const selectedTemplate = templates.find((t) => t.templateId === templateId);
-  const selectedPalette = palettes?.find(
-    (p) => p.paletteId === selectedTemplate?.defaultColorPalette,
-  );
+  const previewThumb =
+    selectedTemplate?.previewImage || selectedTemplate?.backgroundImageUrl;
 
   return (
     <main className="mx-auto max-w-lg px-6 py-10">
@@ -147,18 +132,21 @@ export default function NewInvitationPage() {
           <label className="font-medium">{t("template")}</label>
           <CustomSelect
             value={templateId}
-            onChange={(val) => setTemplateId(val)}
+            onChange={(val) => {
+              setTemplateId(val);
+              setImgError(false);
+            }}
             options={templateOptions}
             buttonClassName="py-2.5 px-4 text-sm font-medium"
           />
         </div>
 
-        {/* Template Preview (Image if available, fallback to Palette if not) */}
-        {selectedTemplate?.previewImage && !imgError ? (
+        {/* Selected Template Summary & Sample Preview Trigger */}
+        {selectedTemplate && (
           <motion.div
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col gap-2 rounded-xl border border-gold/30 dark:border-gold/20 bg-white/75 dark:bg-[#1c161b] p-3.5 shadow-xs"
+            className="flex flex-col gap-3 rounded-xl border border-gold/30 dark:border-gold/20 bg-white/80 dark:bg-[#1c161b] p-4 shadow-xs"
           >
             <div className="flex items-center justify-between text-xs text-maroon/70 dark:text-[#f6eee8]/70">
               <span className="font-semibold">{t("templatePreview")}:</span>
@@ -166,59 +154,74 @@ export default function NewInvitationPage() {
                 {selectedTemplate.name}
               </span>
             </div>
-            <div
-              onClick={() => setLightboxOpen(true)}
-              className="group/img relative aspect-video w-full cursor-pointer overflow-hidden rounded-lg border border-gold/25 bg-gold/5 dark:bg-[#251d24]"
-              title={t("viewFullImage")}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={selectedTemplate.previewImage}
-                alt={selectedTemplate.name}
-                referrerPolicy="no-referrer"
-                onError={() => setImgError(true)}
-                className="h-full w-full object-cover transition-transform duration-300 group-hover/img:scale-105"
-              />
-              <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 backdrop-blur-[2px] transition-opacity duration-200 group-hover/img:opacity-100">
-                <span className="flex items-center gap-1.5 rounded-full bg-white/90 dark:bg-[#20181e]/90 px-3 py-1.5 text-xs font-medium text-maroon dark:text-gold shadow-md transition-transform duration-200 group-hover/img:scale-105">
-                  <Eye size={14} />
-                  <span>{t("viewFullImage")}</span>
-                </span>
-              </div>
-            </div>
-          </motion.div>
-        ) : selectedPalette ? (
-          <motion.div
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col gap-2 rounded-xl border border-gold/30 dark:border-gold/20 bg-white/75 dark:bg-[#1c161b] p-3.5 shadow-xs"
-          >
-            <div className="flex items-center justify-between text-xs text-maroon/70 dark:text-[#f6eee8]/70">
-              <span className="font-semibold">{t("palette")}:</span>
-              <span className="font-medium text-maroon dark:text-[#f6eee8]">
-                {selectedPalette.name}
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              {[
-                { label: "Primary", color: selectedPalette.primary },
-                { label: "Secondary", color: selectedPalette.secondary },
-                { label: "Background", color: selectedPalette.background },
-              ].map((swatch, idx) => (
-                <div key={idx} className="flex items-center gap-2">
+
+            {previewThumb && !imgError && (
+              <Link
+                href={`/i/sample-${selectedTemplate.templateId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group/img relative block aspect-video w-full overflow-hidden rounded-lg border border-gold/25 bg-gold/5 dark:bg-[#251d24]"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={previewThumb}
+                  alt={selectedTemplate.name}
+                  referrerPolicy="no-referrer"
+                  onError={() => setImgError(true)}
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover/img:scale-105"
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-200 group-hover/img:opacity-100">
+                  <span className="flex items-center gap-1.5 rounded-full bg-white/90 dark:bg-[#20181e]/90 px-3 py-1.5 text-xs font-semibold text-maroon dark:text-gold shadow-md">
+                    <Eye size={14} />
+                    <span>{t("previewSample")}</span>
+                    <ExternalLink size={12} />
+                  </span>
+                </div>
+              </Link>
+            )}
+
+            {selectedTemplate.description && (
+              <p className="text-xs leading-relaxed text-maroon/75 dark:text-[#f6eee8]/75">
+                {selectedTemplate.description}
+              </p>
+            )}
+
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+              <div className="flex items-center gap-2">
+                {[
+                  { label: "Primary", color: selectedTemplate.colors.primary },
+                  { label: "Secondary", color: selectedTemplate.colors.secondary },
+                  { label: "Text", color: selectedTemplate.colors.text },
+                  { label: "Background", color: selectedTemplate.colors.background },
+                ].map((swatch, idx) => (
                   <span
-                    className="h-8 w-8 rounded-full border-2 border-white dark:border-[#20181e] shadow-sm ring-1 ring-gold/40 dark:ring-gold/30 transition-transform hover:scale-110"
+                    key={idx}
+                    className="h-6 w-6 rounded-full border-2 border-white dark:border-[#20181e] shadow-xs ring-1 ring-gold/40"
                     style={{ backgroundColor: swatch.color }}
                     title={`${swatch.label}: ${swatch.color}`}
                   />
-                  <span className="text-xs text-maroon/60 dark:text-[#f6eee8]/60 hidden sm:inline">
-                    {swatch.label}
+                ))}
+                {selectedTemplate.hasMusic && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-semibold text-maroon dark:text-gold">
+                    <Music size={10} />
+                    <span>Music</span>
                   </span>
-                </div>
-              ))}
+                )}
+              </div>
+
+              <Link
+                href={`/i/sample-${selectedTemplate.templateId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-gold/40 bg-gold/15 px-3 py-1.5 text-xs font-semibold text-maroon dark:text-gold hover:bg-gold/25 transition-colors cursor-pointer"
+              >
+                <Eye size={13} />
+                <span>{t("previewSample")}</span>
+                <ExternalLink size={12} />
+              </Link>
             </div>
           </motion.div>
-        ) : null}
+        )}
 
         {/* Required Title Input */}
         <div className="flex flex-col gap-1.5 text-sm text-maroon dark:text-[#f6eee8]">
@@ -333,16 +336,6 @@ export default function NewInvitationPage() {
           </motion.button>
         </div>
       </form>
-
-      {/* Lightbox Modal for Full Image View */}
-      {lightboxOpen && selectedTemplate?.previewImage && (
-        <ImageLightbox
-          photos={[selectedTemplate.previewImage]}
-          index={0}
-          onClose={() => setLightboxOpen(false)}
-          onChangeIndex={() => {}}
-        />
-      )}
     </main>
   );
 }

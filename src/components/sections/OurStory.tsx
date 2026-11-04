@@ -42,12 +42,15 @@ export function OurStory({ invitation }: { invitation: Invitation }) {
         <ol className="flex flex-col">
           {items.map(({ item, imageIndex }, index) => (
             <TimelineItem key={index} index={index} isLast={index === story.length - 1}>
-              <p className="mb-2 text-lg text-maroon" style={headingFontStyle(locale)}>
+              <p
+                className="mb-1.5 text-base @sm:text-lg font-bold text-gold"
+                style={headingFontStyle(locale)}
+              >
                 {pickBilingual(item.title, locale)}
               </p>
               <TypewriterText
                 text={pickBilingual(item.description, locale)}
-                className="mb-3 leading-relaxed text-maroon/90"
+                className="mb-3 text-[15px] @sm:text-base leading-[1.9] text-maroon/95"
                 style={bodyFontStyle(locale)}
               />
               {item.image && (

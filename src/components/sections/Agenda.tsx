@@ -32,11 +32,18 @@ export function Agenda({ invitation }: { invitation: Invitation }) {
               index={index}
               isLast={index === agenda.length - 1}
             >
-              <p className="font-[family-name:var(--font-heading-en)] text-gold">
-                {formatAgendaTime(item.time, locale)}
-              </p>
+              <div className="mb-2">
+                <span
+                  className="inline-flex items-center gap-1.5 rounded-full border border-gold/50 bg-gold/15 px-3 py-0.5 text-sm @sm:text-base font-bold tracking-wide text-gold lining-nums tabular-nums shadow-2xs"
+                  style={{ ...bodyFontStyle(locale), fontWeight: 700 }}
+                >
+                  <Clock className="h-3.5 w-3.5 shrink-0 text-gold" />
+                  <span>{formatAgendaTime(item.time, locale)}</span>
+                </span>
+              </div>
               <TypewriterText
                 text={pickBilingual(item.title, locale)}
+                className="text-[15px] @sm:text-base font-medium leading-[1.85] text-maroon"
                 style={bodyFontStyle(locale)}
               />
             </TimelineItem>

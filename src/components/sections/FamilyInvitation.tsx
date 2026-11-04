@@ -23,16 +23,19 @@ function FamilyBlock({
   if (!father && !mother) return null;
 
   return (
-    <div>
-      <p className="mb-2 text-xs uppercase tracking-widest text-gold">
+    <div className="flex flex-col items-center text-center min-w-0">
+      <p
+        className="mb-4 @xl:mb-5 text-xs @xl:text-sm font-semibold text-gold"
+        style={bodyFontStyle(locale)}
+      >
         {heading}
       </p>
       <div
-        className="flex flex-col gap-1 text-base font-bold text-maroon"
+        className="flex flex-col gap-3.5 @xl:gap-4 text-[15px] @xl:text-lg font-bold leading-normal text-maroon"
         style={{ ...bodyFontStyle(locale), fontWeight: 700 }}
       >
-        {father && <p className="font-bold">{father}</p>}
-        {mother && <p className="font-bold">{mother}</p>}
+        {father && <p className="font-bold whitespace-nowrap">{father}</p>}
+        {mother && <p className="font-bold whitespace-nowrap">{mother}</p>}
       </div>
     </div>
   );
@@ -46,19 +49,19 @@ export function FamilyInvitation({ invitation }: { invitation: Invitation }) {
 
   return (
     <SectionShell className="text-maroon">
-      <GlassCard className="flex flex-col items-center gap-8">
-        <div className="grid w-full grid-cols-1 items-center gap-8 sm:grid-cols-[1fr_auto_1fr]">
+      <GlassCard className="flex flex-col items-center gap-10 @xl:gap-12 px-5 py-8 @xl:px-10 @xl:py-11">
+        <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-3 @xl:gap-8">
           <FamilyBlock
             heading={t("groomFamily")}
             family={groomFamily}
             locale={locale}
           />
-          <div className="relative hidden w-8 self-stretch sm:block md:w-10">
+          <div className="relative h-20 w-5 shrink-0 self-center @xl:h-28 @xl:w-8">
             <Image
               src="/images/vertical_divider.png"
               alt=""
               fill
-              sizes="40px"
+              sizes="32px"
               className="object-contain"
               aria-hidden
             />
@@ -70,14 +73,17 @@ export function FamilyInvitation({ invitation }: { invitation: Invitation }) {
           />
         </div>
 
-        <div className="flex flex-col items-center gap-3">
-          <p className="text-sm uppercase tracking-widest text-maroon">
+        <div className="flex w-full flex-col items-center gap-5 @xl:gap-6">
+          <p
+            className="text-sm @xl:text-base font-semibold text-gold mt-3"
+            style={bodyFontStyle(locale)}
+          >
             {t("invitationHeading")}
           </p>
           {text && (
             <p
-              className="max-w-xl leading-relaxed text-maroon/90"
-              style={bodyFontStyle(locale)}
+              className="w-full max-w-lg @xl:max-w-xl px-1 @xl:px-4 text-[15px] @xl:text-[17px] leading-[2.3] text-maroon/95"
+              style={{ ...bodyFontStyle(locale), lineHeight: 2.3 }}
             >
               {text}
             </p>

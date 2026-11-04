@@ -23,7 +23,7 @@ export function ViewerLocaleSwitcher({
           className={`rounded-full px-3 py-1 transition-all ${
             loc === locale
               ? "bg-gold/25 text-gold font-medium border border-gold/40 shadow-xs"
-              : "text-[#fdf8f0]/75 hover:text-[#fdf8f0] hover:bg-white/5"
+              : "text-maroon/75 hover:text-maroon hover:bg-gold/10"
           }`}
         >
           {labels[loc]}

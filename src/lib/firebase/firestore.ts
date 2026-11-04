@@ -14,8 +14,9 @@ import {
   type QueryDocumentSnapshot,
 } from "firebase/firestore";
 import { db } from "./client";
-import type { AppUser, Invitation, Palette, RsvpResponse, Template, WeddingGuest, RsvpDecision } from "@/types";
+import type { AppUser, Invitation, Palette, RsvpResponse, Template, TemplateColors, WeddingGuest, RsvpDecision } from "@/types";
 import { encryptGuestToken } from "@/lib/guestToken";
+import { deleteMediaByUrl } from "./storage";
 
 function cleanUndefined<T extends Record<string, unknown>>(data: T): Record<string, unknown> {
   const result: Record<string, unknown> = {};
@@ -48,9 +49,168 @@ const usersCol = collection(db, "users").withConverter(converter<AppUser>());
 const invitationsCol = collection(db, "invitations").withConverter(
   converter<Invitation>(),
 );
-const templatesCol = collection(db, "templates").withConverter(
-  converter<Template>(),
-);
+export const DEFAULT_TEMPLATE_COLORS: TemplateColors = {
+  primary: "#c9a24b",
+  secondary: "#7a1f2b",
+  text: "#2a1a12",
+  background: "#fdf8f0",
+  backgroundOpacity: 85,
+};
+
+const LEGACY_PALETTE_COLORS: Record<string, TemplateColors> = {
+  "royal-gold": {
+    primary: "#c9a24b",
+    secondary: "#7a1f2b",
+    text: "#2a1a12",
+    background: "#fdf8f0",
+  },
+  "blush-temple": {
+    primary: "#c9a24b",
+    secondary: "#8a3b4c",
+    text: "#3a1d24",
+    background: "#fff8f4",
+  },
+  "modern-minimal": {
+    primary: "#b8934a",
+    secondary: "#2a2a2a",
+    text: "#1f1f1f",
+    background: "#f5f2ec",
+  },
+  "lotus-blush": {
+    primary: "#e3a6ad",
+    secondary: "#9c4a55",
+    text: "#3d1e23",
+    background: "#fff5f2",
+  },
+  "imperial-jade": {
+    primary: "#c9a24b",
+    secondary: "#0f3d3e",
+    text: "#0b2b2c",
+    background: "#f8f5ec",
+  },
+  "naga-crimson": {
+    primary: "#d4af37",
+    secondary: "#5c0a1a",
+    text: "#2e050d",
+    background: "#f9f1e7",
+  },
+  "sbai-silk": {
+    primary: "#e07a3f",
+    secondary: "#2f7a5c",
+    text: "#1c382c",
+    background: "#fff8ef",
+  },
+};
+
+function normalizeTemplate(raw: Partial<Template> & { templateId: string }): Template {
+  const fallbackColors =
+    (raw.defaultColorPalette && LEGACY_PALETTE_COLORS[raw.defaultColorPalette]) ||
+    DEFAULT_TEMPLATE_COLORS;
+
+  return {
+    templateId: raw.templateId,
+    category: raw.category ?? "wedding",
+    name: raw.name ?? "Untitled Template",
+    previewImage: raw.previewImage ?? "",
+    description: raw.description,
+    colors: {
+      primary: raw.colors?.primary || fallbackColors.primary,
+      secondary: raw.colors?.secondary || fallbackColors.secondary,
+      text: raw.colors?.text || fallbackColors.text,
+      background: raw.colors?.background || fallbackColors.background,
+      backgroundOpacity:
+        typeof raw.colors?.backgroundOpacity === "number"
+          ? Math.max(0, Math.min(100, raw.colors.backgroundOpacity))
+          : (fallbackColors.backgroundOpacity ?? 85),
+    },
+    backgroundType:
+      raw.backgroundType ??
+      (raw.backgroundVideoUrl ? "video" : raw.backgroundImageUrl ? "photo" : "none"),
+    backgroundImageUrl: raw.backgroundImageUrl,
+    backgroundVideoUrl: raw.backgroundVideoUrl,
+    hasMusic: raw.hasMusic ?? true,
+    defaultMusicUrl: raw.defaultMusicUrl,
+    defaultFonts: raw.defaultFonts ?? { heading: "Moul", body: "Kantumruy Pro" },
+    defaultColorPalette: raw.defaultColorPalette,
+  };
+}
+
+const templatesCol = collection(db, "templates").withConverter({
+  toFirestore: (data: Template) => cleanUndefined(data as unknown as Record<string, unknown>),
+  fromFirestore: (snapshot: QueryDocumentSnapshot) => {
+    const data = snapshot.data() as Partial<Template>;
+    return normalizeTemplate({ ...data, templateId: data.templateId || snapshot.id });
+  },
+});
+
+export const DEFAULT_TEMPLATES: Template[] = [
+  {
+    templateId: "emerald-gold",
+    category: "wedding",
+    name: "Emerald Gold · មរកតមាស",
+    description:
+      "Luxurious deep emerald green paired with radiant royal gold accents and warm ivory text — inspired by emeraldgold.invibless.com.",
+    previewImage:
+      "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=80",
+    colors: {
+      primary: "#d4af37",
+      secondary: "#0f3d2e",
+      text: "#f8f4eb",
+      background: "#071f17",
+    },
+    backgroundType: "photo",
+    backgroundImageUrl:
+      "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1600&q=80",
+    hasMusic: true,
+    defaultMusicUrl:
+      "https://assets.mixkit.co/music/preview/mixkit-romantic-wedding-640.mp3",
+    defaultFonts: { heading: "Moul", body: "Kantumruy Pro" },
+  },
+  {
+    templateId: "royal-kh",
+    category: "wedding",
+    name: "Royal KH · ខ្មែររាជវង្ស",
+    description:
+      "Traditional Cambodian palace aesthetic with antique gold, regal crimson maroon, and warm silk cream — inspired by royalkh.invibless.com.",
+    previewImage:
+      "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=900&q=80",
+    colors: {
+      primary: "#c9a24b",
+      secondary: "#7a1f2b",
+      text: "#3b1319",
+      background: "#fdf8f0",
+    },
+    backgroundType: "photo",
+    backgroundImageUrl:
+      "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1600&q=80",
+    hasMusic: true,
+    defaultMusicUrl:
+      "https://assets.mixkit.co/music/preview/mixkit-romantic-wedding-640.mp3",
+    defaultFonts: { heading: "Moul", body: "Kantumruy Pro" },
+  },
+  {
+    templateId: "teal-silver",
+    category: "wedding",
+    name: "Teal Silver · ខៀវប្រាក់ទំនើប",
+    description:
+      "Modern oceanic teal blended with shimmering silver-cyan highlights and crisp alabaster tones — inspired by tealsilver.invibless.com.",
+    previewImage:
+      "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=900&q=80",
+    colors: {
+      primary: "#7dd3fc",
+      secondary: "#115e59",
+      text: "#f0fdfa",
+      background: "#082f32",
+    },
+    backgroundType: "photo",
+    backgroundImageUrl:
+      "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1600&q=80",
+    hasMusic: true,
+    defaultMusicUrl:
+      "https://assets.mixkit.co/music/preview/mixkit-romantic-wedding-640.mp3",
+    defaultFonts: { heading: "Moul", body: "Kantumruy Pro" },
+  },
+];
 // Palette docs seeded before the gold/goldLight/maroon/cream -> primary/
 // primaryLight/secondary/background field rename are still shaped the old
 // way in Firestore. Fall back to the legacy field so those documents don't
@@ -163,8 +323,8 @@ export async function createInvitation(
   ownerUid: string,
   input: Pick<
     Invitation,
-    "slug" | "category" | "templateId" | "defaultLocale" | "colorPalette"
-  >,
+    "slug" | "category" | "templateId" | "defaultLocale"
+  > & { colorPalette?: string },
 ) {
   const ref = doc(invitationsCol);
   const invitation: Invitation = {
@@ -175,7 +335,7 @@ export async function createInvitation(
     templateId: input.templateId,
     defaultLocale: input.defaultLocale,
     status: "draft",
-    colorPalette: input.colorPalette,
+    ...(input.colorPalette ? { colorPalette: input.colorPalette } : {}),
     eventDate: Date.now(),
     content: {},
     mediaUrls: { gallery: [] },
@@ -188,7 +348,7 @@ export async function createInvitation(
   // slugs/{slug} instead of a list query (see getInvitationBySlug below).
   const batch = writeBatch(db);
   batch.set(ref, invitation);
-  batch.set(doc(db, "slugs", input.slug), { invitationId: ref.id });
+  batch.set(doc(db, "slugs", input.slug), { invitationId: ref.id, ownerUid });
   await batch.commit();
 
   return invitation;
@@ -232,6 +392,45 @@ export async function getInvitation(invitationId: string) {
 }
 
 export async function deleteInvitation(invitationId: string) {
+  const inv = await getInvitation(invitationId);
+  if (inv) {
+    // Clean up associated media
+    const mediaToDelete: string[] = [
+      ...(inv.mediaUrls?.gallery || []),
+      ...(inv.mediaUrls?.bgMusic ? [inv.mediaUrls.bgMusic] : []),
+      ...(inv.mediaUrls?.digitalEnvelopeQr ? [inv.mediaUrls.digitalEnvelopeQr] : []),
+      ...(inv.coverImageUrl ? [inv.coverImageUrl] : []),
+      ...((inv.content?.story || []).map((s) => s.image).filter((u): u is string => Boolean(u))),
+    ];
+    for (const url of mediaToDelete) {
+      await deleteMediaByUrl(url).catch(() => {});
+    }
+
+    // Delete guests subcollection
+    try {
+      const guestsSnap = await getDocs(collection(db, "invitations", invitationId, "guests"));
+      for (const gDoc of guestsSnap.docs) {
+        await deleteDoc(gDoc.ref).catch(() => {});
+      }
+    } catch {
+      // non-fatal
+    }
+
+    // Delete rsvps subcollection
+    try {
+      const rsvpsSnap = await getDocs(collection(db, "rsvps", invitationId, "responses"));
+      for (const rDoc of rsvpsSnap.docs) {
+        await deleteDoc(rDoc.ref).catch(() => {});
+      }
+    } catch {
+      // non-fatal
+    }
+
+    // Delete slug reservation
+    if (inv.slug) {
+      await deleteDoc(doc(db, "slugs", inv.slug)).catch(() => {});
+    }
+  }
   await deleteDoc(doc(invitationsCol, invitationId));
 }
 
@@ -241,16 +440,33 @@ export async function listAllInvitations() {
 }
 
 export async function listTemplates(category?: Template["category"]) {
-  const q = category
-    ? query(templatesCol, where("category", "==", category))
-    : templatesCol;
-  const snap = await getDocs(q);
-  return snap.docs.map((d) => d.data());
+  const snap = await getDocs(templatesCol);
+  let all = snap.docs.map((d) => d.data());
+
+  // Seed default sample templates (Emerald Gold, Royal KH, Teal Silver) if collection is empty
+  if (all.length === 0) {
+    try {
+      const batch = writeBatch(db);
+      for (const tpl of DEFAULT_TEMPLATES) {
+        batch.set(doc(templatesCol, tpl.templateId), tpl);
+      }
+      await batch.commit();
+    } catch {
+      // Non-admin or unauthenticated caller: return in-memory defaults
+    }
+    all = [...DEFAULT_TEMPLATES];
+  }
+
+  if (category) {
+    return all.filter((t) => t.category === category);
+  }
+  return all;
 }
 
 export async function getTemplate(templateId: string) {
   const snap = await getDoc(doc(templatesCol, templateId));
-  return snap.exists() ? snap.data() : null;
+  if (snap.exists()) return snap.data();
+  return DEFAULT_TEMPLATES.find((t) => t.templateId === templateId) ?? null;
 }
 
 // Lets callers reserve a template id before the doc is created — needed to
@@ -264,7 +480,7 @@ export async function createTemplate(
   input: Omit<Template, "templateId">,
   templateId: string = newTemplateId(),
 ) {
-  const template: Template = { ...input, templateId };
+  const template: Template = normalizeTemplate({ ...input, templateId });
   await setDoc(doc(templatesCol, templateId), template);
   return template;
 }
@@ -277,6 +493,12 @@ export async function updateTemplate(
   for (const [key, value] of Object.entries(patch)) {
     if (value === undefined) {
       cleanPatch[key] = deleteField();
+    } else if (
+      value !== null &&
+      typeof value === "object" &&
+      !Array.isArray(value)
+    ) {
+      cleanPatch[key] = cleanUndefined(value as Record<string, unknown>);
     } else {
       cleanPatch[key] = value;
     }
@@ -284,8 +506,39 @@ export async function updateTemplate(
   await updateDoc(doc(db, "templates", templateId), cleanPatch);
 }
 
-export async function deleteTemplate(templateId: string) {
+/**
+ * Deletes a template AND cascades deletion to all user invitations that were
+ * created using this templateId (along with their guests, RSVPs, media, and slugs).
+ */
+export async function deleteTemplate(templateId: string): Promise<number> {
+  const tpl = await getTemplate(templateId);
+
+  // 1. Find all invitations using this templateId and delete them
+  let deletedInvitationsCount = 0;
+  try {
+    const q = query(invitationsCol, where("templateId", "==", templateId));
+    const snap = await getDocs(q);
+    for (const invDoc of snap.docs) {
+      await deleteInvitation(invDoc.id);
+      deletedInvitationsCount++;
+    }
+  } catch (err) {
+    console.warn("Failed to cascade delete invitations for template:", err);
+  }
+
+  // 2. Clean up template media if hosted on Cloudinary/Storage
+  if (tpl) {
+    const urls = [tpl.previewImage, tpl.backgroundImageUrl, tpl.defaultMusicUrl].filter(
+      (u): u is string => Boolean(u && !u.includes("unsplash.com") && !u.includes("mixkit.co")),
+    );
+    for (const url of urls) {
+      await deleteMediaByUrl(url).catch(() => {});
+    }
+  }
+
+  // 3. Delete the template document itself
   await deleteDoc(doc(templatesCol, templateId));
+  return deletedInvitationsCount;
 }
 
 export async function listPalettes() {

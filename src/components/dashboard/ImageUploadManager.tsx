@@ -204,14 +204,14 @@ export function ImageUploadManager({
 
                     {/* Centered Preview Zoom Icon on hover */}
                     <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-all duration-200 group-hover:opacity-100 group-hover:scale-105">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white shadow-lg backdrop-blur-xs ring-1 ring-white/30">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black/70 text-white shadow-lg ring-1 ring-white/30">
                         <Eye className="h-4 w-4" />
                       </span>
                     </div>
 
                     {/* Cover Photo Badge */}
                     {isCover && multiple && labels.coverPhotoBadge && (
-                      <div className="absolute left-2 top-2 z-10 flex items-center gap-1 rounded-full bg-gold/90 px-2 py-0.5 text-[10px] font-bold text-white shadow-xs backdrop-blur-xs">
+                      <div className="absolute left-2 top-2 z-10 flex items-center gap-1 rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold text-white shadow-xs">
                         <Sparkles className="h-2.5 w-2.5" />
                         <span>{labels.coverPhotoBadge}</span>
                       </div>
@@ -219,7 +219,7 @@ export function ImageUploadManager({
 
                     {/* Image Number Badge (non-cover) */}
                     {!isCover && multiple && (
-                      <div className="absolute left-2 top-2 z-10 rounded-full bg-black/40 px-1.5 py-0.5 text-[10px] font-semibold text-white backdrop-blur-xs">
+                      <div className="absolute left-2 top-2 z-10 rounded-full bg-black/60 px-1.5 py-0.5 text-[10px] font-semibold text-white">
                         #{index + 1}
                       </div>
                     )}

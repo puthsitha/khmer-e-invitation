@@ -165,7 +165,7 @@ export function GuestExcelImportModal({
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
+        className="fixed inset-0 bg-black/65 transition-opacity"
         onClick={onClose}
       />
 
