@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { motion, useReducedMotion } from "framer-motion";
 import { GuestNameFrame } from "@/components/ui/GuestNameFrame";
+import { CouplePhotoFrame } from "@/components/ui/CouplePhotoFrame";
 import { SparkBurst } from "@/components/ui/SparkBurst";
 import { bodyFontStyle, headingFontStyle, scriptFontStyle } from "@/lib/fonts";
 import { pickBilingual } from "@/lib/bilingual";
@@ -39,12 +40,14 @@ const kmNameStyle: CSSProperties = {
 export function Hero({
   invitation,
   guestName: propGuestName,
+  frameImageUrl,
   onOpen,
   onStartMusic,
   contained = false,
 }: {
   invitation: Invitation;
   guestName?: string;
+  frameImageUrl?: string;
   onOpen: () => void;
   onStartMusic: () => void;
   contained?: boolean;
@@ -60,6 +63,11 @@ export function Hero({
   const groomName = pickBilingual(invitation.content.groomName, locale);
   const brideName = pickBilingual(invitation.content.brideName, locale);
   const address = pickBilingual(invitation.content.address, locale);
+  const heroDisplayMode = invitation.content.heroDisplayMode ?? "text";
+  const couplePhotoUrl =
+    invitation.content.couplePhotoUrl ||
+    invitation.coverImageUrl ||
+    invitation.mediaUrls.gallery[0];
 
   const eventDate = new Date(invitation.eventDate);
   const date =
@@ -132,31 +140,47 @@ export function Hero({
           {t("onOccasion")}
         </p>
 
-      <div className="flex flex-col items-center gap-3 sm:gap-4">
-        <motion.h1
-          style={{
-            ...nameStyle,
-            animation: shouldReduceMotion
-              ? undefined
-              : "name-ink-reveal 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s 1 normal both",
-          }}
+      {heroDisplayMode === "photo" ? (
+        <motion.div
+          initial={shouldReduceMotion ? undefined : { opacity: 0, scale: 0.92 }}
+          animate={shouldReduceMotion ? undefined : { opacity: 1, scale: 1 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="my-1"
         >
-          {groomName}
-        </motion.h1>
-        <span className="text-2xl text-gold" style={scriptFontStyle(locale)}>
-          {locale === "km" ? "និង" : "&"}
-        </span>
-        <motion.h1
-          style={{
-            ...nameStyle,
-            animation: shouldReduceMotion
-              ? undefined
-              : "name-ink-reveal 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s 1 normal both",
-          }}
-        >
-          {brideName}
-        </motion.h1>
-      </div>
+          <CouplePhotoFrame
+            photoUrl={couplePhotoUrl}
+            frameUrl={frameImageUrl}
+            alt={[groomName, brideName].filter(Boolean).join(" & ") || "Couple photo"}
+            size="md"
+          />
+        </motion.div>
+      ) : (
+        <div className="flex flex-col items-center gap-3 sm:gap-4">
+          <motion.h1
+            style={{
+              ...nameStyle,
+              animation: shouldReduceMotion
+                ? undefined
+                : "name-ink-reveal 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s 1 normal both",
+            }}
+          >
+            {groomName}
+          </motion.h1>
+          <span className="text-2xl text-gold" style={scriptFontStyle(locale)}>
+            {locale === "km" ? "និង" : "&"}
+          </span>
+          <motion.h1
+            style={{
+              ...nameStyle,
+              animation: shouldReduceMotion
+                ? undefined
+                : "name-ink-reveal 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s 1 normal both",
+            }}
+          >
+            {brideName}
+          </motion.h1>
+        </div>
+      )}
 
       <GuestNameFrame
         text={guestName ? t("guestGreeting", { name: guestName }) : t("guestGreetingDefault")}

@@ -36,11 +36,13 @@ import {
   UploadValidationError,
   uploadTemplatePreviewImage,
   uploadTemplateBackgroundImage,
+  uploadTemplateFrameImage,
   uploadTemplateMusic,
   validateTemplatePreviewImage,
   assertUpload,
 } from "@/lib/firebase/storage";
 import { createSampleInvitationForTemplate } from "@/lib/mockInvitation";
+import { CouplePhotoFrame, DEFAULT_COUPLE_FRAME_URL } from "@/components/ui/CouplePhotoFrame";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { UPLOAD_LIMITS, ALLOWED_AUDIO_TYPES, ALLOWED_IMAGE_TYPES } from "@/lib/constants";
@@ -202,8 +204,14 @@ export default function AdminTemplatesPage() {
   const [defaultMusicUrl, setDefaultMusicUrl] = useState("");
   const [selectedMusicFile, setSelectedMusicFile] = useState<File | null>(null);
 
+  // Couple photo frame settings
+  const [frameImageUrl, setFrameImageUrl] = useState(DEFAULT_COUPLE_FRAME_URL);
+  const [selectedFrameFile, setSelectedFrameFile] = useState<File | null>(null);
+  const [localFrameUrl, setLocalFrameUrl] = useState<string | null>(null);
+
   // Live preview controls
   const [previewStage, setPreviewStage] = useState<"closed" | "landing" | "opened">("opened");
+  const [previewHeroMode, setPreviewHeroMode] = useState<"text" | "photo">("text");
   const [previewDevice, setPreviewDevice] = useState<"mobile" | "ipad">("mobile");
   const [fullScreenPreviewTemplate, setFullScreenPreviewTemplate] = useState<Template | null>(null);
 
@@ -218,6 +226,7 @@ export default function AdminTemplatesPage() {
 
   const previewFileInputRef = useRef<HTMLInputElement>(null);
   const bgFileInputRef = useRef<HTMLInputElement>(null);
+  const frameFileInputRef = useRef<HTMLInputElement>(null);
   const musicFileInputRef = useRef<HTMLInputElement>(null);
 
   const t = useTranslations("admin.templates");
@@ -240,8 +249,9 @@ export default function AdminTemplatesPage() {
     return () => {
       if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl);
       if (localBgUrl) URL.revokeObjectURL(localBgUrl);
+      if (localFrameUrl) URL.revokeObjectURL(localFrameUrl);
     };
-  }, [localPreviewUrl, localBgUrl]);
+  }, [localPreviewUrl, localBgUrl, localFrameUrl]);
 
   function clearFiles() {
     if (localPreviewUrl) {
@@ -252,11 +262,17 @@ export default function AdminTemplatesPage() {
       URL.revokeObjectURL(localBgUrl);
       setLocalBgUrl(null);
     }
+    if (localFrameUrl) {
+      URL.revokeObjectURL(localFrameUrl);
+      setLocalFrameUrl(null);
+    }
     setSelectedPreviewFile(null);
     setSelectedBgFile(null);
+    setSelectedFrameFile(null);
     setSelectedMusicFile(null);
     if (previewFileInputRef.current) previewFileInputRef.current.value = "";
     if (bgFileInputRef.current) bgFileInputRef.current.value = "";
+    if (frameFileInputRef.current) frameFileInputRef.current.value = "";
     if (musicFileInputRef.current) musicFileInputRef.current.value = "";
   }
 
@@ -272,6 +288,7 @@ export default function AdminTemplatesPage() {
     setBackgroundType(tpl.backgroundType || "none");
     setBackgroundImageUrl(tpl.backgroundImageUrl || "");
     setBackgroundVideoUrl(tpl.backgroundVideoUrl || "");
+    setFrameImageUrl(tpl.frameImageUrl || DEFAULT_COUPLE_FRAME_URL);
     setHasMusic(tpl.hasMusic ?? true);
     setDefaultMusicUrl(tpl.defaultMusicUrl || "");
     setUploadError(null);
@@ -290,6 +307,7 @@ export default function AdminTemplatesPage() {
     setBackgroundType("photo");
     setBackgroundImageUrl("");
     setBackgroundVideoUrl("");
+    setFrameImageUrl(DEFAULT_COUPLE_FRAME_URL);
     setHasMusic(true);
     setDefaultMusicUrl("");
     setUploadError(null);
@@ -347,8 +365,29 @@ export default function AdminTemplatesPage() {
     }
   }
 
+  function handleFrameImageSelect(file: File | null) {
+    if (!file) return;
+    setUploadError(null);
+    try {
+      assertUpload(file, {
+        maxBytes: UPLOAD_LIMITS.galleryImageMaxBytes,
+        allowedTypes: ALLOWED_IMAGE_TYPES,
+        allowedExtensions: [".jpg", ".jpeg", ".png", ".webp", ".gif"],
+      });
+      if (localFrameUrl) URL.revokeObjectURL(localFrameUrl);
+      setSelectedFrameFile(file);
+      setLocalFrameUrl(URL.createObjectURL(file));
+    } catch (err) {
+      setUploadError(
+        err instanceof UploadValidationError ? err.message : t("uploadError"),
+      );
+    }
+  }
+
   const displayPreviewImage = localPreviewUrl || previewImage;
   const displayBgImage = localBgUrl || backgroundImageUrl;
+  const displayFrameImage =
+    localFrameUrl || frameImageUrl.trim() || DEFAULT_COUPLE_FRAME_URL;
 
   // Build live draft Template for real-time ViewerExperience preview
   const draftTemplate: Template = useMemo(
@@ -366,6 +405,7 @@ export default function AdminTemplatesPage() {
           : undefined,
       backgroundVideoUrl:
         backgroundType === "video" ? backgroundVideoUrl.trim() || undefined : undefined,
+      frameImageUrl: displayFrameImage,
       hasMusic,
       defaultMusicUrl: hasMusic ? defaultMusicUrl.trim() || undefined : undefined,
       defaultFonts: { heading: "Moul", body: "Kantumruy Pro" },
@@ -376,6 +416,7 @@ export default function AdminTemplatesPage() {
       name,
       displayPreviewImage,
       displayBgImage,
+      displayFrameImage,
       description,
       colors,
       backgroundType,
@@ -385,10 +426,16 @@ export default function AdminTemplatesPage() {
     ],
   );
 
-  const sampleInvitation = useMemo(
-    () => createSampleInvitationForTemplate(draftTemplate),
-    [draftTemplate],
-  );
+  const sampleInvitation = useMemo(() => {
+    const base = createSampleInvitationForTemplate(draftTemplate);
+    return {
+      ...base,
+      content: {
+        ...base.content,
+        heroDisplayMode: previewHeroMode,
+      },
+    };
+  }, [draftTemplate, previewHeroMode]);
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -400,6 +447,7 @@ export default function AdminTemplatesPage() {
 
     let finalPreviewUrl = previewImage;
     let finalBgUrl = backgroundImageUrl;
+    let finalFrameUrl = frameImageUrl.trim() || DEFAULT_COUPLE_FRAME_URL;
     let finalMusicUrl = defaultMusicUrl;
 
     try {
@@ -409,6 +457,9 @@ export default function AdminTemplatesPage() {
       }
       if (backgroundType === "photo" && selectedBgFile) {
         finalBgUrl = await uploadTemplateBackgroundImage(templateId, selectedBgFile);
+      }
+      if (selectedFrameFile) {
+        finalFrameUrl = await uploadTemplateFrameImage(templateId, selectedFrameFile);
       }
       if (hasMusic && selectedMusicFile) {
         finalMusicUrl = await uploadTemplateMusic(templateId, selectedMusicFile);
@@ -443,6 +494,7 @@ export default function AdminTemplatesPage() {
           backgroundType === "photo" ? finalBgUrl || finalPreviewUrl || undefined : undefined,
         backgroundVideoUrl:
           backgroundType === "video" ? backgroundVideoUrl.trim() || undefined : undefined,
+        frameImageUrl: finalFrameUrl || DEFAULT_COUPLE_FRAME_URL,
         hasMusic,
         defaultMusicUrl: hasMusic ? finalMusicUrl || undefined : undefined,
         defaultFonts: { heading: "Moul", body: "Kantumruy Pro" },
@@ -748,6 +800,76 @@ export default function AdminTemplatesPage() {
               )}
             </div>
 
+            {/* Couple Photo Frame Setting */}
+            <div className="flex flex-col gap-3 rounded-xl border border-gold/25 dark:border-gold/20 bg-cream/40 dark:bg-white/5 p-4">
+              <div className="flex items-center justify-between gap-2">
+                <span className="flex items-center gap-1.5 text-sm font-semibold text-maroon dark:text-[#f6eee8]">
+                  <Sparkles className="h-4 w-4 text-gold" />
+                  <span>{t("frameTitle")}</span>
+                </span>
+                {displayFrameImage !== DEFAULT_COUPLE_FRAME_URL && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (localFrameUrl) URL.revokeObjectURL(localFrameUrl);
+                      setLocalFrameUrl(null);
+                      setSelectedFrameFile(null);
+                      setFrameImageUrl(DEFAULT_COUPLE_FRAME_URL);
+                      if (frameFileInputRef.current) frameFileInputRef.current.value = "";
+                    }}
+                    className="text-xs font-medium text-gold hover:underline cursor-pointer"
+                  >
+                    {t("resetDefaultFrame")}
+                  </button>
+                )}
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="shrink-0 rounded-xl border border-gold/30 bg-[#140f13]/90 p-2">
+                  <CouplePhotoFrame
+                    photoUrl={
+                      sampleInvitation.content.couplePhotoUrl ||
+                      sampleInvitation.mediaUrls.gallery[0]
+                    }
+                    frameUrl={displayFrameImage}
+                    size="sm"
+                    className="!w-20"
+                  />
+                </div>
+
+                <div className="flex flex-1 flex-col gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <input
+                      ref={frameFileInputRef}
+                      id="template-frame-image"
+                      type="file"
+                      accept="image/png,image/webp,image/gif"
+                      className="hidden"
+                      disabled={uploading || submitting}
+                      onChange={(e) => handleFrameImageSelect(e.target.files?.[0] ?? null)}
+                    />
+                    <label
+                      htmlFor="template-frame-image"
+                      className="flex items-center gap-1.5 rounded-lg border border-gold/40 bg-white dark:bg-[#20181e] px-3 py-1.5 text-xs font-medium text-maroon dark:text-[#f6eee8] cursor-pointer hover:bg-gold/10"
+                    >
+                      <Upload size={13} />
+                      <span>{t("uploadFrameImage")}</span>
+                    </label>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="/images/couple_frame.webp or https://..."
+                    value={frameImageUrl}
+                    onChange={(e) => setFrameImageUrl(e.target.value)}
+                    className={`${inputClassName} text-xs`}
+                  />
+                  <span className="text-[11px] text-maroon/65 dark:text-[#f6eee8]/65">
+                    {t("frameHint")}
+                  </span>
+                </div>
+              </div>
+            </div>
+
             {/* Music Setting (Enable/Disable + Optional default music track) */}
             <div className="flex flex-col gap-3 rounded-xl border border-gold/25 dark:border-gold/20 bg-cream/40 dark:bg-white/5 p-4">
               <div className="flex items-center justify-between">
@@ -939,6 +1061,33 @@ export default function AdminTemplatesPage() {
                     </button>
                   ))}
                 </div>
+
+                {previewStage === "landing" && (
+                  <div className="inline-flex rounded-xl border border-gold/30 bg-cream/50 dark:bg-[#20181e] p-1">
+                    <button
+                      type="button"
+                      onClick={() => setPreviewHeroMode("text")}
+                      className={`rounded-lg px-2 py-1 text-xs font-semibold transition-all cursor-pointer ${
+                        previewHeroMode === "text"
+                          ? "bg-maroon text-cream dark:bg-gold dark:text-maroon"
+                          : "text-maroon/70 dark:text-[#f6eee8]/70 hover:text-maroon"
+                      }`}
+                    >
+                      Text
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPreviewHeroMode("photo")}
+                      className={`rounded-lg px-2 py-1 text-xs font-semibold transition-all cursor-pointer ${
+                        previewHeroMode === "photo"
+                          ? "bg-maroon text-cream dark:bg-gold dark:text-maroon"
+                          : "text-maroon/70 dark:text-[#f6eee8]/70 hover:text-maroon"
+                      }`}
+                    >
+                      Frame
+                    </button>
+                  </div>
+                )}
 
                 {/* Device Width Toggle (Mobile / iPad) */}
                 <div className="hidden sm:inline-flex rounded-xl border border-gold/30 bg-cream/50 dark:bg-[#20181e] p-1">

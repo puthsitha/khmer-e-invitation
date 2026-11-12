@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { NextIntlClientProvider, useLocale, useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
-import { Hourglass, Loader2, MailQuestion } from "lucide-react";
+import { Eye, Hourglass, Loader2, MailQuestion } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 import { getInvitationBySlug, getTemplate } from "@/lib/firebase/firestore";
 import { decryptGuestToken } from "@/lib/guestToken";
 import { buildEventMetadata } from "@/lib/eventMetadata";
@@ -53,6 +54,8 @@ export function ViewerExperience({
   disableAutoScroll?: boolean;
 }) {
   const t = useTranslations("viewer");
+  const { user, appUser, loading: authLoading } = useAuth();
+  const [isAccessDenied, setIsAccessDenied] = useState(false);
   const searchParams = useSearchParams();
   const token = searchParams.get("g");
   const initialTo = searchParams.get("to")?.trim();
@@ -111,21 +114,39 @@ export function ViewerExperience({
   } = useBackgroundMusic(effectiveMusicUrl);
 
   useEffect(() => {
-    if (initialInvitation !== undefined) return;
-    getInvitationBySlug(slug).then(async (data) => {
-      if (!data && slug === MOCK_WEDDING_INVITATION.slug) {
-        setFetchedInvitation(MOCK_WEDDING_INVITATION);
-      } else if (!data && slug.startsWith("sample-")) {
-        const tplId = slug.slice("sample-".length);
-        const tpl = await getTemplate(tplId);
-        setFetchedInvitation(
-          tpl ? createSampleInvitationForTemplate(tpl) : null
-        );
-      } else {
-        setFetchedInvitation(data);
-      }
-    });
-  }, [slug, initialInvitation]);
+    if (initialInvitation !== undefined && initialInvitation !== null) return;
+    if (authLoading) return;
+
+    let cancelled = false;
+    getInvitationBySlug(slug)
+      .then(async (data) => {
+        if (cancelled) return;
+        if (!data && slug === MOCK_WEDDING_INVITATION.slug) {
+          setFetchedInvitation(MOCK_WEDDING_INVITATION);
+        } else if (!data && slug.startsWith("sample-")) {
+          const tplId = slug.slice("sample-".length);
+          const tpl = await getTemplate(tplId);
+          if (!cancelled) {
+            setFetchedInvitation(
+              tpl ? createSampleInvitationForTemplate(tpl) : null
+            );
+          }
+        } else {
+          setFetchedInvitation(data);
+        }
+      })
+      .catch((err) => {
+        console.warn("Client fetch for invitation failed:", err);
+        if (!cancelled) {
+          setIsAccessDenied(true);
+          setFetchedInvitation(null);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [slug, initialInvitation, authLoading, user]);
 
   useEffect(() => {
     if (invitation && !contained) {
@@ -163,6 +184,15 @@ export function ViewerExperience({
     setStage("opened");
   }
 
+  if (isAccessDenied) {
+    return (
+      <ViewerStatusScreen
+        icon={<Hourglass className="h-8 w-8" />}
+        message={t("notPublished")}
+      />
+    );
+  }
+
   if (invitation === undefined) {
     return (
       <ViewerStatusScreen
@@ -181,7 +211,11 @@ export function ViewerExperience({
     );
   }
 
-  if (invitation.status !== "published") {
+  const isOwnerOrAdmin = Boolean(
+    user && (user.uid === invitation.ownerUid || appUser?.role === "admin")
+  );
+
+  if (invitation.status !== "published" && !isOwnerOrAdmin) {
     return (
       <ViewerStatusScreen
         icon={<Hourglass className="h-8 w-8" />}
@@ -233,6 +267,15 @@ export function ViewerExperience({
               : "min-h-screen w-full max-w-full overflow-x-clip"
           }`}
         >
+          {!contained && invitation.status !== "published" && (
+            <aside
+              aria-label="Draft preview notice"
+              className="sticky top-0 z-50 flex items-center justify-center gap-2 border-b border-amber-600/40 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 px-4 py-2 text-center text-xs font-semibold text-amber-950 shadow-md backdrop-blur-md sm:text-sm"
+            >
+              <Eye size={16} className="shrink-0" />
+              <span>{t("draftPreviewBadge")}</span>
+            </aside>
+          )}
           <BackgroundBackdrop
             embedUrl={embedUrl}
             imageUrl={backdropImage}
@@ -282,6 +325,7 @@ export function ViewerExperience({
                   <Hero
                     invitation={invitation}
                     guestName={guestInfo?.name}
+                    frameImageUrl={activeTemplate?.frameImageUrl}
                     onOpen={handleOpenInvitation}
                     onStartMusic={startMusic}
                     contained={contained}
@@ -312,7 +356,10 @@ export function ViewerExperience({
                     guestId={guestInfo?.guestId}
                     guestName={guestInfo?.name}
                   />
-                  <Closing invitation={invitation} />
+                  <Closing
+                    invitation={invitation}
+                    frameImageUrl={activeTemplate?.frameImageUrl}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>

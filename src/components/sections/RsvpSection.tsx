@@ -84,6 +84,28 @@ export function RsvpSection({
     setError(null);
 
     try {
+      if (invitation.status !== "published") {
+        // In draft preview mode, simulate RSVP submission so the owner can preview the flow
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        setSubmitted(true);
+        const newResponse: RsvpResponse = {
+          responseId: `preview-${Date.now()}`,
+          guestId: guestId || undefined,
+          guestName: activeName,
+          attending: decision === "attending",
+          status: decision,
+          message: wishes.trim() || undefined,
+          createdAt: Date.now(),
+        };
+        setRsvps((prev) => [
+          newResponse,
+          ...prev.filter(
+            (r) => r.guestName.toLowerCase() !== activeName.toLowerCase(),
+          ),
+        ]);
+        return;
+      }
+
       await submitGuestRsvp(invitation.invitationId, {
         guestId,
         guestName: activeName,

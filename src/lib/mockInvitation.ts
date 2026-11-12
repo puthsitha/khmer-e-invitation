@@ -20,6 +20,9 @@ export const MOCK_WEDDING_INVITATION: Invitation = {
       km: "កែវ មុន្នីរ័ត្ន",
       en: "Keo Monyroth",
     },
+    heroDisplayMode: "text",
+    couplePhotoUrl:
+      "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1000&q=80",
     groomFamily: {
       father: {
         km: "លោក សុខ សំអាត",

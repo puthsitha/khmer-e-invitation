@@ -136,6 +136,28 @@ export async function uploadCoverImage(invitationId: string, file: File) {
   return uploadToCloudinary(file, `khmer-e-invitation/invitations/${invitationId}/cover`);
 }
 
+export async function uploadCouplePhoto(invitationId: string, file: File) {
+  assertUpload(file, {
+    maxBytes: UPLOAD_LIMITS.galleryImageMaxBytes,
+    allowedTypes: ALLOWED_IMAGE_TYPES,
+    allowedExtensions: [".jpg", ".jpeg", ".png", ".webp", ".gif"],
+  });
+
+  return uploadToCloudinary(file, `khmer-e-invitation/invitations/${invitationId}/couple-frame`);
+}
+
+export async function uploadTemplateFrameImage(
+  templateId: string,
+  file: File,
+) {
+  assertUpload(file, {
+    maxBytes: UPLOAD_LIMITS.galleryImageMaxBytes,
+    allowedTypes: ALLOWED_IMAGE_TYPES,
+    allowedExtensions: [".jpg", ".jpeg", ".png", ".webp", ".gif"],
+  });
+  return uploadToCloudinary(file, `khmer-e-invitation/templates/${templateId}/frame`);
+}
+
 export async function uploadTemplatePreviewImage(
   templateId: string,
   file: File,

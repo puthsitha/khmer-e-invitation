@@ -16,11 +16,17 @@ async function resolveInvitationForSlug(invitationSlug: string) {
       return createSampleInvitationForTemplate(tpl);
     }
   }
-  const inv = await getInvitationBySlug(invitationSlug);
-  if (!inv && invitationSlug === MOCK_WEDDING_INVITATION.slug) {
+  if (invitationSlug === MOCK_WEDDING_INVITATION.slug) {
     return MOCK_WEDDING_INVITATION;
   }
-  return inv;
+  try {
+    const inv = await getInvitationBySlug(invitationSlug);
+    return inv;
+  } catch (err) {
+    // If permissions denied or server read failed (e.g. draft invitation accessed unauthenticated),
+    // return undefined so the client component can authenticate with the browser session and fetch it.
+    return undefined;
+  }
 }
 
 type Props = {
@@ -79,7 +85,12 @@ export default async function ViewerPage({
   params: Promise<{ invitationSlug: string }>;
 }) {
   const { invitationSlug } = await params;
-  const initialInvitation = await resolveInvitationForSlug(invitationSlug);
+  let initialInvitation: Awaited<ReturnType<typeof resolveInvitationForSlug>> = undefined;
+  try {
+    initialInvitation = await resolveInvitationForSlug(invitationSlug);
+  } catch {
+    initialInvitation = undefined;
+  }
 
   return (
     <Suspense fallback={null}>
