@@ -128,6 +128,7 @@ function normalizeTemplate(raw: Partial<Template> & { templateId: string }): Tem
       (raw.backgroundVideoUrl ? "video" : raw.backgroundImageUrl ? "photo" : "none"),
     backgroundImageUrl: raw.backgroundImageUrl,
     backgroundVideoUrl: raw.backgroundVideoUrl,
+    frameImageUrl: raw.frameImageUrl || "/images/couple_frame.webp",
     hasMusic: raw.hasMusic ?? true,
     defaultMusicUrl: raw.defaultMusicUrl,
     defaultFonts: raw.defaultFonts ?? { heading: "Moul", body: "Kantumruy Pro" },
@@ -161,6 +162,7 @@ export const DEFAULT_TEMPLATES: Template[] = [
     backgroundType: "photo",
     backgroundImageUrl:
       "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1600&q=80",
+    frameImageUrl: "/images/couple_frame.webp",
     hasMusic: true,
     defaultMusicUrl:
       "https://assets.mixkit.co/music/preview/mixkit-romantic-wedding-640.mp3",
@@ -183,6 +185,7 @@ export const DEFAULT_TEMPLATES: Template[] = [
     backgroundType: "photo",
     backgroundImageUrl:
       "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1600&q=80",
+    frameImageUrl: "/images/couple_frame.webp",
     hasMusic: true,
     defaultMusicUrl:
       "https://assets.mixkit.co/music/preview/mixkit-romantic-wedding-640.mp3",
@@ -205,6 +208,7 @@ export const DEFAULT_TEMPLATES: Template[] = [
     backgroundType: "photo",
     backgroundImageUrl:
       "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1600&q=80",
+    frameImageUrl: "/images/couple_frame.webp",
     hasMusic: true,
     defaultMusicUrl:
       "https://assets.mixkit.co/music/preview/mixkit-romantic-wedding-640.mp3",

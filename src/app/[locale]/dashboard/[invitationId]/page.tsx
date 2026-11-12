@@ -22,12 +22,14 @@ import type { ParsedGuestRow } from "@/lib/excel";
 import {
   deleteMediaByUrl,
   uploadBgMusic,
+  uploadCouplePhoto,
   uploadDigitalEnvelopeQr,
   uploadGalleryImage,
   uploadStoryImage,
   UploadValidationError,
 } from "@/lib/firebase/storage";
 import { QrCode } from "@/components/ui/QrCode";
+import { CouplePhotoFrame } from "@/components/ui/CouplePhotoFrame";
 import { BilingualField } from "@/components/dashboard/BilingualField";
 import { TimeSelect12h } from "@/components/dashboard/TimeSelect12h";
 import { ImageUploadManager } from "@/components/dashboard/ImageUploadManager";
@@ -44,10 +46,13 @@ import { InvitationTopNav } from "@/components/dashboard/InvitationTopNav";
 import { VenueMapPreview } from "@/components/dashboard/VenueMapPreview";
 import { asBilingual, EMPTY_BILINGUAL } from "@/lib/bilingual";
 import {
+  Image as ImageIcon,
   MapPin,
   Trash2,
   Plus,
   Share2,
+  Type,
+  Upload,
 } from "lucide-react";
 import type {
   AgendaItem,
@@ -107,6 +112,7 @@ export default function EditInvitationPage() {
   const t = useTranslations("dashboard.editor");
   const tStatus = useTranslations("dashboard.list.status");
   const [template, setTemplate] = useState<Template | null>(null);
+  const [uploadingCouplePhoto, setUploadingCouplePhoto] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -337,6 +343,34 @@ export default function EditInvitationPage() {
     }
   }
 
+  async function handleCouplePhotoUpload(files: FileList | null) {
+    const file = files?.[0];
+    if (!file || !invitation) return;
+    setStatus(null);
+    setUploadingCouplePhoto(true);
+    try {
+      const oldUrl = invitation.content.couplePhotoUrl;
+      const url = await uploadCouplePhoto(invitation.invitationId, file);
+      if (oldUrl && oldUrl !== url) {
+        await deleteMediaByUrl(oldUrl).catch(() => {});
+      }
+      await saveContent({ couplePhotoUrl: url });
+    } catch (err) {
+      setStatus(
+        err instanceof UploadValidationError ? err.message : t("saveError"),
+      );
+    } finally {
+      setUploadingCouplePhoto(false);
+    }
+  }
+
+  async function handleRemoveCouplePhoto() {
+    if (!invitation?.content.couplePhotoUrl) return;
+    const oldUrl = invitation.content.couplePhotoUrl;
+    await deleteMediaByUrl(oldUrl).catch(() => {});
+    await saveContent({ couplePhotoUrl: "" });
+  }
+
   // --- Family fields -------------------------------------------------
   function updateFamily(
     key: "groomFamily" | "brideFamily",
@@ -498,6 +532,103 @@ export default function EditInvitationPage() {
                 placeholderEn="Bride's full name"
                 onBlur={(v) => saveContent({ brideName: v })}
               />
+
+              {/* Hero Display Option Switch (Text vs Framed Photo) & Couple Frame Photo Upload */}
+              <div className="flex flex-col gap-4 rounded-2xl border border-gold/30 dark:border-gold/20 bg-cream/40 dark:bg-white/5 p-4 sm:p-5">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-maroon dark:text-[#f6eee8]">
+                      {t("content.heroDisplayTitle")}
+                    </p>
+                    <p className="mt-0.5 text-xs text-maroon/70 dark:text-[#f6eee8]/70">
+                      {t("content.heroDisplaySubtitle")}
+                    </p>
+                  </div>
+
+                  {/* Option Switch: Text (Names) vs Photo (Frame) */}
+                  <div className="inline-flex rounded-xl border border-gold/40 bg-white dark:bg-[#20181e] p-1">
+                    <button
+                      type="button"
+                      onClick={() => saveContent({ heroDisplayMode: "text" })}
+                      className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
+                        (invitation.content.heroDisplayMode ?? "text") === "text"
+                          ? "bg-maroon text-cream dark:bg-gold dark:text-maroon shadow-xs"
+                          : "text-maroon/75 dark:text-[#f6eee8]/75 hover:bg-gold/10"
+                      }`}
+                    >
+                      <Type size={13} />
+                      <span>{t("content.heroModeText")}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => saveContent({ heroDisplayMode: "photo" })}
+                      className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
+                        invitation.content.heroDisplayMode === "photo"
+                          ? "bg-maroon text-cream dark:bg-gold dark:text-maroon shadow-xs"
+                          : "text-maroon/75 dark:text-[#f6eee8]/75 hover:bg-gold/10"
+                      }`}
+                    >
+                      <ImageIcon size={13} />
+                      <span>{t("content.heroModePhoto")}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Framed Photo Upload & Preview (used in Hero when Photo mode is selected, and always at bottom Closing section) */}
+                <div className="flex flex-col sm:flex-row items-center gap-5 border-t border-gold/20 pt-4">
+                  <div className="shrink-0 rounded-2xl border border-gold/25 bg-[#140f13]/90 p-3">
+                    <CouplePhotoFrame
+                      photoUrl={
+                        invitation.content.couplePhotoUrl ||
+                        invitation.coverImageUrl ||
+                        invitation.mediaUrls.gallery[0]
+                      }
+                      frameUrl={template?.frameImageUrl}
+                      size="sm"
+                    />
+                  </div>
+
+                  <div className="flex flex-1 flex-col items-center sm:items-start gap-2.5 text-center sm:text-left">
+                    <p className="text-xs font-semibold text-maroon dark:text-[#f6eee8]">
+                      {t("content.coupleFramePhotoLabel")}
+                    </p>
+                    <p className="text-xs leading-relaxed text-maroon/70 dark:text-[#f6eee8]/70">
+                      {t("content.coupleFramePhotoHint")}
+                    </p>
+                    <div className="mt-1 flex flex-wrap items-center gap-2.5">
+                      <label className="inline-flex items-center gap-1.5 rounded-xl bg-maroon dark:bg-gold px-4 py-2 text-xs font-semibold text-cream dark:text-maroon shadow-xs hover:opacity-90 transition-opacity cursor-pointer">
+                        <Upload size={13} />
+                        <span>
+                          {uploadingCouplePhoto
+                            ? t("content.uploadingPhoto")
+                            : invitation.content.couplePhotoUrl
+                              ? t("content.changePhoto")
+                              : t("content.uploadCouplePhoto")}
+                        </span>
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp,image/gif"
+                          className="hidden"
+                          disabled={uploadingCouplePhoto || saving}
+                          onChange={(e) => handleCouplePhotoUpload(e.target.files)}
+                        />
+                      </label>
+
+                      {invitation.content.couplePhotoUrl && (
+                        <button
+                          type="button"
+                          onClick={handleRemoveCouplePhoto}
+                          disabled={uploadingCouplePhoto || saving}
+                          className="inline-flex items-center gap-1 rounded-xl border border-red-300 dark:border-red-900/50 bg-red-50 dark:bg-red-950/40 px-3 py-2 text-xs font-semibold text-red-600 dark:text-red-300 hover:bg-red-100 transition-colors cursor-pointer"
+                        >
+                          <Trash2 size={13} />
+                          <span>{t("content.removePhoto")}</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               {/* Groom's Family */}
               <div className="rounded-2xl border border-gold/30 dark:border-gold/20 bg-cream/40 dark:bg-white/5 p-4 sm:p-5">

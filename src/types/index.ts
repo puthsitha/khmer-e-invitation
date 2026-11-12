@@ -38,6 +38,10 @@ export interface AgendaItem {
 export interface InvitationContent {
   groomName?: Bilingual;
   brideName?: Bilingual;
+  /** Whether the Hero landing screen shows the couple's text names or the framed photo */
+  heroDisplayMode?: "text" | "photo";
+  /** Couple photo displayed inside the ornate frame (in Hero when mode="photo", and in Closing) */
+  couplePhotoUrl?: string;
   groomFamily?: FamilyMembers;
   brideFamily?: FamilyMembers;
   invitationText?: Bilingual;
@@ -92,6 +96,8 @@ export interface Template {
   backgroundType: "none" | "photo" | "video";
   backgroundImageUrl?: string;
   backgroundVideoUrl?: string;
+  /** Ornate frame image URL used to frame the couple's photo in Hero and Closing */
+  frameImageUrl?: string;
   hasMusic: boolean;
   defaultMusicUrl?: string;
   defaultFonts: { heading: string; body: string };

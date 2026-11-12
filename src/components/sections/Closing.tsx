@@ -3,12 +3,19 @@
 import { useLocale, useTranslations } from "next-intl";
 import { SectionShell } from "@/components/viewer/SectionShell";
 import { OrnamentDivider } from "@/components/ui/OrnamentDivider";
+import { CouplePhotoFrame } from "@/components/ui/CouplePhotoFrame";
 import { bodyFontStyle, scriptFontStyle } from "@/lib/fonts";
 import { pickBilingual } from "@/lib/bilingual";
 import { formatKhmerDate } from "@/lib/khmerDate";
 import type { Invitation } from "@/types";
 
-export function Closing({ invitation }: { invitation: Invitation }) {
+export function Closing({
+  invitation,
+  frameImageUrl,
+}: {
+  invitation: Invitation;
+  frameImageUrl?: string;
+}) {
   const t = useTranslations("viewer");
   const locale = useLocale();
   const names = [
@@ -27,17 +34,35 @@ export function Closing({ invitation }: { invitation: Invitation }) {
           day: "numeric",
         });
 
+  const couplePhotoUrl =
+    invitation.content.couplePhotoUrl ||
+    invitation.coverImageUrl ||
+    invitation.mediaUrls.gallery[0];
+
   return (
     <SectionShell className="text-maroon">
       <OrnamentDivider />
-      <h2 className="text-glow text-2xl sm:text-3xl text-maroon break-words max-w-full" style={scriptFontStyle(locale)}>
+      <h2
+        className="text-glow text-2xl sm:text-3xl text-maroon break-words max-w-full"
+        style={scriptFontStyle(locale)}
+      >
         {names}
       </h2>
+      <CouplePhotoFrame
+        photoUrl={couplePhotoUrl}
+        frameUrl={frameImageUrl}
+        alt={names || "Couple photo"}
+        size="md"
+        className="my-2"
+      />
       <p className="text-glow" style={bodyFontStyle(locale)}>
         {date}
       </p>
       <OrnamentDivider mirrored />
-      <p className="text-glow text-sm text-maroon/70" style={bodyFontStyle(locale)}>
+      <p
+        className="text-glow text-sm text-maroon/70"
+        style={bodyFontStyle(locale)}
+      >
         {t("closingSignoff")}
       </p>
     </SectionShell>
